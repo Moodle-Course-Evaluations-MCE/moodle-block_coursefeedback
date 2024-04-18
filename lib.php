@@ -559,7 +559,7 @@ function block_coursefeedback_get_qanswercounts($course, $feedbackid) {
             }
         }
         // Calculate choices and average for each question
-        $average = $choicessum > 0 ? ($avsum / $choicessum) : null;
+        $average = $choicessum > 0 ? ($avsum / $choicessum) : 0;
         $answers[$questionid]['average'] = number_format($average, 2);
         $answers[$questionid]['choicessum'] = $choicessum;
         $answers[$questionid]['abstentions'] = $abstentions;
