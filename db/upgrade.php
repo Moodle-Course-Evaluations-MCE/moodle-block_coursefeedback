@@ -70,7 +70,7 @@ function xmldb_block_coursefeedback_upgrade($oldversion = 0) {
         // Add 'infotext' field to the 'block_coursefeedback' table
 
         $table = new xmldb_table('block_coursefeedback');
-        $field = new xmldb_field('infotext', XMLDB_TYPE_TEXT, null, null, null, null, null, 'heading');
+        $field = new xmldb_field('infotext', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
         // Conditionally launch add field.
         if (!$dbman->field_exists($table, $field)) {
