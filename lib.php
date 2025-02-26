@@ -28,7 +28,6 @@
 defined("MOODLE_INTERNAL") || die();
 define("COURSEFEEDBACK_DEFAULT", "DEFAULT");
 define("COURSEFEEDBACK_ALL", "ALL");
-define("COURSEFEEDBACK_EMPTY_ACTIVE", 0);
 
 /**
  * Fixes holes in question id order.
@@ -38,7 +37,7 @@ define("COURSEFEEDBACK_EMPTY_ACTIVE", 0);
  * @return 0 if operation failed or order is incorrect (checkonly), 1 if order is correct and 2 if order has succesful been changed
  */
 function block_coursefeedback_order_questions($feedbackid, $checkonly = true) {
-    global $CFG, $DB;
+    global $DB;
 
     $feedbackid = intval($feedbackid);
     $max = block_coursefeedback_get_questionid($feedbackid) - 1;
@@ -400,7 +399,7 @@ function block_coursefeedback_delete_answers($feedbackid) {
  * @return array Language codes
  */
 function block_coursefeedback_get_combined_languages($feedbackid = COURSEFEEDBACK_DEFAULT, $codesonly = true) {
-    global $CFG, $DB;
+    global $DB;
 
     // Clean params.
     if ($feedbackid === COURSEFEEDBACK_DEFAULT) {
@@ -437,7 +436,7 @@ function block_coursefeedback_get_combined_languages($feedbackid = COURSEFEEDBAC
  * @return array - All languages of the feedback, which are listed in database. Array data type depends on input parameters.
  */
 function block_coursefeedback_get_implemented_languages($feedbackid, $questionid = null, $langcodesonly = true, $inverted = false) {
-    global $CFG, $DB;
+    global $DB;
 
     $feedbackid = intval($feedbackid);
 
@@ -518,7 +517,6 @@ function block_coursefeedback_get_feedbackname($feedbackid = null) {
  */
 function block_coursefeedback_get_qanswercounts($course, $feedbackid) {
     global $DB;
-    $config = get_config("block_coursefeedback");
     $answers = array();
     $course = clean_param($course, PARAM_INT);
 
@@ -654,8 +652,6 @@ function block_coursefeedback_get_question_ids($feedbackid = COURSEFEEDBACK_DEFA
  * @return array - Array of strings with error messages if editing is not allowed (may be empty).
  */
 function block_coursefeedback_get_editerrors($feedbackid) {
-    global $DB;
-
     $feedbackid = intval($feedbackid);
     $perm = array();
 
@@ -773,33 +769,6 @@ function block_coursefeedback_create_activate_button($feedbackid, $value = "") {
 }
 
 /**
- * Only alias for now.
- * TODO: Provide space in DB for descriptions in different language and get it here.
- *
- * @param int $feedbackid - not used for now
- */
-function block_coursefeedback_get_description($feedbackid) {
-    /*
-    global $DB, $USER, $COURSE;
-
-    $lang = $USER->lang;
-    $alternatives = array($COURSE->lang, $CFG->lang);
-    while (!$DB->record_exists("block_coursefeedback",
-                               array("coursefeedbackid" => $feedbackid, "questionid" => 0, "language" => $lang)))
-    {
-        $lang = array_shift($alternatives);
-    }
-
-    return $DB->get_field("block_coursefeedback_questns",
-                          "question",
-                          array("coursefeedbackid" => $feedbackid,
-                          "questionid" => 0,
-                          "language" => $lang));
-    */
-    return "";
-}
-
-/**
  * Reimplementation of the moodle 1.9 execute_sql_arr.
  *
  * Secrurity WARNING: All statements won't be validated, before they are executed!
@@ -834,53 +803,6 @@ function block_coursefeedback_execute_sql_arr($sqlarr) {
 }
 
 /**
- * Fill missing values of an existing array.
- *
- * @param array $array
- * @param int $start
- * @param int $num
- * @param mixed $value
- */
-function block_coursefeedback_array_fill_spaces(&$array, $start, $num, $value) {
-    for ($i = $start; $i < $num; $i++) {
-        if (!isset($array[$i])) {
-            $array[$i] = $value;
-        }
-    }
-    ksort($array);
-}
-
-/**
- * @param mixed $printable
- * @param bool Should the execution of the script come to an end?
- */
-function block_coursefeedback_debug($printable, $die = false) {
-    if (is_bool($printable)) {
-        $printable = $printable ? "TRUE" : "FALSE";
-    }
-    $string = "<pre>" . print_r($printable, true) . "</pre>";
-    if ($die) {
-        die($string);
-    } else {
-        echo $string;
-    }
-}
-
-/**
- * @param array|bool $bools
- * @return String a comma-seperated list of "TRUE" or "FALSE"
- */
-function block_coursefeedback_check_bools($bools = array()) {
-    if (!is_array($bools)) {
-        $bools = array($bools);
-    }
-    foreach ($bools as &$boolean) {
-        $boolean = $boolean ? "TRUE" : "FALSE";
-    }
-    return join(" ", $bools);
-}
-
-/**
  * @param string $langcode
  * @return string - Gives the human readable language string
  */
@@ -898,7 +820,7 @@ function block_coursefeedback_get_language($langcode) {
  * @return boolean
  */
 function block_coursefeedback_questions_exist($feedbackid = COURSEFEEDBACK_DEFAULT) {
-    global $DB, $CFG, $COURSE, $USER;
+    global $CFG, $COURSE, $USER;
 
     $config = get_config("block_coursefeedback");
     $feedbackid = ($feedbackid === COURSEFEEDBACK_DEFAULT) ? $config->active_feedback : intval($feedbackid);
