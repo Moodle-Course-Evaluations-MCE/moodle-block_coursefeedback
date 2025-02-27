@@ -25,9 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined("MOODLE_INTERNAL") || die();
-define("COURSEFEEDBACK_DEFAULT", "DEFAULT");
-define("COURSEFEEDBACK_ALL", "ALL");
+const COURSEFEEDBACK_DEFAULT = "DEFAULT";
+const COURSEFEEDBACK_ALL = "ALL";
 
 /**
  * Fixes holes in question id order.
