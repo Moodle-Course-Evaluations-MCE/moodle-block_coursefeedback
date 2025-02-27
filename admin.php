@@ -271,7 +271,7 @@ if (isset($form) && get_parent_class($form) === "coursefeedbackform" && $form->i
             if ($form->is_validated()) {
                 if ($data->questiontext && isset($data->template) && isset($data->questionid) && $data->language) {
                     if (block_coursefeedback_update_question($data->template, $data->questionid, $data->questiontext,
-                            $data->language)) {
+                        $data->language, $data->questiontype)) {
                         $statusmsg = get_string("changessaved");
                     } else {
                         $errormsg = get_string("therewereerrors", "admin");
