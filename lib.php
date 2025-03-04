@@ -500,7 +500,7 @@ function block_coursefeedback_get_questioncount(int $feedbackid): int {
     $sql = "SELECT COUNT(DISTINCT questionid) 
               FROM {block_coursefeedback_questns} 
              WHERE coursefeedbackid = :feedbackid";
-    return (int) $DB->get_field_sql($sql, ["feedbackid" => $feedbackid]);
+    return $DB->get_field_sql($sql, ["feedbackid" => $feedbackid]);
 }
 
 /**
