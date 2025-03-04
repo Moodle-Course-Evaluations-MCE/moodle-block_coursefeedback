@@ -39,7 +39,7 @@ function block_coursefeedback_order_questions($feedbackid, $checkonly = true) {
     global $DB;
 
     $feedbackid = intval($feedbackid);
-    $max = block_coursefeedback_get_questionid($feedbackid) - 1;
+    $max = block_coursefeedback_get_questioncount($feedbackid);
     $currentid = 1;
     $sql = array();
     if ($max > 0) {
@@ -408,7 +408,7 @@ function block_coursefeedback_get_combined_languages($feedbackid = COURSEFEEDBAC
     }
     $codesonly = clean_param($codesonly, PARAM_BOOL);
 
-    $count = block_coursefeedback_get_questionid($feedbackid) - 1;
+    $count = block_coursefeedback_get_questioncount($feedbackid);
     $select = "coursefeedbackid = :fid GROUP BY language HAVING COUNT(language) = :count";
     $params = array("fid" => $feedbackid, "count" => $count);
     $langs = $DB->get_records_select("block_coursefeedback_questns", $select, $params, "", "language");
@@ -474,16 +474,33 @@ function block_coursefeedback_get_implemented_languages($feedbackid, $questionid
 }
 
 /**
- * Computes the next free questionid, is also used to detect the amount of questions the FB has.
+ * Computes the next available (unused) questionid for a given feedback.
  *
- * @param int $feedbackid
- * @return int - Next availble question id number.
+ * @param int $feedbackid The feedback ID.
+ * @return int The next available question ID.
+ * @throws dml_exception If the database query fails.
  */
-function block_coursefeedback_get_questionid($feedbackid) {
+function block_coursefeedback_get_questionid(int $feedbackid): int {
     global $DB;
-    $feedbackid = intval($feedbackid);
-    $n = $DB->get_field("block_coursefeedback_questns", "MAX(questionid)", array("coursefeedbackid" => $feedbackid));
-    return $n ? ($n + 1) : 1;
+    $sql = "SELECT COALESCE(MAX(questionid), 0) + 1 
+              FROM {block_coursefeedback_questns} 
+             WHERE coursefeedbackid = :feedbackid";
+    return $DB->get_field_sql($sql, ["feedbackid" => $feedbackid]);
+}
+
+/**
+ * Calculates how many questions a feedback has.
+ *
+ * @param int $feedbackid The feedback ID.
+ * @return int The number of questions in this feedback.
+ * @throws dml_exception If the database query fails.
+ */
+function block_coursefeedback_get_questioncount(int $feedbackid): int {
+    global $DB;
+    $sql = "SELECT COUNT(DISTINCT questionid) 
+              FROM {block_coursefeedback_questns} 
+             WHERE coursefeedbackid = :feedbackid";
+    return $DB->get_field_sql($sql, ["feedbackid" => $feedbackid]);
 }
 
 /**
