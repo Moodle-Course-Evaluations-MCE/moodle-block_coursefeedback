@@ -492,7 +492,7 @@ function block_coursefeedback_get_questionid(int $feedbackid): int {
  * Calculates how many questions a feedback has.
  *
  * @param int $feedbackid The feedback ID.
- * @return int How much Questions for this Feedback.
+ * @return int The number of questions in this feedback.
  * @throws dml_exception If the database query fails.
  */
 function block_coursefeedback_get_questioncount(int $feedbackid): int {
