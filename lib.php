@@ -29,52 +29,43 @@ const COURSEFEEDBACK_DEFAULT = "DEFAULT";
 const COURSEFEEDBACK_ALL = "ALL";
 
 /**
- * Fixes holes in question id order.
+ * Fixes gaps in question id ordering for a given feedback.
  *
- * @param int $feedbackid
- * @param bool $checkonly don"t change database entries
- * @return 0 if operation failed or order is incorrect (checkonly), 1 if order is correct and 2 if order has succesful been changed
+ * @param int $feedbackid The feedback instance ID.
+ * @return bool true
+ * @throws dml_exception A DML specific exception is thrown for any errors.
  */
-function block_coursefeedback_order_questions($feedbackid, $checkonly = true) {
+function block_coursefeedback_order_questions(int $feedbackid): bool
+{
     global $DB;
+    // "mapping" generates a new consecutive ID (new_qid) for each distinct questionid by using 'row_number()'
+    // Then, the UPDATE statement joins the mapping with the target table to set:
+    // - questionid = new_qid | - timemodified = current timestamp (via time())
+    // for all rows belonging to the given feedback instance.
+    $sqlupdate = "WITH mapping AS (
+                      SELECT questionid, row_number() OVER (ORDER BY questionid) AS new_qid
+                        FROM (
+                            SELECT DISTINCT questionid
+                              FROM {block_coursefeedback_questns}
+                             WHERE coursefeedbackid = :feedbackid1
+                        ) sub
+                  )
+                  UPDATE {block_coursefeedback_questns} t
+                     SET questionid = mapping.new_qid, timemodified = :timemodified
+                    FROM mapping
+                   WHERE t.coursefeedbackid = :feedbackid2
+                         AND t.questionid = mapping.questionid";
 
-    $feedbackid = intval($feedbackid);
-    $max = block_coursefeedback_get_questioncount($feedbackid);
-    $currentid = 1;
-    $sql = array();
-    if ($max > 0) {
-        while ($currentid < $max) {
-            if (!$DB->record_exists("block_coursefeedback_questns",
-                    array("coursefeedbackid" => $feedbackid, "questionid" => $currentid))) {
-                while (!$DB->record_exists("block_coursefeedback_questns",
-                        array("coursefeedbackid" => $feedbackid, "questionid" => $max)) && $max > 0) {
-                    // Don"t use other spots.
-                    $max--;
-                }
-                $sql = array("query" => "UPDATE {block_coursefeedback_questns}
-                                            SET questionid = :currentid,timemodified = :modified
-                                          WHERE coursefeedbackid = :fid 
-                                                AND questionid = :max",
-                    "params" => array("currentid" => $currentid,
-                        "modified" => time(),
-                        "fid" => $feedbackid,
-                        "max" => $max));
-                $max--;
-            }
-            $currentid++;
-        }
-        if (empty($sql)) {
-            return 1;
-        } else if (!$checkonly) {
-            if (block_coursefeedback_execute_sql_arr($sql)) {
-                return 2;
-            } else {
-                return 0;
-            }
-        }
-    }
+    $params = [
+        'feedbackid1' => $feedbackid,
+        'feedbackid2' => $feedbackid,
+        'timemodified' => time()
+    ];
+
+    $result = $DB->execute($sqlupdate, $params);
+
+    return $result;
 }
-
 /**
  * If the function returns a negative number, it indicates a false validation (i.e. use of blacklisted characters).
  *
@@ -332,7 +323,7 @@ function block_coursefeedback_delete_question($feedbackid, $questionid, $languag
     $success = clean_param($success, PARAM_BOOL);
 
     if ($success) {
-        block_coursefeedback_order_questions($feedbackid, false);
+        block_coursefeedback_order_questions($feedbackid);
     }
 
     return $success;
@@ -782,40 +773,6 @@ function block_coursefeedback_create_activate_button($feedbackid, $value = "") {
     }
     $url = block_coursefeedback_adminurl("feedback", "activate", $feedbackid);
     return html_writer::link($url, $value);
-}
-
-/**
- * Reimplementation of the moodle 1.9 execute_sql_arr.
- *
- * Secrurity WARNING: All statements won't be validated, before they are executed!
- *
- * @param array $sqlarr Each field is one query, one query contains the query string (key "query") and his parameters (key "params")
- * @return boolean
- */
-function block_coursefeedback_execute_sql_arr($sqlarr) {
-    global $DB;
-
-    // Transaction handling; improves db consistancy.
-    $dbtrans = $DB->start_delegated_transaction();
-    $success = true;
-    foreach ($sqlarr as $sql) {
-        // Check if for null-pointer warnings before execution.
-        if (!isset($sql["query"]) || !isset($sql["params"])) {
-            continue;
-        }
-
-        if (!$DB->execute($sql["query"], $sql["params"])) {
-            $success = false;
-            break;
-        }
-    }
-    if ($success) {
-        $dbtrans->allow_commit();
-    } else {
-        $dbtrans->rollback(new dbtransfer_exception("dbupdatefailed"));
-    }
-
-    return $success;
 }
 
 /**
