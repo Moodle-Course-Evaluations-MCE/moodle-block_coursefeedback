@@ -35,15 +35,14 @@ const COURSEFEEDBACK_ALL = "ALL";
  * @return bool true
  * @throws dml_exception A DML specific exception is thrown for any errors.
  */
-function block_coursefeedback_order_questions(int $feedbackid): bool
-{
+function block_coursefeedback_order_questions(int $feedbackid): bool {
     global $DB;
-    // "mapping" generates a new consecutive ID (new_qid) for each distinct questionid by using 'row_number()'
+    // "mapping" generates a new consecutive ID (newquestionid) for each distinct questionid by using 'row_number()'
     // Then, the UPDATE statement joins the mapping with the target table to set:
-    // - questionid = new_qid | - timemodified = current timestamp (via time())
+    // - questionid = newquestionid
     // for all rows belonging to the given feedback instance.
     $sqlupdate = "WITH mapping AS (
-                      SELECT questionid, row_number() OVER (ORDER BY questionid) AS new_qid
+                      SELECT questionid, row_number() OVER (ORDER BY questionid) AS newquestionid
                         FROM (
                             SELECT DISTINCT questionid
                               FROM {block_coursefeedback_questns}
@@ -51,7 +50,7 @@ function block_coursefeedback_order_questions(int $feedbackid): bool
                         ) sub
                   )
                   UPDATE {block_coursefeedback_questns} t
-                     SET questionid = mapping.new_qid, timemodified = :timemodified
+                     SET questionid = mapping.newquestionid
                     FROM mapping
                    WHERE t.coursefeedbackid = :feedbackid2
                          AND t.questionid = mapping.questionid";
@@ -59,13 +58,13 @@ function block_coursefeedback_order_questions(int $feedbackid): bool
     $params = [
         'feedbackid1' => $feedbackid,
         'feedbackid2' => $feedbackid,
-        'timemodified' => time()
     ];
 
     $result = $DB->execute($sqlupdate, $params);
 
     return $result;
 }
+
 /**
  * If the function returns a negative number, it indicates a false validation (i.e. use of blacklisted characters).
  *
@@ -207,67 +206,91 @@ function block_coursefeedback_insert_question($question, $feedbackid, $questioni
 
     return false;
 }
-
 /**
- * @param int $feedbackid
- * @param int $oldpos
- * @param int $newpos
- * @return bool Success of operation
+ * Moves a question within the course feedback block to a new position.
+ *
+ * This function reorders questions by updating their questionid values.
+ * It uses a temporary offset to avoid unique constraint conflicts and performs
+ * the update in a transaction.
+ *
+ * @param int $feedbackid    The course feedback identifier.
+ * @param int $oldposition   The current position of the question.
+ * @param int $newposition   The target position for the question.
+ * @return bool            True if the operation was successful.
+ * @throws dml_exception   If a database error occurs.
  */
-function block_coursefeedback_swap_questions($feedbackid, $oldpos, $newpos) {
+function block_coursefeedback_move_question(int $feedbackid, int $oldposition, int $newposition): bool {
     global $DB;
 
-    $feedbackid = intval($feedbackid);
-    $oldpos = intval($oldpos);
-    $newpos = intval($newpos);
-    $tmppos = block_coursefeedback_get_questionid($feedbackid);
-
-    if ($DB->record_exists("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid, "questionid" => $oldpos))
-            && $DB->record_exists("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid, "questionid" => $newpos))) {
-        $sql = array();
-        // Set temporary position.
-        $sql[] = array(
-            "query" => "UPDATE {block_coursefeedback_questns}
-                           SET questionid = :tmppos
-                         WHERE coursefeedbackid = :feedbackid 
-                               AND questionid = :newpos",
-            "params" => array(
-                "tmppos" => $tmppos,
-                "feedbackid" => $feedbackid,
-                "newpos" => $newpos,
-            )
-        );
-        // Move to new position.
-        $sql[] = array(
-            "query" => "UPDATE {block_coursefeedback_questns}
-                           SET questionid = :newpos, timemodified = :modified
-                         WHERE coursefeedbackid = :fid 
-                               AND questionid = :oldpos",
-            "params" => array(
-                "newpos" => $newpos,
-                "modified" => time(),
-                "fid" => $feedbackid,
-                "oldpos" => $oldpos,
-            )
-        );
-        // Restore old position.
-        $sql[] = array(
-            "query" => "UPDATE {block_coursefeedback_questns}
-                           SET questionid = :oldpos, timemodified = :modified
-                         WHERE coursefeedbackid = :fid 
-                               AND questionid = :tmppos",
-            "params" => array(
-                "oldpos" => $oldpos,
-                "modified" => time(),
-                "fid" => $feedbackid,
-                "tmppos" => $tmppos,
-            )
-        );
-
-        return block_coursefeedback_execute_sql_arr($sql);
-    } else {
-        return false;
+    if ($oldposition === $newposition) {
+        return true;
     }
+
+    $transaction = $DB->start_delegated_transaction();
+
+    try {
+        // Get the current offset value.
+        $offset = block_coursefeedback_get_questionid($feedbackid);
+
+        // Step 1: Shift all affected questions to a temporary offset.
+        $sql = "UPDATE {block_coursefeedback_questns}
+                   SET questionid = questionid + :offset
+                 WHERE coursefeedbackid = :feedbackid
+                       AND questionid BETWEEN LEAST(:oldposition::bigint, :newposition::bigint)
+                                     AND GREATEST(:oldposition1::bigint, :newposition1::bigint)";
+        $DB->execute($sql, [
+            'offset'      => $offset,
+            'feedbackid'  => $feedbackid,
+            'oldposition' => $oldposition,
+            'newposition' => $newposition,
+            'oldposition1' => $oldposition,
+            'newposition1' => $newposition,
+        ]);
+
+        // Step 2: Adjust positions of intermediate questions.
+        if ($oldposition < $newposition) {
+            // Moving to a higher position: shift intermediate questions one step down, considering the offset.
+            $sql = "UPDATE {block_coursefeedback_questns}
+                       SET questionid = questionid - (1 + :offset)
+                     WHERE coursefeedbackid = :feedbackid
+                           AND questionid BETWEEN (:oldposoffset + 1) AND :newposoffset";
+            $DB->execute($sql, [
+                'newposoffset' => $newposition + $offset,
+                'oldposoffset' => $oldposition + $offset,
+                'offset'       => $offset,
+                'feedbackid'   => $feedbackid,
+            ]);
+        } elseif ($oldposition > $newposition) {
+            // Moving to a lower position: shift intermediate questions one step up, considering the offset.
+            $sql = "UPDATE {block_coursefeedback_questns}
+                    SET questionid = questionid + (1 - :offset)
+                    WHERE coursefeedbackid = :feedbackid
+                      AND questionid BETWEEN :newposoffset AND (:oldposoffset - 1)";
+            $DB->execute($sql, [
+                'newposoffset' => $newposition + $offset,
+                'oldposoffset' => $oldposition + $offset,
+                'offset'       => $offset,
+                'feedbackid'   => $feedbackid,
+            ]);
+        }
+
+        // Step 3: Move the target question from its temporary offset position to the new position.
+        $sql = "UPDATE {block_coursefeedback_questns}
+                   SET questionid = :newposition
+                 WHERE coursefeedbackid = :feedbackid
+                       AND questionid = :oldposoffset";
+        $DB->execute($sql, [
+            'oldposoffset' => $oldposition + $offset,
+            'newposition'  => $newposition,
+            'feedbackid'   => $feedbackid,
+        ]);
+    } catch (Exception $e) {
+        $transaction->rollback($e);
+        throw $e;
+    }
+    $transaction->allow_commit();
+
+    return true;
 }
 
 /**

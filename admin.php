@@ -209,7 +209,7 @@ if (isset($form) && get_parent_class($form) === "coursefeedbackform" && $form->i
         case "questionsmove":
             if ($form->is_validated()) {
                 if (isset($data->position) && isset($data->template) && isset($data->questionid)) {
-                    if (block_coursefeedback_swap_questions($data->template, $data->questionid, $data->position)) {
+                    if (block_coursefeedback_move_question($data->template, $data->questionid, $data->position)) {
                         $statusmsg = get_string("changessaved");
                     } else {
                         $errormsg = get_string("therewereerrors", "admin");
