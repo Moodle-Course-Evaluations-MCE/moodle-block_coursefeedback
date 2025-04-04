@@ -277,25 +277,19 @@ function block_coursefeedback_move_question(int $feedbackid, int $oldposition, i
                        SET questionid = questionid - (1 + :offset)
                      WHERE coursefeedbackid = :feedbackid
                            AND questionid BETWEEN (:oldposoffset + 1) AND :newposoffset";
-            $DB->execute($sql, [
-                'newposoffset' => $newposition + $offset,
-                'oldposoffset' => $oldposition + $offset,
-                'offset'       => $offset,
-                'feedbackid'   => $feedbackid,
-            ]);
         } elseif ($oldposition > $newposition) {
             // Moving to a lower position: shift intermediate questions one step up, considering the offset.
             $sql = "UPDATE {block_coursefeedback_questns}
                     SET questionid = questionid + (1 - :offset)
                     WHERE coursefeedbackid = :feedbackid
                       AND questionid BETWEEN :newposoffset AND (:oldposoffset - 1)";
-            $DB->execute($sql, [
-                'newposoffset' => $newposition + $offset,
-                'oldposoffset' => $oldposition + $offset,
-                'offset'       => $offset,
-                'feedbackid'   => $feedbackid,
-            ]);
         }
+        $DB->execute($sql, [
+            'newposoffset' => $newposition + $offset,
+            'oldposoffset' => $oldposition + $offset,
+            'offset'       => $offset,
+            'feedbackid'   => $feedbackid,
+        ]);
 
         // Step 3: Move the target question from its temporary offset position to the new position.
         $sql = "UPDATE {block_coursefeedback_questns}
