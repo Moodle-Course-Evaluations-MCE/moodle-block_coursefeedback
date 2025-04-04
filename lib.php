@@ -37,30 +37,53 @@ const COURSEFEEDBACK_ALL = "ALL";
  */
 function block_coursefeedback_order_questions(int $feedbackid): bool {
     global $DB;
-    // "mapping" generates a new consecutive ID (newquestionid) for each distinct questionid by using 'row_number()'
-    // Then, the UPDATE statement joins the mapping with the target table to set:
-    // - questionid = newquestionid
-    // for all rows belonging to the given feedback instance.
-    $sqlupdate = "WITH mapping AS (
-                      SELECT questionid, row_number() OVER (ORDER BY questionid) AS newquestionid
-                        FROM (
-                            SELECT DISTINCT questionid
-                              FROM {block_coursefeedback_questns}
-                             WHERE coursefeedbackid = :feedbackid1
-                        ) sub
-                  )
-                  UPDATE {block_coursefeedback_questns} t
-                     SET questionid = mapping.newquestionid
-                    FROM mapping
-                   WHERE t.coursefeedbackid = :feedbackid2
-                         AND t.questionid = mapping.questionid";
 
-    $params = [
-        'feedbackid1' => $feedbackid,
-        'feedbackid2' => $feedbackid,
-    ];
+    $transaction = $DB->start_delegated_transaction();
 
-    $result = $DB->execute($sqlupdate, $params);
+    try {
+        // Get the current offset value.
+        $offset = block_coursefeedback_get_questionid($feedbackid);
+
+        // Shift all affected questions to a temporary offset.
+        // We need this to make sure the (questionid, feedbackid, laguage) unique constraint is not violated
+        $sql = "UPDATE {block_coursefeedback_questns}
+                   SET questionid = questionid + :offset
+                 WHERE coursefeedbackid = :feedbackid";
+
+        $DB->execute($sql, [
+            'offset'      => $offset,
+            'feedbackid'  => $feedbackid
+        ]);
+
+        // "mapping" generates a new consecutive ID (newquestionid) for each distinct questionid by using 'row_number()'
+        // Then, the UPDATE statement joins the mapping with the target table to set:
+        // - questionid = newquestionid
+        // for all rows belonging to the given feedback instance.
+        $sqlupdate = "WITH mapping AS (
+                          SELECT questionid, row_number() OVER (ORDER BY questionid) AS newquestionid
+                            FROM (
+                                SELECT DISTINCT questionid
+                                  FROM {block_coursefeedback_questns}
+                                 WHERE coursefeedbackid = :feedbackid1
+                            ) sub
+                      )
+                      UPDATE {block_coursefeedback_questns} t
+                         SET questionid = mapping.newquestionid
+                        FROM mapping
+                       WHERE t.coursefeedbackid = :feedbackid2
+                             AND t.questionid = mapping.questionid";
+
+        $params = [
+            'feedbackid1' => $feedbackid,
+            'feedbackid2' => $feedbackid,
+        ];
+
+        $result = $DB->execute($sqlupdate, $params);
+    } catch (Exception $e) {
+        $transaction->rollback($e);
+        throw $e;
+    }
+    $transaction->allow_commit();
 
     return $result;
 }
