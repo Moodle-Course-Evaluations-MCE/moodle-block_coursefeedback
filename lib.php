@@ -232,10 +232,6 @@ function block_coursefeedback_insert_question($question, $feedbackid, $questioni
 /**
  * Moves a question within the course feedback block to a new position.
  *
- * This function reorders questions by updating their questionid values.
- * It uses a temporary offset to avoid unique constraint conflicts and performs
- * the update in a transaction.
- *
  * @param int $feedbackid    The course feedback identifier.
  * @param int $oldposition   The current position of the question.
  * @param int $newposition   The target position for the question.
@@ -252,6 +248,10 @@ function block_coursefeedback_move_question(int $feedbackid, int $oldposition, i
     $transaction = $DB->start_delegated_transaction();
 
     try {
+        // Reordering questions by updating their questionid values.
+        // Making use of a temporary offset to avoid unique constraint conflicts and performing
+        // the update in a transaction.
+
         // Get the current offset value.
         $offset = block_coursefeedback_get_questionid($feedbackid);
 
