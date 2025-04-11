@@ -17,7 +17,7 @@
 /**
  * Main class file.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -50,7 +50,7 @@ class block_coursefeedback extends block_base {
             'site-index' => true,
             'course-view' => false,
             'mod' => false,
-            'my' => false
+            'my' => false,
         ];
     }
 
@@ -68,9 +68,9 @@ class block_coursefeedback extends block_base {
         $context = context_course::instance($this->page->course->id);
         $config = get_config("block_coursefeedback");
         $renderer = $this->page->get_renderer("block_coursefeedback");
-        $feedback = $DB->get_record("block_coursefeedback", array("id" => $config->active_feedback));
+        $feedback = $DB->get_record("block_coursefeedback", ["id" => $config->active_feedback]);
         $coursestartgood = block_coursefeedbck_coursestartcheck_good($config, $this->page->course->id);
-        $list = array();
+        $list = [];
 
         // Show information banner in Course if enabled and the coursestart is in range so a FB would be triggered.
         if ($config->enable_infobanner && $coursestartgood
@@ -127,7 +127,7 @@ class block_coursefeedback extends block_base {
             $this->content->text = null;
         } else {
             // Save block content.
-            $this->content->text = html_writer::alist($list, array("style" => "list-style:none"));
+            $this->content->text = html_writer::alist($list, ["style" => "list-style:none"]);
         }
         $this->content->footer = "";
         return $this->content;

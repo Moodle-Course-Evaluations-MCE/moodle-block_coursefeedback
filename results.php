@@ -38,19 +38,19 @@ $context = context_course::instance($courseid);
 require_capability("block/coursefeedback:viewanswers", $context);
 $config = get_config("block_coursefeedback");
 
-$fbs =  block_coursefeedbck_get_fbsfor_course($courseid);
+$fbs = block_coursefeedbck_get_fbsfor_course($courseid);
 
 if (count($fbs) == 1) {
     // If only one Feedback, redirect to the Feedbacks view.php site
     $feedback = current($fbs);
-    $url = new moodle_url('/blocks/coursefeedback/view.php', array('course' => $courseid, 'feedback' => $feedback->id));
+    $url = new moodle_url('/blocks/coursefeedback/view.php', ['course' => $courseid, 'feedback' => $feedback->id]);
     redirect($url);
 } else {
     // Several feedbacks with answers available -> Show table with links.
-    $course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
     $PAGE->set_title(get_string('resultspage_title', 'block_coursefeedback'));
     $PAGE->set_heading($course->fullname);
-    $PAGE->set_url(new moodle_url("/blocks/coursefeedback/results.php", array("course" => $courseid)));
+    $PAGE->set_url(new moodle_url("/blocks/coursefeedback/results.php", ["course" => $courseid]));
     $PAGE->set_context($context);
     $PAGE->set_pagelayout("incourse");
     $title = get_string('pluginname', 'block_coursefeedback');
@@ -71,13 +71,13 @@ if (count($fbs) == 1) {
     $table->define_baseurl($PAGE->url);
     $table->setup();
     foreach ($fbs as $feedback) {
-        $feedbackrecord = $DB->get_record("block_coursefeedback", array("id" => $feedback->id));
-        $url = new moodle_url('/blocks/coursefeedback/view.php', array('course' => $courseid, 'feedback' => $feedback->id));
+        $feedbackrecord = $DB->get_record("block_coursefeedback", ["id" => $feedback->id]);
+        $url = new moodle_url('/blocks/coursefeedback/view.php', ['course' => $courseid, 'feedback' => $feedback->id]);
         $namelink = html_writer::tag('div', html_writer::link($url, $feedbackrecord->name));
         $languages = block_coursefeedback_get_combined_languages($feedback->id, false);
         $questioncount = $DB->count_records_select("block_coursefeedback_questns",
             "coursefeedbackid = :fid AND language = :curlang GROUP BY language",
-            array("fid" => $feedback->id, "curlang" => current(array_keys($languages))));
+            ["fid" => $feedback->id, "curlang" => current(array_keys($languages))]);
         $table->add_data([$feedback->id, $namelink, $questioncount, $feedbackrecord->timemodified]);
     }
     $table->finish_output();

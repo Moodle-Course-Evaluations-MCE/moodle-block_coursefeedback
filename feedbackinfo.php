@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Display Feedbackinfo.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -44,14 +43,14 @@ if ($courseid == SITEID) {
 require_login($courseid);
 
 $config = get_config("block_coursefeedback");
-$feedback = $DB->get_record("block_coursefeedback", array("id" => $feedbackid));
+$feedback = $DB->get_record("block_coursefeedback", ["id" => $feedbackid]);
 
 // Only show site if the given feedback is also active right now.
 if ($config->active_feedback != $feedbackid && $config->active_feedback != 0) {
     redirect(new moodle_url($CFG->wwwroot));
 }
 
-$url = new moodle_url("/blocks/coursefeedback/feedbackinfo.php", array("feedback" => $feedbackid, "course" => $courseid));
+$url = new moodle_url("/blocks/coursefeedback/feedbackinfo.php", ["feedback" => $feedbackid, "course" => $courseid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout("standard");

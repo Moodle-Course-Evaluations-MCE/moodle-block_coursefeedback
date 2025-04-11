@@ -17,7 +17,7 @@
 /**
  * Renderer
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -41,7 +41,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
      */
     public function render_results_link($courseid, $feedbackid) {
         return html_writer::link(new moodle_url("/blocks/coursefeedback/view.php",
-            array("course" => $courseid, "feedback" => $feedbackid)),
+            ["course" => $courseid, "feedback" => $feedbackid]),
             get_string("page_link_viewresults", "block_coursefeedback"));
     }
 
@@ -84,7 +84,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         // Template vars are automatically escaped
         $urlparams = [
             'feedback' => $feedback->id,
-            'course' => $this->page->course->id
+            'course' => $this->page->course->id,
         ];
         $data = [
             'fbheading' => format_text($feedback->heading, FORMAT_HTML),
@@ -92,7 +92,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             'qsum' => $openquestions['questionsum'],
             'qtext' => $openquestions['currentopenqstn']->question,
             'link' => new moodle_url("/blocks/coursefeedback/feedbackinfo.php", $urlparams),
-            'questiontype' => intval($openquestions['currentopenqstn']->questiontype)
+            'questiontype' => intval($openquestions['currentopenqstn']->questiontype),
 
         ];
 
@@ -110,7 +110,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         if (get_config("block_coursefeedback", "allow_hiding")) {
             $message .= ' ' . get_string("notif_deactivate_howto", "block_coursefeedback");
         }
-        $message .= ' ' . $this->render_moreinfo_link(array("feedback" => $feedback->id, "course" => $courseid));
+        $message .= ' ' . $this->render_moreinfo_link(["feedback" => $feedback->id, "course" => $courseid]);
         $message .= ' | ' . $this->render_results_link($courseid, $feedback->id);
         return $message;
     }
@@ -129,7 +129,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         $params = [
             "course" => $courseid,
             "feedback" => $feedbackid,
-            "download" => "csv"
+            "download" => "csv",
         ];
         $essayhtml = html_writer::link(new moodle_url("/blocks/coursefeedback/essayanswers.php", $params),
             get_string("page_link_download", "block_coursefeedback", "CSV"));
@@ -150,7 +150,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             $params = [
                 'course' => $courseid,
                 'feedback' => $essayquestion->coursefeedbackid,
-                'question' => $essayquestion->questionid
+                'question' => $essayquestion->questionid,
             ];
             $answerlink = html_writer::link(new moodle_url("/blocks/coursefeedback/essayanswers.php", $params),
                 get_string("table_html_showanswers", "block_coursefeedback"));
@@ -175,7 +175,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         global $DB;
 
         // Start output with heading "Essay Feedbackresults"
-        $answerhtml = html_writer::tag('h3',get_string("questiontype_essay", "block_coursefeedback")
+        $answerhtml = html_writer::tag('h3', get_string("questiontype_essay", "block_coursefeedback")
             . ' ' . get_string("resultspage_title", "block_coursefeedback"));
 
         // Add infos for $anscount and current $page.
@@ -188,7 +188,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         $totalcount = $DB->count_records('block_coursefeedback_textans', [
             'course' => $courseid,
             'coursefeedbackid' => $feedbackid,
-            'questionid' => $questionid
+            'questionid' => $questionid,
         ]);
         $emptyans = $totalcount - $anscount;
         $answerhtml .= html_writer::tag('div',
@@ -199,7 +199,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             "course" => $courseid,
             "feedback" => $feedbackid,
             "question" => $questionid,
-            "download" => "csv"
+            "download" => "csv",
         ];
         $link = html_writer::link(new moodle_url("/blocks/coursefeedback/essayanswers.php", $params),
             get_string("page_link_download", "block_coursefeedback", "CSV"));

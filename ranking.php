@@ -17,7 +17,7 @@
 /**
  * Display the ranking page
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -71,7 +71,7 @@ $PAGE->set_title(get_string("page_link_rankings", "block_coursefeedback"));
 $PAGE->set_heading(get_string("page_link_rankings", "block_coursefeedback"));
 $PAGE->navbar->add(get_string("blocks"), new moodle_url("/admin/blocks.php"));
 $PAGE->navbar->add(get_string("pluginname", "block_coursefeedback"),
-    new moodle_url("/admin/settings.php", array("section" => "blocksettingcoursefeedback")));
+    new moodle_url("/admin/settings.php", ["section" => "blocksettingcoursefeedback"]));
 $PAGE->navbar->add(get_string("page_link_rankings", "block_coursefeedback"),
     new moodle_url("/blocks/coursefeedback/ranking.php"));
 $PAGE->requires->js_call_amd('block_coursefeedback/dynform', 'init');
@@ -80,14 +80,14 @@ echo $OUTPUT->heading(get_string("page_link_rankings", "block_coursefeedback"));
 echo html_writer::div($form->render(), '', ['id' => 'formcontainer']);
 $table = new html_table();
 $table->id = "coursefeedback_table";
-$table->head = array(
+$table->head = [
     get_string("course"),
     get_string("idnumber"),
     get_string("table_html_votes", "block_coursefeedback"),
     get_string("table_html_average", "block_coursefeedback"),
-);
-$table->data = array();
+];
+$table->data = [];
 echo html_writer::table($table);
-//$OUTPUT->paging_bar();
+// $OUTPUT->paging_bar();
 echo '<br><b>TODO PAGINATION</b>';
 echo $OUTPUT->footer();

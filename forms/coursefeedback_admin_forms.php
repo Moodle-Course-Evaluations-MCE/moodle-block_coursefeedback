@@ -17,7 +17,7 @@
 /**
  * Collection of forms, which are used inside administration.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -51,7 +51,7 @@ class coursefeedback_feedback_new_form extends coursefeedbackform {
         $form->addElement("editor", "infotext", get_string('form_feedback_infotext', 'block_coursefeedback'));
         $form->addHelpButton('infotext', 'form_feedback_infotext', 'block_coursefeedback');
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "add", get_string("add"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -74,7 +74,7 @@ class coursefeedback_feedback_new_form extends coursefeedbackform {
 
         // Display html text correctly.
         $text = $feedback->infotext;
-        $feedback->infotext = array('text' => $text, 'format' => FORMAT_HTML);
+        $feedback->infotext = ['text' => $text, 'format' => FORMAT_HTML];
 
         parent::set_data($feedback);
     }
@@ -99,11 +99,11 @@ class coursefeedback_feedback_edit_form extends coursefeedbackform {
 
         $systemcontext = context_system::instance();
         // All editoroptions are finally set in MoodleQuickForm_editor Class (lib/form/editor.php) -> no files allowed.
-        $editoroptions = array('context' => $systemcontext);
+        $editoroptions = ['context' => $systemcontext];
         $form->addElement("editor", "infotext", get_string('form_feedback_infotext', 'block_coursefeedback'), null, $editoroptions);
         $form->addHelpButton('infotext', 'form_feedback_infotext', 'block_coursefeedback');
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "edit", get_string("savechanges"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -123,7 +123,7 @@ class coursefeedback_feedback_edit_form extends coursefeedbackform {
         // "infotext" editor element maxfiles == 0 per default (-> no need for itemid and draft area because no files are accepted)
         // $draftid_editor = file_get_submitted_draft_itemid('infotext');.
         $text = $defaults->infotext;
-        $defaults->infotext = array('text' => $text, 'format' => FORMAT_HTML);
+        $defaults->infotext = ['text' => $text, 'format' => FORMAT_HTML];
 
         parent::set_data($defaults);
     }
@@ -139,12 +139,12 @@ class coursefeedback_feedback_delete_form extends coursefeedbackform {
         global $DB;
 
         $form =& $this->_form;
-        $name = $DB->get_field("block_coursefeedback", "name", array("id" => $this->fid));
+        $name = $DB->get_field("block_coursefeedback", "name", ["id" => $this->fid]);
 
         $form->addElement("header", "header_confirm", get_string("form_header_confirm", "block_coursefeedback"));
         $form->addElement("hidden", "template", $this->fid);
         $form->addElement("selectyesno", "confirm", get_string("form_select_confirmyesno", "block_coursefeedback", $name));
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "delete", get_string("confirm"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -166,17 +166,17 @@ class coursefeedback_delete_answers_form extends coursefeedbackform {
 
         $html = html_writer::tag("p",
             get_string("form_html_deleteanswerstext", "block_coursefeedback"),
-            array("style" => "margin-left: 3em; margin-right: 3em;"));
+            ["style" => "margin-left: 3em; margin-right: 3em;"]);
         $form->addElement("html", $html);
         $form->addElement("selectyesno", "confirm", get_string("form_select_deleteanswers", "block_coursefeedback"));
 
         $html = html_writer::tag("p",
             get_string("form_html_deleteanswerswarning", "block_coursefeedback"),
-            array("style" => "margin-left: 3em; margin-right: 3em;"));
+            ["style" => "margin-left: 3em; margin-right: 3em;"]);
         $form->addElement("header", "warning", get_string("caution", "block_coursefeedback"));
         $form->addElement("html", $html);
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "danswers", get_string("confirm"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -217,7 +217,7 @@ class coursefeedback_questions_new_form extends coursefeedbackform {
             get_string("form_area_questiontext", "block_coursefeedback"),
             "rows=\"20\" cols=\"50\"");
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "add", get_string("add"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -248,11 +248,11 @@ class coursefeedback_questions_edit_form extends coursefeedbackform {
         $form->addElement("hidden", "questionid", $this->qid);
 
         $questionids = block_coursefeedback_get_question_ids($this->fid);
-        $questionids = ($questionids) ? array_combine($questionids, $questionids) : array();
+        $questionids = ($questionids) ? array_combine($questionids, $questionids) : [];
         $form->addElement("select", "position", get_string("form_select_changepos", "block_coursefeedback"), $questionids);
         $form->getElement("position")->setSelected($this->qid);
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "move", get_string("savechanges"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -276,14 +276,14 @@ class coursefeedback_questions_delete_form extends coursefeedbackform {
         global $DB;
 
         $form =& $this->_form;
-        $name = $DB->get_field("block_coursefeedback", "name", array("id" => $this->fid));
+        $name = $DB->get_field("block_coursefeedback", "name", ["id" => $this->fid]);
 
         $form->addElement("header", "header_confirm", get_string("form_header_confirm", "block_coursefeedback"));
         $form->addElement("hidden", "template", $this->fid);
         $form->addElement("hidden", "questionid", $this->qid);
         $form->addElement("hidden", "language", COURSEFEEDBACK_ALL);
         $form->addElement("selectyesno", "confirm", get_string("form_select_confirmyesno", "block_coursefeedback", $name));
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "delete", get_string("confirm"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -308,14 +308,14 @@ class coursefeedback_question_delete_form extends coursefeedbackform {
         global $DB;
 
         $form =& $this->_form;
-        $name = $DB->get_field("block_coursefeedback", "name", array("id" => $this->fid));
+        $name = $DB->get_field("block_coursefeedback", "name", ["id" => $this->fid]);
 
         $form->addElement("header", "header_confirm", get_string("form_header_confirm", "block_coursefeedback"));
         $form->addElement("hidden", "template", $this->fid);
         $form->addElement("hidden", "questionid", $this->qid);
         $form->addElement("hidden", "language", $this->lang);
         $form->addElement("selectyesno", "confirm", get_string("form_select_confirmyesno", "block_coursefeedback", $name));
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "delete", get_string("confirm"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -352,7 +352,7 @@ class coursefeedback_question_edit_form extends coursefeedbackform {
 
         $html = html_writer::tag("p",
             get_string("form_html_currentlang", "block_coursefeedback", block_coursefeedback_get_language($this->lang)),
-            array("style" => "margin-left:3em;margin-right:3em;"));
+            ["style" => "margin-left:3em;margin-right:3em;"]);
         $form->addElement("html", $html);
         $form->addElement("select",
             "questiontype", get_string("questiontype", "block_coursefeedback"),
@@ -368,7 +368,7 @@ class coursefeedback_question_edit_form extends coursefeedbackform {
             $form->getElement("questiontype")->setValue($question->questiontype);
         }
 
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "edit", get_string("confirm"));
         $submits[] = &$form->createElement("cancel");
         $form->addGroup($submits, "submits", "", "&nbsp;");
@@ -396,7 +396,7 @@ class coursefeedback_question_new_form extends coursefeedbackform {
         global $DB;
 
         $form =& $this->_form;
-        $submits = array();
+        $submits = [];
 
         $form->addElement("header", "header_new_language", get_string("form_header_addlang", "block_coursefeedback"));
         $form->addElement("hidden", "template", $this->fid);
@@ -451,14 +451,14 @@ class coursefeedback_delete_language_form extends coursefeedbackform {
         $form->addElement("header", "chooselang", get_string("form_header_deletelang", "block_coursefeedback"));
         $form->addElement("hidden", "template", $this->fid);
         $implemented = block_coursefeedback_get_implemented_languages($this->fid, "", false);
-        $submits = array();
+        $submits = [];
         $submits[] = &$form->createElement("submit", "dlang", get_string("delete"));
         $submits[] = &$form->createElement("cancel");
         if (count($implemented) > 0) {
             $form->addElement("select",
                 "unwantedlang",
                 get_string("form_select_unwantedlang", "block_coursefeedback"),
-                array()); // Initialize with empty list.
+                []); // Initialize with empty list.
             $form->getElement("unwantedlang")->loadArray($implemented);
             $form->getElement("unwantedlang")->setMultiple(true);
             $form->setType("unwantedlang", PARAM_ALPHAEXT);

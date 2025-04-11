@@ -17,7 +17,7 @@
 /**
  * Functions and classes for block management
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -39,12 +39,12 @@ define("CFB_QUESTIONTYPE_ESSAY", 2);
 function get_question_types($type = 0) {
     $questiontypes = [
         CFB_QUESTIONTYPE_SCHOOLGRADE => get_string('questiontype_schoolgrades', 'block_coursefeedback'),
-        CFB_QUESTIONTYPE_ESSAY => get_string('questiontype_essay', 'block_coursefeedback')
+        CFB_QUESTIONTYPE_ESSAY => get_string('questiontype_essay', 'block_coursefeedback'),
     ];
     if ($type === 0) {
         // The $type is not specified in funcion call -> all questiontypes are returned
         return $questiontypes;
-    } elseif (array_key_exists($type, $questiontypes)) {
+    } else if (array_key_exists($type, $questiontypes)) {
         // Return the specified question $type
         return [$type => $questiontypes[$type]];
     }
@@ -60,7 +60,7 @@ function install_and_remove_block() {
     $config = get_config("block_coursefeedback");
     $globalenablesetting = $config->global_enable;
     // Check if the setting contradicts the block installation state.
-    $instances = $DB->get_records('block_instances', array('blockname' => 'coursefeedback'));
+    $instances = $DB->get_records('block_instances', ['blockname' => 'coursefeedback']);
     if (!empty($instances)) {
         // The block exists.
         if ($globalenablesetting == 0) {
@@ -120,7 +120,7 @@ function block_coursefeedback_get_courserankings(
         'questionid2' => $questionid,
         'answerlimit' => $answerlimit,
         'specificcourseid' => $specificcourseid,
-        'specificcourseid2' => $specificcourseid
+        'specificcourseid2' => $specificcourseid,
     ];
     $sql = "
         SELECT course.courseid, cenrol.enroleduserssum, c.shortname, c.category, cc.path,  
@@ -164,7 +164,7 @@ function block_coursefeedback_get_courserankings(
          WHERE (:specificcourseid = 0 OR c.id = :specificcourseid2)";
 
     if ($showperpage != 0 && $page < 0) {
-        $limitnum = $showperpage * ($page -1);
+        $limitnum = $showperpage * ($page - 1);
         $limitfrom = $showperpage;
         $courserecords = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 

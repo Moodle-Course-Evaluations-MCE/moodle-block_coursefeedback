@@ -17,7 +17,7 @@
 /**
  * This file keeps track of upgrades to block_coursefeedback.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_block_coursefeedback_upgrade($oldversion = 0) {
     global $CFG, $DB;
 
-    //TODO remove "unsigned" usage from all fields https://tracker.moodle.org/browse/MDL-27982 ???
+    // TODO remove "unsigned" usage from all fields https://tracker.moodle.org/browse/MDL-27982 ???
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2022092000) {
@@ -237,7 +237,6 @@ function xmldb_block_coursefeedback_upgrade($oldversion = 0) {
         // Drop 'textanswer' field in 'block_coursefeedback_answers'.
         $field = new xmldb_field('textanswer', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'answer');
         $dbman->drop_field($table, $field);
-
 
         // Check if the 'answer' field in the table 'block_coursefeedback_answers' has the correct 'NOTNULL' value.
         $field = new xmldb_field('answer', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null, 'questionid');

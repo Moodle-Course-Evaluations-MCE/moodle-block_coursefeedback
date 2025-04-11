@@ -17,7 +17,7 @@
 /**
  * External service definitions for the coursefeedback block.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
@@ -27,29 +27,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
-    'block_coursefeedback_answer_question_and_get_new' => array(
+$functions = [
+    'block_coursefeedback_answer_question_and_get_new' => [
         'classname' => 'block_coursefeedback\external_api',
         'methodname' => 'answer_question_and_get_new',
         'description' => 'Saves answer of a notification feedback question and gives a new one back if there are any unanswered left.',
         'type' => 'write',
         'capabilities' => 'block/coursefeedback:evaluate',
         'ajax' => true,
-    ),
-    'block_coursefeedback_get_feedback_questions' => array(
+    ],
+    'block_coursefeedback_get_feedback_questions' => [
         'classname' => 'block_coursefeedback\external_api',
         'methodname' => 'get_feedback_questions',
         'description' => 'Get all the questions of a given feedback',
         'type' => 'read',
         'capabilities' => 'block/coursefeedback:managefeedbacks',
         'ajax' => true,
-    ),
-    'block_coursefeedback_get_ranking_for_question' => array(
+    ],
+    'block_coursefeedback_get_ranking_for_question' => [
         'classname' => 'block_coursefeedback\external_api',
         'methodname' => 'get_ranking_for_question',
         'description' => 'Get the rankings for a given question',
         'type' => 'read',
         'capabilities' => 'block/coursefeedback:managefeedbacks',
         'ajax' => true,
-    ),
-);
+    ],
+];
