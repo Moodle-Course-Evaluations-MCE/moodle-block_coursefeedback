@@ -472,7 +472,7 @@ function block_coursefeedback_get_implemented_languages($feedbackid, $questionid
 
     $sql = "SELECT language
               FROM {block_coursefeedback_questns}
-             WHERE coursefeedbackid = :fid";
+             WHERE coursefeedbackid = :fid ";
     if (is_int($questionid) && $questionid > 0) {
         $sql .= "AND questionid = :qid ";
     }
