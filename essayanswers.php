@@ -18,7 +18,6 @@
  * Display site of the given essayanswers for a specific question and a given course  (Survey analysis).
  *
  * @package    block_coursefeedback
- * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda

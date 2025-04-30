@@ -18,7 +18,6 @@
  * Export functions
  *
  * @package    block_coursefeedback
- * @subpackage coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -35,7 +34,6 @@ require_once(__DIR__ . "/locallib.php");
  * Export feedback data for a course.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -87,7 +85,6 @@ class feedback_exporter {
  * Export essay answers for a given course.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -161,7 +158,6 @@ class essay_exporter {
  * Export feedback data for an entire feedback.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
