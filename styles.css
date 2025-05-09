@@ -1,6 +1,0 @@
-/* TODO Would like to use @container Query, but its not (yet) working */
-@media (max-width: 1450px) {
-    .block_coursefeedback .onlydesktop {
-        display: none;
-    }
-}
