@@ -21,8 +21,7 @@ defined("MOODLE_INTERNAL") || die();
 /**
  * Feedback evaluated event
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -43,7 +42,7 @@ class coursefeedback_viewed extends \core\event\base {
      * @see \core\event\base::get_url()
      */
     public function get_url() {
-        return new \moodle_url("/blocks/coursefeedback/view.php", array("id" => $this->courseid));
+        return new \moodle_url("/blocks/coursefeedback/view.php", ["id" => $this->courseid]);
     }
 
     /**
@@ -76,7 +75,7 @@ class coursefeedback_viewed extends \core\event\base {
      * @return multitype:string
      */
     protected function get_legacy_eventdata() {
-        return array($this->courseid, "coursefeedback", "view", "view.php?id={$this->courseid}", $this->courseid);
+        return [$this->courseid, "coursefeedback", "view", "view.php?id={$this->courseid}", $this->courseid];
     }
 }
 

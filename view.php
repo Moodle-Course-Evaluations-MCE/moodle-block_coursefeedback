@@ -17,8 +17,7 @@
 /**
  * Display homepage of the given feedbacks for this course  (Survey analysis).
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -34,14 +33,14 @@ $courseid = required_param("course", PARAM_INT);
 $feedbackid = required_param("feedback", PARAM_INT);
 $download = optional_param("download", null, PARAM_ALPHA);
 
-if (!($course = $DB->get_record("course", array("id" => $courseid)))) {
-    throw new moodle_exception(get_string("except_invalid_courseid","block_coursefeedback"));
+if (!($course = $DB->get_record("course", ["id" => $courseid]))) {
+    throw new moodle_exception(get_string("except_invalid_courseid", "block_coursefeedback"));
 }
 
 require_login($course);
 $context = context_course::instance($course->id);
 require_capability("block/coursefeedback:viewanswers", $context);
-$feedback = $DB->get_record("block_coursefeedback", array("id" => $feedbackid));
+$feedback = $DB->get_record("block_coursefeedback", ["id" => $feedbackid]);
 
 $statusmsg = "";
 $errormsg = "";
@@ -57,9 +56,9 @@ if ($course->id == SITEID) {
     redirect($CFG->wwwroot);
 }
 
-\block_coursefeedback\event\coursefeedback_viewed::create(array("context" => $context))->trigger();
+\block_coursefeedback\event\coursefeedback_viewed::create(["context" => $context])->trigger();
 
-$PAGE->set_url(new moodle_url("/blocks/coursefeedback/view.php", array("course" => $course->id, "feedback" => $feedbackid)));
+$PAGE->set_url(new moodle_url("/blocks/coursefeedback/view.php", ["course" => $course->id, "feedback" => $feedbackid]));
 $PAGE->set_context($context);
 $PAGE->set_pagelayout("standard");
 $PAGE->set_title(get_string("page_link_viewresults", "block_coursefeedback"));
@@ -82,17 +81,17 @@ if ($questions) {
     $j = 0;
     foreach ($questions as $question) {
         $table->data[$j] = new html_table_row();
-        $table->data[$j]->attributes = array("class" => "coursefeedback_table_headrow");
+        $table->data[$j]->attributes = ["class" => "coursefeedback_table_headrow"];
         $c11 = new html_table_cell();
         $c11->colspan = 9;
         $c11->style = "padding-bottom:1em;";
         $c11->text = html_writer::tag("span",
             get_string("form_header_question", "block_coursefeedback", $question->questionid)
-            . ": ", array("style" => "font-weight: bold; font-size: 1.5rem"));
-        $c11->text .= html_writer::tag("span", format_string($question->question), array("style" => "font-size: 1.5rem"));
-        $table->data[$j++]->cells = array($c11);
+            . ": ", ["style" => "font-weight: bold; font-size: 1.5rem"]);
+        $c11->text .= html_writer::tag("span", format_string($question->question), ["style" => "font-size: 1.5rem"]);
+        $table->data[$j++]->cells = [$c11];
         $table->data[$j] = new html_table_row();
-        $table->data[$j]->attributes = array("class" => "coursefeedback_table_sdescrow");
+        $table->data[$j]->attributes = ["class" => "coursefeedback_table_sdescrow"];
         $c21 = new html_table_cell();
         $c22 = new html_table_cell();
         $c23 = new html_table_cell();
@@ -109,10 +108,10 @@ if ($questions) {
         $c25->text = get_string("notif_emoji_bad", "block_coursefeedback");
         $c26->text = get_string("notif_emoji_superbad", "block_coursefeedback");
 
-        $table->data[$j++]->cells = array($c21, $c22, $c23, $c24, $c25, $c26, $c27);
+        $table->data[$j++]->cells = [$c21, $c22, $c23, $c24, $c25, $c26, $c27];
 
         $table->data[$j] = new html_table_row();
-        $table->data[$j]->attributes = array("class" => "coursefeedback_table_descrow");
+        $table->data[$j]->attributes = ["class" => "coursefeedback_table_descrow"];
         for ($i = 1; $i <= 9; $i++) {
             $cn = "c3" . $i;
             ${$cn} = new html_table_cell();
@@ -133,11 +132,11 @@ if ($questions) {
         $c34->style = "font-size: 1.5rem;";
         $c35->style = "font-size: 1.5rem;";
         $c36->style = "font-size: 1.5rem;";
-        $table->data[$j++]->cells = array($c31, $c32, $c33, $c34, $c35, $c36, $c37, $c38, $c39);
+        $table->data[$j++]->cells = [$c31, $c32, $c33, $c34, $c35, $c36, $c37, $c38, $c39];
 
         $question->answers = $answers[$question->questionid];
         $table->data[$j] = new html_table_row();
-        $table->data[$j]->attributes = array("class" => "coursefeedback_table_graderow");
+        $table->data[$j]->attributes = ["class" => "coursefeedback_table_graderow"];
         for ($i = 1; $i <= 6; $i++) {
             $cn = "c4" . $i;
             ${$cn} = new html_table_cell();
@@ -149,20 +148,20 @@ if ($questions) {
         $c47->text = $question->answers['average'];
         $c48->text = $question->answers['choicessum'];
         $c49->text = $question->answers['abstentions'];
-        $table->data[$j++]->cells = array($c41, $c42, $c43, $c44, $c45, $c46, $c47, $c48, $c49);
+        $table->data[$j++]->cells = [$c41, $c42, $c43, $c44, $c45, $c46, $c47, $c48, $c49];
         $table->data[$j] = new html_table_row();
-        $table->data[$j]->attributes = array("class" => "coursefeedback_table_blankrow");
+        $table->data[$j]->attributes = ["class" => "coursefeedback_table_blankrow"];
         $table->data[$j++]->style = "height:3em;border:none;";
     }
 
     $html = html_writer::table($table);
-    $params = array("course" => $course->id, "feedback" => $feedbackid, "download" => "csv");
+    $params = ["course" => $course->id, "feedback" => $feedbackid, "download" => "csv"];
     $link = html_writer::link(new moodle_url("/blocks/coursefeedback/view.php", $params),
         get_string("page_link_download", "block_coursefeedback", "CSV"));
 } else if ($feedbackid > 0) {
     $html = get_string("page_html_noquestions", "block_coursefeedback");
 } else {
-    redirect(new moodle_url("/course/view.php", array("id" => $course->id)),
+    redirect(new moodle_url("/course/view.php", ["id" => $course->id]),
         get_string("page_html_nofeedbackactive", "block_coursefeedback"));
 }
 
@@ -188,18 +187,18 @@ if ($errormsg !== "") {
 echo $OUTPUT->box_start("generalbox coursefeedbackbox");
 
 // Output schoolgrade quetions section.
-echo html_writer::tag('h3',get_string("questiontype", "block_coursefeedback") . ": "
+echo html_writer::tag('h3', get_string("questiontype", "block_coursefeedback") . ": "
         . get_string("questiontype_schoolgrades", "block_coursefeedback"));
 if ($link > "") {
     echo $link . "<br/>";
 }
-echo html_writer::tag("span", get_string("page_html_viewintro", "block_coursefeedback"), array("id" => "viewintro"))
+echo html_writer::tag("span", get_string("page_html_viewintro", "block_coursefeedback"), ["id" => "viewintro"])
     . $OUTPUT->box_end()
     . $OUTPUT->box($html);
 
 // Output Essay qustions section.
 if (isset($essayhtml)) {
-    echo html_writer::tag('h3',get_string("questiontype", "block_coursefeedback")
+    echo html_writer::tag('h3', get_string("questiontype", "block_coursefeedback")
         . ": " . get_string("questiontype_essay", "block_coursefeedback"));
     echo $OUTPUT->box($essayhtml);
 }

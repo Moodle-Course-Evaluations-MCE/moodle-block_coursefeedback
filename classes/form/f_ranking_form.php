@@ -17,8 +17,7 @@
 /**
  * Feedback rankings form
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -57,7 +56,7 @@ class f_ranking_form extends moodleform {
     protected function get_possible_feedbacks() {
         global $DB;
 
-        if ($DB->record_exists("block", array("name" => "coursefeedback"))
+        if ($DB->record_exists("block", ["name" => "coursefeedback"])
                 && $feedbacks = $DB->get_records("block_coursefeedback")) {
             // Populate feedback options
             $options = [0 => get_string("form_option_choose", "block_coursefeedback")];

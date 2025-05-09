@@ -17,8 +17,7 @@
 /**
  * Export functions
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -35,7 +34,6 @@ require_once(__DIR__ . "/locallib.php");
  * Export feedback data for a course.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -87,7 +85,6 @@ class feedback_exporter {
  * Export essay answers for a given course.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -104,8 +101,8 @@ class essay_exporter {
             . "_" . get_string("questiontype_essay", "block_coursefeedback") . date("_Y-m-d-H-i"));
 
         // Check and get course.
-        if (!($course = $DB->get_record("course", array("id" => $courseid)))) {
-            throw new moodle_exception(get_string("except_invalid_courseid","block_coursefeedback"));
+        if (!($course = $DB->get_record("course", ["id" => $courseid]))) {
+            throw new moodle_exception(get_string("except_invalid_courseid", "block_coursefeedback"));
         }
 
         // Insert headrow.
@@ -114,7 +111,7 @@ class essay_exporter {
             get_string("pluginname", "block_coursefeedback"),
             block_coursefeedback_get_feedbackname($feedbackid),
             get_string("questiontype_essay", "block_coursefeedback") . " "
-                . get_string("resultspage_title", "block_coursefeedback")
+                . get_string("resultspage_title", "block_coursefeedback"),
         ];
         $this->csvexportwriter->add_data($headrow);
         $this->csvexportwriter->add_data([]);
@@ -134,7 +131,7 @@ class essay_exporter {
             $questiondata = [
                 get_string("download_thead_questions", "block_coursefeedback")
                     . " " . $question->questionid .": ",
-                format_string($question->question)
+                format_string($question->question),
             ];
             $this->csvexportwriter->add_data($questiondata);
 
@@ -143,8 +140,8 @@ class essay_exporter {
                 'coursefeedbackid' => $feedbackid,
                 'questionid' => $question->questionid], 'id', 'id,textanswer');
             foreach($answers as $answer) {
-                $answersdata =  [
-                    format_string($answer->textanswer)
+                $answersdata = [
+                    format_string($answer->textanswer),
                 ];
                 $this->csvexportwriter->add_data($answersdata);
             }
@@ -161,7 +158,6 @@ class essay_exporter {
  * Export feedback data for an entire feedback.
  *
  * @package block
- * @subpackage coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -181,7 +177,7 @@ class ranking_exporter {
         $feedback = $DB->get_record("block_coursefeedback", ["id" => $feedbackid]);
         $this->csvexportwriter->add_data([
             'Feedbackid: ' . $feedback->id,
-            'Feedbackname: ' . $feedback->name
+            'Feedbackname: ' . $feedback->name,
         ]);
 
         // Get all questions
@@ -200,7 +196,7 @@ class ranking_exporter {
             $this->csvexportwriter->add_data([]);
             $this->csvexportwriter->add_data([
                 $question->question,
-                $question->questionid
+                $question->questionid,
             ]);
 
             $this->csvexportwriter->add_data([
@@ -217,7 +213,7 @@ class ranking_exporter {
                 get_string('notif_emoji_superbad', 'block_coursefeedback'),
                 get_string('table_html_average', 'block_coursefeedback'),
                 get_string('table_html_votes', 'block_coursefeedback'),
-                get_string('table_html_nochoice', 'block_coursefeedback')
+                get_string('table_html_nochoice', 'block_coursefeedback'),
             ]);
             $courses = block_coursefeedback_get_courserankings($question->questionid, $feedbackid);
 

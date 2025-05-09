@@ -78,13 +78,13 @@ class external_api extends \external_api {
             'QuestionID',
             VALUE_REQUIRED
         );
-        $params = array(
+        $params = [
             'courseid' => $courseid,
             'feedback' => $feedback,
             'essay' => $essay,
             'feedbackid' => $feedbackid,
-            'questionid' => $questionid
-        );
+            'questionid' => $questionid,
+        ];
 
         return new \external_function_parameters($params);
     }
@@ -97,7 +97,7 @@ class external_api extends \external_api {
      * @param string $essay given essay answer
      * @param int $feedbackid
      * @param int $questionid
-     * @returns array The next questiondetails
+     * @return array The next questiondetails
      * @throws moodle_exception If question doesn't exist or the wron questiontypeanswer was given
      */
     public static function answer_question_and_get_new($courseid, $feedback, $essay, $feedbackid, $questionid) {
@@ -105,13 +105,13 @@ class external_api extends \external_api {
 
         // Validate parameter
         $params = self::validate_parameters(self::answer_question_and_get_new_parameters(),
-            array(
+            [
                 'courseid' => $courseid,
                 'feedback' => $feedback,
                 'essay' => $essay,
                 'feedbackid' => $feedbackid,
-                'questionid' => $questionid
-            )
+                'questionid' => $questionid,
+            ]
         );
 
         // Security checks
@@ -131,7 +131,7 @@ class external_api extends \external_api {
         // There must be exactly one matching question.
         if (count($question) != 1) {
             throw new \moodle_exception('except_no_question', 'block_coursefeedback');
-        } elseif ((isset($params['essay']) && reset($question)->questiontype != CFB_QUESTIONTYPE_ESSAY)
+        } else if ((isset($params['essay']) && reset($question)->questiontype != CFB_QUESTIONTYPE_ESSAY)
                 || (isset($params['feedback']) && reset($question)->questiontype != CFB_QUESTIONTYPE_SCHOOLGRADE)) {
             // The given answerparam has to match the questiontype.
             throw new \moodle_exception('except_wrong_questiontype', 'block_coursefeedback');
@@ -143,7 +143,7 @@ class external_api extends \external_api {
                     "userid" => $USER->id,
                     "course" => $params['courseid'],
                     "questionid" => $params['questionid'],
-                    "coursefeedbackid" => $params['feedbackid']
+                    "coursefeedbackid" => $params['feedbackid'],
                 ])) {
             throw new \moodle_exception('except_answer_exist', 'block_coursefeedback');
         }
@@ -162,7 +162,7 @@ class external_api extends \external_api {
                        AND bi.blockname = :blockname";
         $sqlparams = [
             'contextid' => $context->id,
-            'blockname' => 'coursefeedback'
+            'blockname' => 'coursefeedback',
         ];
         $blocks = $DB->get_records_sql($sql, $sqlparams);
         if (count($blocks) > 1) {
@@ -196,7 +196,7 @@ class external_api extends \external_api {
                 $result['saved'] = true;
             }
             $dbtrans->allow_commit();
-        } elseif ( isset($params['feedback'])) {
+        } else if ( isset($params['feedback'])) {
             $record->answer = $params['feedback'];
             $dbtrans = $DB->start_delegated_transaction();
             if ($DB->insert_record("block_coursefeedback_answers", $record, false, false)
@@ -261,11 +261,11 @@ class external_api extends \external_api {
         );
         $params = new external_single_structure([
             'saved' => $saved,
-            'questionstotal' =>$questionstotal,
+            'questionstotal' => $questionstotal,
             'nextquestion' => $nextquestion,
             'nextquestionid' => $nextquestionid,
             'nextquestiontype' => $nextquestiontype,
-            'feedbackid' => $feedbackid
+            'feedbackid' => $feedbackid,
         ]);
         return $params;
     }
@@ -281,9 +281,9 @@ class external_api extends \external_api {
             'FeedbackID',
             VALUE_REQUIRED
         );
-        $params = array(
+        $params = [
             'feedbackid' => $feedbackid,
-        );
+        ];
 
         return new \external_function_parameters($params);
     }
@@ -293,15 +293,15 @@ class external_api extends \external_api {
      *
      * @param int $feedbackid The feedback id
      * @param int $questionid The question id
-     * @returns array The feedbackquestions
+     * @return array The feedbackquestions
      */
-    //TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
-    //TODO noch die frage übergeben und nur die fragen der jeweiligen sprache holen
+    // TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
+    // TODO noch die frage übergeben und nur die fragen der jeweiligen sprache holen
     public static function get_feedback_questions($feedbackid) {
 
         // Validate parameter
         $params = self::validate_parameters(self::get_feedback_questions_parameters(),
-            array( 'feedbackid' => $feedbackid )
+            [ 'feedbackid' => $feedbackid ]
         );
 
         // Security checks
@@ -314,7 +314,7 @@ class external_api extends \external_api {
                 CFB_QUESTIONTYPE_SCHOOLGRADE,
                 "questionid",
                 "id,questionid,question,coursefeedbackid,language");
-        $result = ['questions' => array()];
+        $result = ['questions' => []];
         foreach ($questions as $question) {
             array_push($result['questions'], (array) $question);
         }
@@ -339,7 +339,7 @@ class external_api extends \external_api {
             ])
         );
         $params = new external_single_structure([
-            'questions' => $questions
+            'questions' => $questions,
         ]);
         return $params;
     }
@@ -349,7 +349,7 @@ class external_api extends \external_api {
      *
      * @return external_function_parameters
      */
-    //TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
+    // TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
     public static function get_ranking_for_question_parameters() {
         $questionid = new external_value(
             PARAM_INT,
@@ -376,13 +376,13 @@ class external_api extends \external_api {
             '$page',
             VALUE_REQUIRED
         );
-        $params = array(
+        $params = [
             'questionid' => $questionid,
             'feedback' => $feedback,
             'answerlimit' => $answerlimit,
             'showperpage' => $showperpage,
-            'page' => $page
-        );
+            'page' => $page,
+        ];
         return new \external_function_parameters($params);
     }
     /**
@@ -392,21 +392,21 @@ class external_api extends \external_api {
      * @param int $answerlimit TODO implement
      * @param int $showperpage TODO implement
      * @param int $page TODO implement
-     * @returns array
+     * @return array
      */
-    //TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
+    // TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
     public static function get_ranking_for_question($questionid, $feedback, $answerlimit, $showperpage, $page) {
         global $DB;
 
         // Validate parameter
         $params = self::validate_parameters(self::get_ranking_for_question_parameters(),
-            array(
+            [
                 'questionid' => $questionid,
                 'feedback' => $feedback,
                 'answerlimit' => $answerlimit,
                 'showperpage' => $showperpage,
-                'page' => $page
-            )
+                'page' => $page,
+            ]
         );
 
         // Security checks
@@ -426,7 +426,7 @@ class external_api extends \external_api {
      *
      * @return external_single_structure
      */
-    //TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
+    // TODO das Anzeigen der Rankings in der Weboberfläche ist nicht fertig implementiert -> CSV Download nutzen
     public static function get_ranking_for_question_returns() {
         $ranking = new external_multiple_structure (
             new external_single_structure([
@@ -447,7 +447,7 @@ class external_api extends \external_api {
             ])
         );
         $params = new external_single_structure([
-            'ranking' => $ranking
+            'ranking' => $ranking,
         ]);
         return $params;
 

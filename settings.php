@@ -17,8 +17,7 @@
 /**
  * Setting page
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -80,7 +79,7 @@ $settings->add(new admin_setting_configcheckbox("block_coursefeedback/enable_inf
 $settings->hide_if('block_coursefeedback/enable_infobanner', 'block_coursefeedback/global_enable');
 
 /* Create/Edit survey link */
-$url = new moodle_url("/blocks/coursefeedback/admin.php", array("mode" => "feedback", "action" => "view"));
+$url = new moodle_url("/blocks/coursefeedback/admin.php", ["mode" => "feedback", "action" => "view"]);
 $settings->add(new admin_setting_heading("othersettings",
     get_string("othersettings", "form"),
     html_writer::link($url, get_string("adminpage_link_feedbackedit", "block_coursefeedback"))));

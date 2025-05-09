@@ -17,8 +17,7 @@
 /**
  * Display site of the given essayanswers for a specific question and a given course  (Survey analysis).
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -32,20 +31,20 @@ require_once(__DIR__ . "/locallib.php");
 
 $courseid = required_param("course", PARAM_INT);
 $feedbackid = required_param("feedback", PARAM_INT);
-$questionid = optional_param("question", null,PARAM_INT);
+$questionid = optional_param("question", null, PARAM_INT);
 $download = optional_param("download", null, PARAM_ALPHA);
 $page = optional_param('page', 0, PARAM_INT);
 $perpage = optional_param('perpage', 30, PARAM_INT);        // how many per page
 
 // Check course.
-if (!($course = $DB->get_record("course", array("id" => $courseid)))) {
-    throw new moodle_exception(get_string("except_invalid_courseid","block_coursefeedback"));
+if (!($course = $DB->get_record("course", ["id" => $courseid]))) {
+    throw new moodle_exception(get_string("except_invalid_courseid", "block_coursefeedback"));
 }
 
 require_login($course);
 $context = context_course::instance($course->id);
 require_capability("block/coursefeedback:viewanswers", $context);
-$feedback = $DB->get_record("block_coursefeedback", array("id" => $feedbackid));
+$feedback = $DB->get_record("block_coursefeedback", ["id" => $feedbackid]);
 
 // Provide CSV-download.
 if (!empty($download)) {
@@ -56,7 +55,7 @@ if (!empty($download)) {
 
 // Param "question" is only optional for download.
 if (empty($questionid)) {
-    throw new moodle_exception(get_string("except_invalid_questionid","block_coursefeedback"));
+    throw new moodle_exception(get_string("except_invalid_questionid", "block_coursefeedback"));
 }
 
 if ($course->id == SITEID) {
@@ -64,7 +63,7 @@ if ($course->id == SITEID) {
     redirect($CFG->wwwroot);
 }
 
-\block_coursefeedback\event\coursefeedback_viewed::create(array("context" => $context))->trigger();
+\block_coursefeedback\event\coursefeedback_viewed::create(["context" => $context])->trigger();
 
 $baseurl = new moodle_url("/blocks/coursefeedback/essayanswers.php", [
     "course" => $course->id,
@@ -82,7 +81,7 @@ $select = "course = :course
 $params = [
     'course' => $courseid,
     'coursefeedbackid' => $feedbackid,
-    'questionid' => $questionid
+    'questionid' => $questionid,
 ];
 $anscount = $DB->count_records_select('block_coursefeedback_textans', $select, $params);
 

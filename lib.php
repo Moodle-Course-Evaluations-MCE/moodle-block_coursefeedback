@@ -17,8 +17,7 @@
 /**
  * Helper functions
  *
- * @package    block
- * @subpackage coursefeedback
+ * @package    block_coursefeedback
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
@@ -52,7 +51,7 @@ function block_coursefeedback_order_questions(int $feedbackid): bool {
 
         $DB->execute($sql, [
             'offset'      => $offset,
-            'feedbackid'  => $feedbackid
+            'feedbackid'  => $feedbackid,
         ]);
 
         // "mapping" generates a new consecutive ID (newquestionid) for each distinct questionid by using 'row_number()'
@@ -131,7 +130,7 @@ function block_coursefeedback_edit_feedback($feedbackid, $feedbackname, $heading
         return -1;
     }
 
-    if ($record = $DB->get_record("block_coursefeedback", array("id" => $feedbackid))) {
+    if ($record = $DB->get_record("block_coursefeedback", ["id" => $feedbackid])) {
         $record->name = $feedbackname;
         $record->timemodified = time();
         $record->heading = $heading;
@@ -160,7 +159,7 @@ function block_coursefeedback_copy_feedback($oldfbid, $fbname, $heading = null, 
 
     if ($newid === -1) {
         return -1;
-    } else if ($newid > 0 && $questions = $DB->get_records("block_coursefeedback_questns", array("coursefeedbackid" => $oldfbid))) {
+    } else if ($newid > 0 && $questions = $DB->get_records("block_coursefeedback_questns", ["coursefeedbackid" => $oldfbid])) {
         $a = $newid;
         foreach ($questions as $question) {
             if (!block_coursefeedback_insert_question(
@@ -182,10 +181,10 @@ function block_coursefeedback_copy_feedback($oldfbid, $fbname, $heading = null, 
  */
 function block_coursefeedback_delete_feedback($feedbackid) {
     global $DB;
-    if ($DB->delete_records("block_coursefeedback_answers", array("coursefeedbackid" => $feedbackid))
-            && $DB->delete_records("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid))
-            && $DB->delete_records("block_coursefeedback", array("id" => $feedbackid))
-            && $DB->delete_records("block_coursefeedback_uidansw", array("coursefeedbackid" => $feedbackid))) {
+    if ($DB->delete_records("block_coursefeedback_answers", ["coursefeedbackid" => $feedbackid])
+            && $DB->delete_records("block_coursefeedback_questns", ["coursefeedbackid" => $feedbackid])
+            && $DB->delete_records("block_coursefeedback", ["id" => $feedbackid])
+            && $DB->delete_records("block_coursefeedback_uidansw", ["coursefeedbackid" => $feedbackid])) {
         // If the first fails, the second won't be executed (because of &&).
         return true;
     } else {
@@ -212,7 +211,7 @@ function block_coursefeedback_insert_question($question, $feedbackid, $questioni
     $language = preg_replace("/[^a-z\_]/", "", strtolower($language));
 
     if (!$DB->record_exists("block_coursefeedback_questns",
-            array("coursefeedbackid" => $feedbackid, "questionid" => $questionid, "language" => $language))) {
+            ["coursefeedbackid" => $feedbackid, "questionid" => $questionid, "language" => $language])) {
         $languages = block_coursefeedback_get_implemented_languages($feedbackid, $questionid, true, true);
         // Ceck if language already exists.
         if ($languages && in_array($language, $languages)) {
@@ -277,7 +276,7 @@ function block_coursefeedback_move_question(int $feedbackid, int $oldposition, i
                        SET questionid = questionid - (1 + :offset)
                      WHERE coursefeedbackid = :feedbackid
                            AND questionid BETWEEN (:oldposoffset + 1) AND :newposoffset";
-        } elseif ($oldposition > $newposition) {
+        } else if ($oldposition > $newposition) {
             // Moving to a lower position: shift intermediate questions one step up, considering the offset.
             $sql = "UPDATE {block_coursefeedback_questns}
                     SET questionid = questionid + (1 - :offset)
@@ -325,9 +324,9 @@ function block_coursefeedback_update_question($feedbackid, $questionid, $questio
     $questionid = intval($questionid);
     $questiontype = intval($questiontype);
     if (in_array($language, block_coursefeedback_get_implemented_languages($feedbackid, $questionid))) {
-        $record = $DB->get_record("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid,
+        $record = $DB->get_record("block_coursefeedback_questns", ["coursefeedbackid" => $feedbackid,
             "questionid" => $questionid,
-            "language" => $language));
+            "language" => $language]);
         $record->question = $question;
         $record->timemodified = time();
         $record->questiontype = $questiontype;
@@ -351,12 +350,12 @@ function block_coursefeedback_delete_question($feedbackid, $questionid, $languag
     $questionid = intval($questionid);
 
     if ($language == COURSEFEEDBACK_ALL) {
-        $success = $DB->delete_records("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid,
-            "questionid" => $questionid));
+        $success = $DB->delete_records("block_coursefeedback_questns", ["coursefeedbackid" => $feedbackid,
+            "questionid" => $questionid]);
     } else if (array_key_exists($language, get_string_manager()->get_list_of_translations())) {
-        $success = $DB->delete_records("block_coursefeedback_questns", array("coursefeedbackid" => $feedbackid,
+        $success = $DB->delete_records("block_coursefeedback_questns", ["coursefeedbackid" => $feedbackid,
             "questionid" => $questionid,
-            "language" => $language));
+            "language" => $language]);
     } else {
         $success = false;
     }
@@ -380,10 +379,10 @@ function block_coursefeedback_delete_questions($feedbackid, $languages) {
     $feedbackid = intval($feedbackid);
 
     if (!is_array($languages)) {
-        $languages = array($languages);
+        $languages = [$languages];
     } // Ensure array.
     $implemented = block_coursefeedback_get_implemented_languages($feedbackid);
-    $conditions = array("coursefeedbackid" => $feedbackid);
+    $conditions = ["coursefeedbackid" => $feedbackid];
     $succeeded = 0;
 
     foreach ($languages as $langcode) {
@@ -406,10 +405,10 @@ function block_coursefeedback_delete_questions($feedbackid, $languages) {
  */
 function block_coursefeedback_delete_answers($feedbackid) {
     global $DB;
-    $conditions = array("coursefeedbackid" => intval($feedbackid));
+    $conditions = ["coursefeedbackid" => intval($feedbackid)];
     $dbtrans = $DB->start_delegated_transaction();
     try {
-        $DB->delete_records("block_coursefeedback_uidansw", array("coursefeedbackid" => $feedbackid));
+        $DB->delete_records("block_coursefeedback_uidansw", ["coursefeedbackid" => $feedbackid]);
         $DB->delete_records("block_coursefeedback_answers", $conditions);
         $DB->delete_records("block_coursefeedback_textans", $conditions);
         $dbtrans->allow_commit();
@@ -441,13 +440,13 @@ function block_coursefeedback_get_combined_languages($feedbackid = COURSEFEEDBAC
 
     $count = block_coursefeedback_get_questioncount($feedbackid);
     $select = "coursefeedbackid = :fid GROUP BY language HAVING COUNT(language) = :count";
-    $params = array("fid" => $feedbackid, "count" => $count);
+    $params = ["fid" => $feedbackid, "count" => $count];
     $langs = $DB->get_records_select("block_coursefeedback_questns", $select, $params, "", "language");
     $langs = array_keys($langs);
 
     if ($langs && !$codesonly) {
         $listoflanguages = get_string_manager()->get_list_of_translations();
-        $languages = array();
+        $languages = [];
         foreach ($langs as $langcode) {
             $languages[$langcode] = isset($listoflanguages[$langcode])
                 ? $listoflanguages[$langcode]
@@ -455,7 +454,7 @@ function block_coursefeedback_get_combined_languages($feedbackid = COURSEFEEDBAC
         }
         $langs = $languages;
     }
-    return ($langs ? $langs : array());
+    return ($langs ? $langs : []);
 }
 
 /**
@@ -470,17 +469,17 @@ function block_coursefeedback_get_implemented_languages($feedbackid, $questionid
 
     $feedbackid = intval($feedbackid);
 
-    $sql = "SELECT language 
-              FROM {block_coursefeedback_questns} 
+    $sql = "SELECT language
+              FROM {block_coursefeedback_questns}
              WHERE coursefeedbackid = :fid ";
     if (is_int($questionid) && $questionid > 0) {
         $sql .= "AND questionid = :qid ";
     }
     $sql .= "GROUP BY language";
 
-    $implemented = $DB->get_fieldset_sql($sql, array("fid" => $feedbackid, "qid" => $questionid));
+    $implemented = $DB->get_fieldset_sql($sql, ["fid" => $feedbackid, "qid" => $questionid]);
     if (!$implemented) {
-        $implemented = array();
+        $implemented = [];
     }
     $installed = get_string_manager()->get_list_of_translations();
 
@@ -495,7 +494,7 @@ function block_coursefeedback_get_implemented_languages($feedbackid, $questionid
         $languages = $installed;
     } else {
         // Case !$langcodesonly && !$inverted.
-        $languages = array();
+        $languages = [];
         foreach ($implemented as $i) {
             $languages[$i] = $installed[$i];
         }
@@ -542,7 +541,7 @@ function block_coursefeedback_get_feedbackname($feedbackid = null) {
     global $DB;
 
     if (is_number($feedbackid)) {
-        $name = $DB->get_field("block_coursefeedback", "name", array("id" => $feedbackid));
+        $name = $DB->get_field("block_coursefeedback", "name", ["id" => $feedbackid]);
     }
 
     if (empty($name)) {
@@ -564,7 +563,7 @@ function block_coursefeedback_get_feedbackname($feedbackid = null) {
  */
 function block_coursefeedback_get_qanswercounts($course, $feedbackid) {
     global $DB;
-    $answers = array();
+    $answers = [];
     $course = clean_param($course, PARAM_INT);
 
     if ($course <= 0) {
@@ -573,7 +572,7 @@ function block_coursefeedback_get_qanswercounts($course, $feedbackid) {
     // Get all the questions of the feedback
     $questions = block_coursefeedback_get_questions_by_language($feedbackid, [current_language()],
             CFB_QUESTIONTYPE_SCHOOLGRADE);
-    $params = array("fid" => $feedbackid, "course" => $course);
+    $params = ["fid" => $feedbackid, "course" => $course];
     // For each question and each answerpossibility, count the amount of the given answers
     foreach ($questions as $question) {
         $choicessum = 0;
@@ -669,7 +668,7 @@ function block_coursefeedback_get_questions_by_language($feedbackid,
     // If the search is for a specific questionid, only one entry is allowed to be found.
     if (isset($questionid)) {
         if (count($questions) != 1) {
-            throw new moodle_exception(get_string("except_invalid_questionid","block_coursefeedback"));
+            throw new moodle_exception(get_string("except_invalid_questionid", "block_coursefeedback"));
         }
     }
 
@@ -690,7 +689,7 @@ function block_coursefeedback_get_question_ids($feedbackid = COURSEFEEDBACK_DEFA
 
     $select = "coursefeedbackid = ? GROUP BY questionid ORDER BY questionid";
 
-    return $DB->get_fieldset_select("block_coursefeedback_questns", "questionid", $select, array($feedbackid));
+    return $DB->get_fieldset_select("block_coursefeedback_questns", "questionid", $select, [$feedbackid]);
 }
 
 /**
@@ -700,7 +699,7 @@ function block_coursefeedback_get_question_ids($feedbackid = COURSEFEEDBACK_DEFA
  */
 function block_coursefeedback_get_editerrors($feedbackid) {
     $feedbackid = intval($feedbackid);
-    $perm = array();
+    $perm = [];
 
     // This feedback is currently active -> editing not possible.
     if ($feedbackid == get_config("block_coursefeedback", "active_feedback")) {
@@ -723,12 +722,12 @@ function block_coursefeedback_get_editerrors($feedbackid) {
  */
 function block_coursefeedback_set_active($feedbackid) {
     global $DB;
-    if ($feedbackid == 0 || $DB->record_exists("block_coursefeedback", array("id" => $feedbackid))) {
+    if ($feedbackid == 0 || $DB->record_exists("block_coursefeedback", ["id" => $feedbackid])) {
         $oldfeedbackid = get_config("block_coursefeedback", "active_feedback");
         if (block_coursefeedback_answers_exist($oldfeedbackid)) {
             // If answers for the last FB exist -> delete the saved userids.
             // It will not be possible to reactivate a FB for which answers exist
-            $DB->delete_records("block_coursefeedback_uidansw", array("coursefeedbackid" => $oldfeedbackid));
+            $DB->delete_records("block_coursefeedback_uidansw", ["coursefeedbackid" => $oldfeedbackid]);
         }
         set_config("active_feedback", $feedbackid, "block_coursefeedback");
         return true;
@@ -748,7 +747,7 @@ function block_coursefeedback_print_header($editable = false, $feedbackid = null
 
     $editable = clean_param($editable, PARAM_BOOL);
 
-    $div = html_writer::start_tag("div", array("style" => "margin-left:3em;margin-bottom:1em;"));
+    $div = html_writer::start_tag("div", ["style" => "margin-left:3em;margin-bottom:1em;"]);
     if ($editable) {
         $url1 = block_coursefeedback_adminurl("questions", "new", $feedbackid);
         $url2 = block_coursefeedback_adminurl("questions", "dlang", $feedbackid);
@@ -756,7 +755,7 @@ function block_coursefeedback_print_header($editable = false, $feedbackid = null
             . html_writer::link($url2, get_string("page_link_deletelanguage", "block_coursefeedback")) . "<br/>";
     }
     $url1 = block_coursefeedback_adminurl("feedback", "view");
-    $url2 = new moodle_url("/" . $CFG->admin . "/settings.php", array("section" => "blocksettingcoursefeedback"));
+    $url2 = new moodle_url("/" . $CFG->admin . "/settings.php", ["section" => "blocksettingcoursefeedback"]);
     $div .= html_writer::link($url1, get_string("page_link_backtofeedbackview", "block_coursefeedback")) . "<br/>"
         . html_writer::link($url2, get_string("page_link_backtoconfig", "block_coursefeedback")) . "<br/>"
         . html_writer::end_div();
@@ -782,17 +781,17 @@ function block_coursefeedback_print_noperm_page($errors, $feedbackid) {
 
     $html = html_writer::tag("h4",
         get_string("perm_header_editnotpermitted", "block_coursefeedback"),
-        array("style" => "text-align:center;"))
-        . html_writer::alist($errors, array("style" => "margin-left:3em;margin-right:3em;"));
+        ["style" => "text-align:center;"])
+        . html_writer::alist($errors, ["style" => "margin-left:3em;margin-right:3em;"]);
 
     if (isset($errors["answersexists"])) {
         $html .= html_writer::tag("p",
             get_string("perm_html_danswerslink", "block_coursefeedback", $feedbackid),
-            array("style" => "margin-left:3em;margin-right:3em;"));
+            ["style" => "margin-left:3em;margin-right:3em;"]);
     } else if (isset($errors["erroractive"])) {
         $html .= html_writer::tag("p",
             get_string("perm_html_duplicatelink", "block_coursefeedback", $feedbackid),
-            array("style" => "margin-left:3em;margin-right:3em;"));
+            ["style" => "margin-left:3em;margin-right:3em;"]);
     }
     echo $OUTPUT->box($html);
 }
@@ -803,7 +802,7 @@ function block_coursefeedback_print_noperm_page($errors, $feedbackid) {
  */
 function block_coursefeedback_create_activate_button($feedbackid, $value = "") {
     global $DB;
-    if ($DB->record_exists("block_coursefeedback_answers", array("coursefeedbackid" => $feedbackid))) {
+    if ($DB->record_exists("block_coursefeedback_answers", ["coursefeedbackid" => $feedbackid])) {
         // Reactivation of FB's for whom answers exist is not possible.
         return get_string("page_html_wasactive", "block_coursefeedback", $feedbackid);
     }
@@ -864,14 +863,14 @@ function block_coursefeedback_answers_exist($feedbackid) {
  * @return multitype:array boolean
  */
 function block_coursefeedback_validate($feedbackid, $returnerrors = false) {
-    $notifications = array();
+    $notifications = [];
     $feedbackid = intval($feedbackid);
     $defaultlang[] = get_config("block_coursefeedback", "default_language");
     if ($feedbackid > 0) {
         $langs = block_coursefeedback_get_combined_languages($feedbackid);
         if (empty($langs)) {
             $notifications[] = get_string("page_html_norelations", "block_coursefeedback");
-        } elseif (!array_intersect($langs, $defaultlang)) {
+        } else if (!array_intersect($langs, $defaultlang)) {
             $notifications[] = get_string("page_html_servedefaultlang",
                 "block_coursefeedback",
                 $defaultlang);
@@ -893,9 +892,9 @@ function format($string) {
  * @param array $other params of the url.
  * @return moodle_url to admin.php with given params.
  */
-function block_coursefeedback_adminurl($mode, $action, $fid = null, array $other = array()) {
+function block_coursefeedback_adminurl($mode, $action, $fid = null, array $other = []) {
     $url = new moodle_url("/blocks/coursefeedback/admin.php");
-    $params = array_merge($other, array("mode" => $mode, "action" => $action));
+    $params = array_merge($other, ["mode" => $mode, "action" => $action]);
     if (is_number($fid)) {
         $params["fid"] = $fid;
     }
@@ -921,14 +920,14 @@ function block_coursefeedback_get_open_question() {
             $params = [
                 "userid" => $USER->id,
                 "course" => $COURSE->id, "questionid" => $question->questionid,
-                "coursefeedbackid" => $config->active_feedback
+                "coursefeedbackid" => $config->active_feedback,
             ];
             if (!$DB->record_exists("block_coursefeedback_uidansw", $params)) {
                 // Diese Frage ist noch offen;
-                return array(
+                return [
                     'currentopenqstn' => $question,
-                    'questionsum' => count($questions)
-                );
+                    'questionsum' => count($questions),
+                ];
             }
         }
         // Keine offene Fragen vorhanden
@@ -969,7 +968,7 @@ function block_coursefeedbck_get_fbsfor_course($courseid) {
               FROM {block_coursefeedback_answers} ans
               JOIN {block_coursefeedback} cf ON ans.coursefeedbackid = cf.id
              WHERE ans.course = ?";
-    $answerredfbs = $DB->get_records_sql($sql, array($courseid));
+    $answerredfbs = $DB->get_records_sql($sql, [$courseid]);
 
     return $answerredfbs;
 }
@@ -985,14 +984,14 @@ function block_coursefeedback_extend_navigation_course(
         navigation_node $parentnode,
         stdClass $course,
         context_course $context) {
-    # Only Trainers and only if there are feedbacks to display
+    // Only Trainers and only if there are feedbacks to display
     if (has_capability('block/coursefeedback:viewanswers', $context)
-            && !empty($fbs =  block_coursefeedbck_get_fbsfor_course($course->id))) {
+            && !empty($fbs = block_coursefeedbck_get_fbsfor_course($course->id))) {
         // Add Coursefeedbacksnode to the "more" navigation dropdown
         $parentnode->add(
             get_string('resultspage_nav_extension', 'block_coursefeedback'),
             $url = new moodle_url('/blocks/coursefeedback/results.php',
-                array('course' => $course->id)),
+                ['course' => $course->id]),
             navigation_node::TYPE_CUSTOM,
             'block_coursefeedback',
             'feedback_results',
