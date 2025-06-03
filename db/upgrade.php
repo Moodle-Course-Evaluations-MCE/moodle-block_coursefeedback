@@ -59,7 +59,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool
 
         // TODO: data archival/migration logic here.
 
-        upgrade_plugin_savepoint(true, 2025050901, 'block_coursefeedback');
+        upgrade_block_savepoint(true, 2025050901, 'coursefeedback');
     }
 
     return true;
