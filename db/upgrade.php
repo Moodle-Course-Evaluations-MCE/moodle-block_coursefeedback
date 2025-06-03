@@ -57,7 +57,42 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool
             );
         }
 
-        // TODO: data archival/migration logic here.
+         $dbman = $DB->get_manager();
+
+        // Define table block_coursefeedback to be renamed to block_coursefeedback_old.
+        $table = new xmldb_table('block_coursefeedback');
+        if ($dbman->table_exists($table)) {
+            // Launch rename table for block_coursefeedback.
+            $dbman->rename_table($table, 'block_coursefeedback_old');
+        }
+
+        // Define table block_coursefeedback_questns to be renamed to block_coursefeedback_old_questns.
+        $table = new xmldb_table('block_coursefeedback_questns');
+        if ($dbman->table_exists($table)) {
+            // Launch rename table for block_coursefeedback_questns.
+            $dbman->rename_table($table, 'block_coursefeedback_old_questns');
+        }
+
+        // Define table block_coursefeedback_answers to be renamed to block_coursefeedback_old_answers.
+        $table = new xmldb_table('block_coursefeedback_answers');
+        if ($dbman->table_exists($table)) {
+            // Launch rename table for block_coursefeedback_answers.
+            $dbman->rename_table($table, 'block_coursefeedback_old_answers');
+        }
+
+        // Define table block_coursefeedback_textans to be renamed to block_coursefeedback_old_textans.
+        $table = new xmldb_table('block_coursefeedback_textans');
+        if ($dbman->table_exists($table)) {
+            // Launch rename table for block_coursefeedback_textans.
+            $dbman->rename_table($table, 'block_coursefeedback_old_textans');
+        }
+
+        // Define table block_coursefeedback_uidansw to be renamed to block_coursefeedback_old_uidansw.
+        $table = new xmldb_table('block_coursefeedback_uidansw');
+        if ($dbman->table_exists($table)) {
+            // Launch rename table for block_coursefeedback_uidansw.
+            $dbman->rename_table($table, 'block_coursefeedback_old_uidansw');
+        }
 
         upgrade_block_savepoint(true, 2025050901, 'coursefeedback');
     }
