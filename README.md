@@ -1,23 +1,46 @@
-moodle-block_coursefeedback
-===========================
+# block_coursefeedback – Moodle Kursfeedback-Block #
 
-This Block intends to give the system administrators a tool for forced evaluation of a course (or other facts).
-System administrators can define a set of textual questions, which can be rated from students.
-Responses are collected in course context and can be seen by trainers and non-editing trainers.
-Access to the questions and the results are given by a simple block.
+TO-DO Describe the plugin shortly here.
 
-It differs the approach of pre-defined "Feedback" in that way, that a block can be made sticky and feedbacks are optinal for teachers (they may use it or not).
+TO-DO Provide more detailed description here.
 
-Make it sticky
-==============
+## Installing via uploaded ZIP file ##
 
-Since version 1.0.6. there is an option in the plugin settings, to create a global sticky instance.
-It will be shown in all course main pages.
+1. Log in to your Moodle site as an admin and go to _Site administration >
+   Plugins > Install plugins_.
+2. Upload the ZIP file with the plugin code. You should only be prompted to add
+   extra details if your plugin type is not automatically detected.
+3. Check the plugin validation report and finish the installation.
 
-Upgrade from Version 2
-==============
-Since version 3.1.0, all existing blocks will be deleted as the rendering is now achieved via a "system context" block that is visible in all courses.
-Therefore, individual "Course Context" blocks are no longer allowed as they could conflict with the system block.
-Also for this reason only managers are allowed to add or delete the block. There can only be exactly one block in each course.
+## Installing manually ##
 
-To make things as easy as possible, the necessary system block can now be added to, and removed from, all courses through the adminsettings of the block.
+The plugin can be also installed by putting the contents of this directory to
+
+    {your/moodle/dirroot}/blocks/coursefeedback
+
+Afterwards, log in to your Moodle site as an admin and go to _Site administration >
+Notifications_ to complete the installation.
+
+Alternatively, you can run
+
+    $ php admin/cli/upgrade.php
+
+to complete the installation from the command line.
+
+## License ##
+
+© 2025 innoCampus, Technische Universität Berlin
+
+© 2025 IT.Services, Ruhr-Universität Bochum
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program.  If not, see <https://www.gnu.org/licenses/>.
