@@ -1,0 +1,87 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Survey item persistent class.
+ *
+ * @package     block_coursefeedback
+ * @copyright   2025 innoCampus, Technische Universität Berlin
+ * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+namespace block_coursefeedback\local\persistent;
+
+use core\persistent;
+
+/**
+ * Survey item persistent class.
+ *
+ * @package     block_coursefeedback
+ * @copyright   2025 innoCampus, Technische Universität Berlin
+ * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class surveyitem extends persistent {
+
+    /** Table name for the persistent. */
+    const TABLE = 'block_coursefeedback_surveyitem';
+
+    /**
+     * Return the definition of the properties of this model.
+     * @return array
+     */
+    protected static function define_properties() {
+        return [
+            'surveypartid' => [
+                'type' => PARAM_INT,
+            ],
+            'surveyitemtype' => [
+                'type' => PARAM_ALPHANUMEXT,
+            ],
+            'sortindex' => [
+                'type' => PARAM_INT,
+            ],
+            'textid' => [
+                'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
+        ];
+    }
+
+    public static function get_surveyitem_records_for_surveypart(int $surveypartid) {
+        global $DB;
+        return $DB->get_records_sql(
+            'SELECT si.id, si.surveyitemtype, si.sortindex, tt.text FROM {block_coursefeedback_surveyitem} si ' .
+            'LEFT JOIN {block_coursefeedback_texttranslation} tt ON si.textid = tt.textid ' .
+            'WHERE si.surveypartid = :surveypartid ' .
+            'ORDER BY si.sortindex ',
+            ['surveypartid' => $surveypartid]
+        );
+    }
+
+    public function delete_and_fix_sortorder() {
+        global $DB;
+        $sortindex = $this->get('sortindex');
+        $surveypartid = $this->get('surveypartid');
+        $this->delete();
+        $DB->execute("UPDATE {" . self::TABLE . "} SET sortindex = sortindex - 1 " .
+            "WHERE sortindex > :thissortindex AND surveypartid = :surveypartid", [
+                'thissortindex' => $sortindex,
+                'surveypartid' => $surveypartid
+        ]);
+    }
+}

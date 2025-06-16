@@ -1,0 +1,9 @@
+.coursefeedback-dnd-item.grabbed {
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    user-select: none;
+}
+
+.coursefeedback-custom-content :last-child {
+    margin-bottom: 0;
+}

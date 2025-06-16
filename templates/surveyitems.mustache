@@ -1,0 +1,19 @@
+<div class="coursefeedback-dnd-list">
+    {{# surveyitems }}
+        <div class="d-flex border rounded p-3 mt-3 coursefeedback-dnd-item align-items-center"
+             data-itemid="{{ itemid }}">
+            <div class="p-2 coursefeedback-dnd-handle" style="cursor: move">
+                {{# pix }} t/move {{/ pix }}
+            </div>
+            <div class="flex-grow-1 coursefeedback-custom-content">
+                {{{ text }}}
+            </div>
+            <div class="text-muted mr-3">
+                {{ type }}
+            </div>
+            {{# actionmenu }}
+                {{> core/action_menu }}
+            {{/actionmenu}}
+        </div>
+    {{/ surveyitems }}
+</div>
