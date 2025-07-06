@@ -25,3 +25,12 @@
  */
 
 $string['pluginname'] = 'Course feedback';
+$string['organization'] = 'Organization';
+$string['tools'] = 'Tools';
+$string['name'] = 'Name';
+$string['text'] = 'Text';
+$string['infotext'] = 'Infotext';
+
+$string['organizations'] = 'Organizations';
+$string['new_organization'] = 'New organization';
+$string['edit_organization'] = 'Edit organization';
