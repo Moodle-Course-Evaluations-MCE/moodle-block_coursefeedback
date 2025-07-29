@@ -19,7 +19,7 @@ import * as Ajax from 'core/ajax';
  * Does dragging and dropping.
  *
  * @module     block_coursefeedback/drag-and-drop-reorder
- * @copyright  2024 Melanie Treitinger, Justus Dieckmann RUB
+ * @copyright  2025 Justus Dieckmann RUB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,6 +32,7 @@ export function init(surveyPartId) {
 
     let movingElement = null;
     let startY = null;
+    let lastMouseClientY = null;
 
     const pointerDownListener = (event) => {
         const handle = event.target.closest('.coursefeedback-dnd-handle');
@@ -40,13 +41,36 @@ export function init(surveyPartId) {
         }
         movingElement = handle.closest('.coursefeedback-dnd-item');
         movingElement.classList.add('grabbed');
-        startY = event.clientY;
+        startY = event.pageY;
+        lastMouseClientY = event.clientY;
         list.setPointerCapture(event.pointerId);
+        requestAnimationFrame(doScrolling);
         return true;
     };
 
-    const move = (event) => {
-        let offset = (event.clientY - startY);
+    const doScrolling = () => {
+        if (!movingElement) {
+            return;
+        }
+        const SCROLL_ZONE_PERCENTAGE = 0.3;
+        const MAX_SPEED = 10;
+        const rect = movingElement.getBoundingClientRect();
+        if (rect.top < window.innerHeight * SCROLL_ZONE_PERCENTAGE) {
+            const ratioInScrollZone = 1 - (rect.top / window.innerHeight) / SCROLL_ZONE_PERCENTAGE;
+            window.scrollBy({top: -Math.pow(ratioInScrollZone, 2) * MAX_SPEED});
+        } else if (rect.bottom > window.innerHeight * (1 - SCROLL_ZONE_PERCENTAGE)) {
+            const ratioInScrollZone = ((rect.bottom / window.innerHeight) - (1 - SCROLL_ZONE_PERCENTAGE)) / SCROLL_ZONE_PERCENTAGE;
+            window.scrollBy({top: Math.pow(ratioInScrollZone, 2) * MAX_SPEED});
+        }
+
+        move();
+
+        requestAnimationFrame(doScrolling);
+    };
+
+    const move = () => {
+        let offset = (lastMouseClientY + window.scrollY) - startY;
+        const oldScroll = window.scrollY;
         if (offset < 0) {
             while (movingElement.previousElementSibling) {
                 const movingElementMidpoint = movingElement.offsetTop + movingElement.offsetHeight * 0.5;
@@ -80,6 +104,8 @@ export function init(surveyPartId) {
                 offset = Math.min(0, offset);
             }
         }
+        // Reset scroll that happened because of DOM changes at top of viewport.
+        window.scroll({top: oldScroll, behavior: 'instant'});
         movingElement.style.transform = 'translateY(' + offset + 'px)';
     };
 
@@ -87,6 +113,7 @@ export function init(surveyPartId) {
         if (!movingElement) {
             return false;
         }
+        lastMouseClientY = event.clientY;
         move(event);
         return true;
     };
@@ -96,6 +123,7 @@ export function init(surveyPartId) {
             return false;
         }
 
+        lastMouseClientY = event.clientY;
         move(event);
         movingElement.style.transform = null;
         movingElement.classList.remove('grabbed');
