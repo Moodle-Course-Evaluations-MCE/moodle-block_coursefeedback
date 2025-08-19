@@ -88,17 +88,11 @@ if (!$mformclass) {
 
 /** @var surveyitem_form $mform */
 $mform = new $mformclass($PAGE->url);
+$language = \block_coursefeedback\local\manager\language_manager::get_default_language_for_surveypart($surveypartid);
 
 if ($surveyitem) {
-    $record = $surveyitem->to_record();
-    if (isset($record->textid)) {
-        $texttranslation = $DB->get_record('block_coursefeedback_texttranslation', ['textid' => $record->textid]);
-        $record->text = [
-            'text' => $texttranslation->text,
-            'format' => $texttranslation->format ?? FORMAT_HTML,
-        ];
-    }
-    $mform->set_data($record);
+    $data = $surveyitemtype->load_settings_mform($surveyitem, $language);
+    $mform->set_data($data);
 }
 
 if ($mform->is_cancelled()) {
@@ -126,15 +120,13 @@ if ($mform->is_cancelled()) {
                 'textid' => $textid,
                 'text' => $data->text['text'],
                 'format' => $data->text['format'],
-                'lang' => 'notalang'
             ]);
             $surveyitem->set('textid', $textid);
         }
-
     }
 
     $surveyitem->save();
-    $surveyitemtype->save_settings_mform($surveyitem->get('id'), $data);
+    $surveyitemtype->save_settings_mform($surveyitem->get('id'), $data, $language);
     redirect($returnurl);
 } // Else display form.
 

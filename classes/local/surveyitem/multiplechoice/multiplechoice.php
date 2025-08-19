@@ -24,6 +24,8 @@
  */
 namespace block_coursefeedback\local\surveyitem\multiplechoice;
 
+use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\lang_string;
 
@@ -49,8 +51,41 @@ class multiplechoice extends surveyitemtype {
         return multiplechoice_form::class;
     }
 
-    public function save_settings_mform(int $surveyitemid, object $formdata) {
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
         global $DB;
-        $DB->get_records('block_coursefeedback_surveyitemansweroption', ['surveyitemid' => $surveyitemid]);
+        $existingoptions = $DB->get_records('block_coursefeedback_surveyitemansweroption', ['surveyitemid' => $surveyitemid], 'sortindex ASC', 'sortindex, *');
+        $index = 0;
+        for ($i = 1; $i <= $formdata->choices_amount; $i++) {
+            if ($formdata->{'answer' . $i}) {
+                $index++;
+                if (isset($existingoptions[$i])) {
+                    language_manager::update_string($existingoptions[$i]->textid, $formdata->{'answer' . $i}, $language);
+                    if ($existingoptions[$i]->sortindex != $index) {
+                        $existingoptions[$i]->sortindex = $index;
+                        $DB->update_record('block_coursefeedback_surveyitemansweroption', $existingoptions[$i]);
+                    }
+                } else {
+                    $textid = language_manager::create_string($formdata->{'answer' . $i}, $language);
+                    $DB->insert_record('block_coursefeedback_surveyitemansweroption', [
+                        'surveyitemid' => $surveyitemid,
+                        'textid' => $textid,
+                        'sortindex' => $index,
+                    ]);
+                }
+            } else if (isset($existingoptions[$i])) {
+                $DB->delete_records('block_coursefeedback_surveyitemansweroption', ['id' => $existingoptions[$i]->id]);
+            }
+        }
+    }
+
+    public function load_settings_mform(surveyitem $surveyitem, string $language): object {
+        global $DB;
+        $data = parent::load_settings_mform($surveyitem, $language);
+        $existingoptions = $DB->get_records('block_coursefeedback_surveyitemansweroption', ['surveyitemid' => $surveyitem->get('id')], 'sortindex ASC', 'sortindex, *');
+        $data->choices_amount = count($existingoptions);
+        for ($i = 1; $i <= $data->choices_amount; $i++) {
+            $data->{'answer' . $i} = language_manager::fetch_string($existingoptions[$i]->textid, $language);
+        }
+        return $data;
     }
 }

@@ -24,7 +24,7 @@
  */
 namespace block_coursefeedback\local\manager;
 
-use core\output\language_menu;
+use block_coursefeedback\local\persistent\surveypart;
 
 /**
  * Language manager.
@@ -38,6 +38,41 @@ class language_manager {
 
     public static function get_languages() {
         return \get_string_manager()->get_list_of_translations();
+    }
+
+    public static function fetch_strings(array $requests, string $language) {
+        global $DB;
+        // TODO respect language.
+        list($insql, $inparams) = $DB->get_in_or_equal(array_values($requests), SQL_PARAMS_NAMED);
+        $results = $DB->get_records_select_menu('block_coursefeedback_texttranslation', "textid $insql", $inparams, '', 'textid, text');
+        return $results;
+    }
+
+    public static function fetch_string(int $textid, string $language) {
+        global $DB;
+        return $DB->get_field('block_coursefeedback_texttranslation', 'text', ['textid' => $textid, 'lang' => $language]);
+    }
+
+    public static function update_string(int $textid, string $text, string $language) {
+        global $DB;
+        $DB->execute('UPDATE {block_coursefeedback_texttranslation} SET text = :text WHERE textid = :textid AND lang = :language',
+            ['text' => $text, 'textid' => $textid, 'language' => $language]);
+    }
+
+    public static function create_string(string $text, string $language, $format = FORMAT_PLAIN) {
+        global $DB;
+        $textid = $DB->get_field_sql('SELECT max(id) + 1 FROM {block_coursefeedback_texttranslation}') ?: 1;
+        $DB->insert_record('block_coursefeedback_texttranslation', [
+            'textid' => $textid,
+            'text' => $text,
+            'format' => $format,
+            'lang' => $language
+        ]);
+        return $textid;
+    }
+
+    public static function get_default_language_for_surveypart(int $surveypartid) {
+        return 'de';
     }
 
 }

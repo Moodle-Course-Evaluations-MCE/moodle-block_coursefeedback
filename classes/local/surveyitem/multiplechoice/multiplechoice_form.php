@@ -45,29 +45,32 @@ class multiplechoice_form extends surveyitem_form {
 
         $mform->addElement('editor', 'text', get_string('question', 'block_coursefeedback'));
         $mform->setType('text', PARAM_RAW);
+
+        $mform->addElement('submit', 'add_blanks', get_string('add_more_blanks', 'block_coursefeedback'));
+
+        $this->add_action_buttons();
     }
     
     public function definition_after_data() {
         $mform =& $this->_form;
 
         $choicesamountel = $mform->getElement('choices_amount');
-        $mform->addElement('submit', 'add_blanks', get_string('add_more_blanks', 'block_coursefeedback'));
 
         $data = $this->get_submitted_data();
-        $choicesamount = $data->choices_amount ?? 2;
+        $choicesamount = $choicesamountel->getValue() ?? 2;
 
         if (isset($data->add_blanks)) {
             $choicesamount += 3;
             $choicesamountel->setValue($choicesamount);
         }
 
-        for ($i = 0; $i < $choicesamount; $i++) {
+        for ($i = 1; $i <= $choicesamount; $i++) {
             $mform->insertElementBefore(
                 $mform->createElement('html', '<div class="move-open">'),
                 'add_blanks',
             );
             $mform->insertElementBefore(
-                $mform->createElement('text', 'answer' . $i, get_string('answer-i', 'block_coursefeedback', $i + 1)),
+                $mform->createElement('text', 'answer' . $i, get_string('answer-i', 'block_coursefeedback', $i)),
                 'add_blanks',
             );
             $mform->setType('answer' . $i, PARAM_RAW);
@@ -77,6 +80,5 @@ class multiplechoice_form extends surveyitem_form {
             );
         }
 
-        $this->add_action_buttons();
     }
 }

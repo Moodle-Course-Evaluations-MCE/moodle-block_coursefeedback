@@ -49,7 +49,7 @@ class text extends surveyitemtype {
         return text_form::class;
     }
 
-    public function save_settings_mform(int $surveyitemid, object $formdata) {
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
         // TODO: Implement save_settings_mform() method.
     }
 }

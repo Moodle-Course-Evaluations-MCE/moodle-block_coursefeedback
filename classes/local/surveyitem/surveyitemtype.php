@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\surveyitem;
 
+use block_coursefeedback\local\persistent\surveyitem;
 use core\exception\coding_exception;
 use core\lang_string;
 
@@ -45,8 +46,31 @@ abstract class surveyitemtype {
 
     public abstract function get_settings_mform();
 
-    public function save_settings_mform(int $surveyitemid, object $formdata) {
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
         throw new coding_exception('save_settings_mform must be implemented if surveyitemtype has settings.');
+    }
+
+    public function load_settings_mform(surveyitem $surveyitem, string $language): object {
+        global $DB;
+
+        $record = $surveyitem->to_record();
+        if (isset($record->textid)) {
+            $texttranslation = $DB->get_record('block_coursefeedback_texttranslation', ['textid' => $record->textid]);
+            $record->text = [
+                'text' => $texttranslation->text,
+                'format' => $texttranslation->format ?? FORMAT_HTML,
+            ];
+        }
+
+        return $record;
+    }
+
+    public function get_textids(array $surveyitemids): array {
+        $textids = [];
+        foreach ($surveyitemids as $surveyitemid) {
+            $textids[$surveyitemid] = [];
+        }
+        return $textids;
     }
 
 }

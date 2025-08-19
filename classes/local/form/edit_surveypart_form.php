@@ -24,6 +24,8 @@
  */
 namespace block_coursefeedback\local\form;
 
+use core\plugin_manager;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -47,6 +49,8 @@ class edit_surveypart_form extends \core\form\persistent {
      */
     public function definition() {
         $mform = $this->_form;
+
+        plugin_manager::instance()->get_plugintype_root()
 
         $mform->addElement('text', 'name', get_string('name', 'block_coursefeedback'));
 
