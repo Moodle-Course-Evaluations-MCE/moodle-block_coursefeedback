@@ -44,7 +44,8 @@ class language_manager {
         global $DB;
         // TODO respect language.
         list($insql, $inparams) = $DB->get_in_or_equal(array_values($requests), SQL_PARAMS_NAMED);
-        $results = $DB->get_records_select_menu('block_coursefeedback_texttranslation', "textid $insql", $inparams, '', 'textid, text');
+        $inparams['lang'] = $language;
+        $results = $DB->get_records_select_menu('block_coursefeedback_texttranslation', "lang = :lang AND textid $insql", $inparams, '', 'textid, text');
         return $results;
     }
 

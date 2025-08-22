@@ -15,48 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Surveyitem manager.
+ * Abstract surveyitem class, to be extended by all survey elements.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_coursefeedback\local\surveyitem;
+namespace block_coursefeedback\local\surveyitem\singlechoice;
 
-use block_coursefeedback\local\surveyitem\info\info;
-use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
-use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
-use block_coursefeedback\local\surveyitem\singlechoice\singlechoice;
-use block_coursefeedback\local\surveyitem\text\text;
-use core\exception\coding_exception;
+use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
+use core\lang_string;
 
 /**
- * Surveyitem manager.
+ * Abstract surveyitem class, to be extended by all survey elements.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class surveyitem_manager {
+class singlechoice extends ms_choice {
 
-    public static function get_all_surveyitemtypes(): array {
-        static $surveyitemtypes = [
-            'singlechoice' => new singlechoice(),
-            'multiplechoice' => new multiplechoice(),
-            'text' => new text(),
-            'pagebreak' => new pagebreak(),
-            'info' => new info(),
-        ];
-        return $surveyitemtypes;
+    /**
+     * Return the name of the survey element type.
+     * @return lang_string
+     */
+    public function get_name(): lang_string {
+        return new lang_string('singlechoice', 'block_coursefeedback');
     }
-
-    public static function get_surveyitemtype(string $type): surveyitemtype {
-        if (!isset(self::get_all_surveyitemtypes()[$type])) {
-            throw new coding_exception('Survey element type ' .  $type . ' not found.');
-        }
-        return self::get_all_surveyitemtypes()[$type];
-    }
-
 }

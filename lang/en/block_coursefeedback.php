@@ -44,3 +44,4 @@ $string['question'] = 'Question';
 $string['answer-i'] = 'Answer #{$a}';
 $string['multiplechoice'] = 'Multiple choice';
 $string['add_more_blanks'] = 'Add more blanks';
+$string['singlechoice'] = 'Single choice';

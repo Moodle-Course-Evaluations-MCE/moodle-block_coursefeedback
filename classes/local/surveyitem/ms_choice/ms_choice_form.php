@@ -22,7 +22,7 @@
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_coursefeedback\local\surveyitem\multiplechoice;
+namespace block_coursefeedback\local\surveyitem\ms_choice;
 
 use block_coursefeedback\local\surveyitem\surveyitem_form;
 
@@ -34,7 +34,7 @@ use block_coursefeedback\local\surveyitem\surveyitem_form;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class multiplechoice_form extends surveyitem_form {
+class ms_choice_form extends surveyitem_form {
 
     protected function definition() {
         $mform =& $this->_form;
