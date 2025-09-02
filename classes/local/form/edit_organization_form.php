@@ -69,6 +69,25 @@ class edit_organization_form extends \moodleform {
             },
         ]);
 
+        // TODO durch ajax ersetzen damit nicht die ganze Liste ans frontend geschickt werden muss
+        $allcats = \core_course_category::make_categories_list();
+
+        $options = [
+            'multiple'          => true,
+            'noselectionstring' => false,     // kein “Alle”-Eintrag
+            'minchars'          => 0,         // direkt filtern, auch ohne tippen
+            // 'ajax'            => null,      // kein ajax – lokal filtern
+        ];
+
+        $mform->addElement(
+            'autocomplete',
+            'coursecatids',
+            get_string('coursecategories', 'block_coursefeedback'),
+            $allcats,
+            $options
+        );
+        $mform->setType('coursecatids', PARAM_SEQUENCE);
+
         $this->add_action_buttons();
     }
 

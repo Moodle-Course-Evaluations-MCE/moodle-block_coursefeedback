@@ -31,4 +31,11 @@ $capabilities = [
         "contextlevel" => CONTEXT_BLOCK,
         "archetypes" => [],
     ],
+    'block/coursefeedback:manageorganizations' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

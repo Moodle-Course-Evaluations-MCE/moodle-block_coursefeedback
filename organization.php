@@ -29,12 +29,14 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
+require_login();
+$context = context_system::instance();
+require_capability('block/coursefeedback:manageorganizations', $context);
 $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
 
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]));
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $title = $organization->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);

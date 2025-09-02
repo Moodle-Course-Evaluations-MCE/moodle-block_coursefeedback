@@ -24,13 +24,16 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Course feedback';
-$string['organization'] = 'Organization';
-$string['tools'] = 'Tools';
-$string['name'] = 'Name';
-$string['text'] = 'Text';
-$string['infotext'] = 'Infotext';
 
-$string['organizations'] = 'Organizations';
-$string['new_organization'] = 'New organization';
+$string['coursecategories'] = 'Kurskategorien';
+$string['coursefeedback:manageorganizations'] = 'Manage course feedback organizations';
 $string['edit_organization'] = 'Edit organization';
+$string['infotext'] = 'Infotext';
+$string['name'] = 'Name';
+$string['new_organization'] = 'New organization';
+$string['organization'] = 'Organization';
+$string['organizations'] = 'Organizations';
+$string['pluginname'] = 'Course feedback';
+$string['text'] = 'Text';
+$string['tools'] = 'Tools';
+

@@ -27,8 +27,12 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
-$PAGE->set_context(context_system::instance());
+require_login();
+$context = context_system::instance();
+
+// TODO unterscheiden zwischen manageorganizations und "organization zugeordnet?
+require_capability('block/coursefeedback:manageorganizations', $context);
+$PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organizations.php'));
 $PAGE->set_heading(get_string('organizations', 'block_coursefeedback'));
 
@@ -36,12 +40,12 @@ $table = new \block_coursefeedback\local\table\organizations_table();
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render(new \core\output\single_button(
+echo $OUTPUT->render(new single_button(
     new moodle_url('/blocks/coursefeedback/organization_edit.php'),
     get_string('new_organization', 'block_coursefeedback'),
     'post',
     single_button::BUTTON_PRIMARY
-)) . '<br><br>';
+));
 
 $table->out(48, false);
 

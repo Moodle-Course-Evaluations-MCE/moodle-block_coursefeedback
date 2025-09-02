@@ -25,7 +25,9 @@
 namespace block_coursefeedback\local\table;
 
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\organization_category;
 use moodle_url;
+use html_writer;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -50,23 +52,13 @@ class organizations_table extends \table_sql {
         $this->define_baseurl($PAGE->url);
         $this->set_sql('id, name', '{' . organization::TABLE . '}', 'true');
         $this->column_nosort = ['users', 'tools'];
-        $this->define_columns(['name', 'users', 'tools']);
+        $this->define_columns(['name', 'categories', 'users', 'tools']);
         $this->define_headers([
             get_string('name', 'block_coursefeedback'),
+            'Categories',
             get_string('users'),
             get_string('tools', 'block_coursefeedback'),
         ]);
-    }
-
-    public function col_users($row) {
-        global $DB;
-        list($fields, $params) = \core_user\fields::get_sql_fullname();
-        $params['organizationid'] = $row->id;
-        $usernames = $DB->get_fieldset_sql("SELECT {$fields} FROM {block_coursefeedback_organization} o " .
-        "JOIN {block_coursefeedback_organization_user} ou ON o.id = ou.organizationid " .
-        "JOIN {user} u ON u.id = ou.userid " .
-        "WHERE o.id = :organizationid", $params);
-        return join(", ", $usernames);
     }
 
     /**
@@ -79,6 +71,54 @@ class organizations_table extends \table_sql {
             new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $row->id]),
             $row->name
         );
+    }
+    /**
+     * Render categories column.
+     * @param object $row Row data.
+     * @return string action buttons for workflows
+     */
+    public function col_categories($row) {
+        global $DB;
+        $categoryids = array_values(organization_category::get_organization_coursecatids($row->id));
+        $params['organizationid'] = $row->id;
+        if (!empty($categoryids)) {
+            list($insql, $params) = $DB->get_in_or_equal($categoryids, SQL_PARAMS_NAMED);
+            $categorynames = $DB->get_fieldset_select(
+                'course_categories',
+                'name',
+                "id $insql",
+                $params
+            );
+        } else {
+            $categorynames = [];
+        }
+
+        $links = [];
+        foreach ($categorynames as $index => $name) {
+            $id = $categoryids[$index];
+            $url = new \moodle_url('/course/index.php', ['categoryid' => $id]);
+            $links[] = html_writer::link($url, format_string($name));
+        }
+
+        return implode(', ', $links);
+    }
+
+    /**
+     * Render users column.
+     * @param object $row Row data.
+     * @return string action buttons for workflows
+     */
+    public function col_users($row) {
+        global $DB;
+        list($fields, $params) = \core_user\fields::get_sql_fullname();
+        $params['organizationid'] = $row->id;
+        $usernames = $DB->get_fieldset_sql("SELECT {$fields} FROM {block_coursefeedback_organization} o " .
+            "JOIN {block_coursefeedback_organization_user} ou ON o.id = ou.organizationid " .
+            "JOIN {user} u ON u.id = ou.userid " .
+            "WHERE o.id = :organizationid", $params);
+
+        // TODO Darstellung verbessern User klickbar machen
+        return join(", ", $usernames);
     }
 
     /**

@@ -26,6 +26,7 @@
 use block_coursefeedback\local\form\edit_organization_form;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\organization_user;
+use block_coursefeedback\local\persistent\organization_category;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -34,7 +35,9 @@ require_once($CFG->libdir . '/adminlib.php');
 // Override active url for admin tree / breadcrumbs.
 // navigation_node::override_active_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
 // admin_externalpage_setup('mod_bookit_surveyparts');
-require_admin();
+require_login();
+$context = context_system::instance();
+require_capability('block/coursefeedback:manageorganizations', $context);
 
 $id = optional_param('id', null, PARAM_INT);
 
@@ -52,7 +55,7 @@ if ($id) {
     $title = get_string('new_organization', 'block_coursefeedback');
 }
 
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
 $PAGE->navbar->add($title, new moodle_url($PAGE->url));
@@ -64,6 +67,7 @@ $mform = new edit_organization_form($PAGE->url);
 if ($organization) {
     $data = $organization->to_record();
     $data->userids = array_values(organization_user::get_organization_userids($organization->get('id')));
+    $data->coursecatids = array_values(organization_category::get_organization_coursecatids($organization->get('id')));
     $mform->set_data($data);
 }
 
@@ -78,6 +82,7 @@ if ($mform->is_cancelled()) {
         $organization->create();
     }
     organization_user::set_organization_userids($organization->get('id'), $data->userids);
+    organization_category::set_organization_coursecatids($organization->get('id'), $data->coursecatids);
     redirect($returnurl);
 } // Else display form.
 
