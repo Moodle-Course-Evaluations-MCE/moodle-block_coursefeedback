@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="MoodleCore">
+  <rule ref="moodle-extra">
+    <exclude name="moodle.NamingConventions.ValidVariableName.VariableNameUnderscore" />
+    <exclude name="PSR12.Classes.OpeningBraceSpace.Found" />
+  </rule>
+</ruleset>
