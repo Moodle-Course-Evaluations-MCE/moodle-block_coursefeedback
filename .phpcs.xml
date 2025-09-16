@@ -3,5 +3,6 @@
   <rule ref="moodle-extra">
     <exclude name="moodle.NamingConventions.ValidVariableName.VariableNameUnderscore" />
     <exclude name="PSR12.Classes.OpeningBraceSpace.Found" />
+    <exclude name="moodle.Commenting.TodoComment.MissingInfoInline" />
   </rule>
 </ruleset>
