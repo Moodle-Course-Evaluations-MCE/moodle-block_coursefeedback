@@ -24,22 +24,28 @@
     }
 
 }}
-<div class="coursefeedback-dnd-list">
-    {{# surveyitems }}
-        <div class="d-flex border rounded p-3 mt-3 coursefeedback-dnd-item align-items-center"
-             data-itemid="{{ itemid }}">
-            <div class="p-2 coursefeedback-dnd-handle" style="cursor: move">
-                {{# pix }} t/move {{/ pix }}
-            </div>
-            <div class="flex-grow-1 coursefeedback-custom-content">
-                {{{ text }}}
-            </div>
-            <div class="text-muted mr-3">
-                {{ type }}
-            </div>
-            {{# actionmenu }}
-                {{> core/action_menu }}
-            {{/actionmenu}}
+<div class="alert alert-info" id="block_coursefeedback-survey-root">
+    <div id="block_coursefeedback-survey-content">
+        <div class="mb-3">
+            Frage 1
         </div>
-    {{/ surveyitems }}
+
+        <div class="mb-3">
+            Frage 2
+        </div>
+    </div>
+    <div class="d-flex mb-3 justify-content-between">
+        <button class="btn btn-secondary" disabled>
+            Back
+        </button>
+        <button class="btn btn-primary">
+            Next
+        </button>
+    </div>
+    <div class="progress mb-3" role="progressbar">
+        <div class="progress-bar" style="width: calc(100% / 5)"></div>
+    </div>
+    <div class="d-flex justify-content-around">
+        <span>Seite 1 / 5</span>
+    </div>
 </div>
