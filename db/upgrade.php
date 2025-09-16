@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,8 +23,6 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Upgrade script for the Course Feedback block.
  *
@@ -33,16 +30,14 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool True on success.
  * @throws moodle_exception If the installed version is too old or confirmation is missing.
  */
-function xmldb_block_coursefeedback_upgrade(int $oldversion): bool
-{
+function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
     global $DB;
 
     // 1) Enforce minimum starting version.
-    if ($oldversion < 2025050900) {
-        throw new moodle_exception(
+    if ($oldversion < 2025_05_09_00) {
+        throw new coding_exception(
             'This upgrade requires plugin version 2025050900 or higher. '
-            . 'Please upgrade to version 2025050900 before proceeding.',
-            'block_coursefeedback'
+            . 'Please upgrade to version 2025050900 before proceeding.'
         );
     }
 
@@ -50,7 +45,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool
     if ($oldversion < 2025050901) {
         $confirmed = get_config('block_coursefeedback', 'confirmoverhaul');
         if (empty($confirmed)) {
-            throw new moodle_exception(
+            throw new coding_exception(
                 'You must confirm the major overhaul and possible data loss '
                 . 'in the Course Feedback block settings before continuing.'
             );
