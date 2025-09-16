@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\surveyitem\info;
 
+use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\lang_string;
 
@@ -45,11 +46,22 @@ class info extends surveyitemtype {
         return new lang_string('infotext', 'block_coursefeedback');
     }
 
+    /**
+     * The settings mform for the info element.
+     * @return string
+     */
     public function get_settings_mform() {
         return info_form::class;
     }
 
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
+    /**
+     * Loads the settings for the mform.
+     * @param int $surveyitemid
+     * @param object $formdata
+     * @param string $language
+     * @return object
+     */
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         // TODO: Implement save_settings_mform() method.
     }
 }

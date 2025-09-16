@@ -38,13 +38,29 @@ use block_coursefeedback\local\surveyitem\surveyitemtype;
  */
 abstract class ms_choice extends surveyitemtype {
 
+    /**
+     * Return the settings form for this surveyitemtype.
+     * @return string
+     */
     public function get_settings_mform() {
         return ms_choice_form::class;
     }
 
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
+    /**
+     * Saves the settings.
+     * @param int $surveyitemid
+     * @param object $formdata
+     * @param string $language
+     * @return void
+     */
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         global $DB;
-        $existingoptions = $DB->get_records('block_coursefeedback_surveyitemansweroption', ['surveyitemid' => $surveyitemid], 'sortindex ASC', 'sortindex, *');
+        $existingoptions = $DB->get_records(
+            'block_coursefeedback_surveyitemansweroption',
+            ['surveyitemid' => $surveyitemid],
+            'sortindex ASC',
+            'sortindex, *'
+        );
         $index = 0;
         for ($i = 1; $i <= $formdata->choices_amount; $i++) {
             if ($formdata->{'answer' . $i}) {
@@ -69,10 +85,21 @@ abstract class ms_choice extends surveyitemtype {
         }
     }
 
+    /**
+     * Loads the settings for the mform.
+     * @param surveyitem $surveyitem
+     * @param string $language
+     * @return object
+     */
     public function load_settings_mform(surveyitem $surveyitem, string $language): object {
         global $DB;
         $data = parent::load_settings_mform($surveyitem, $language);
-        $existingoptions = $DB->get_records('block_coursefeedback_surveyitemansweroption', ['surveyitemid' => $surveyitem->get('id')], 'sortindex ASC', 'sortindex, *');
+        $existingoptions = $DB->get_records(
+            'block_coursefeedback_surveyitemansweroption',
+            ['surveyitemid' => $surveyitem->get('id')],
+            'sortindex ASC',
+            'sortindex, *'
+        );
         $data->choices_amount = count($existingoptions);
         for ($i = 1; $i <= $data->choices_amount; $i++) {
             $data->{'answer' . $i} = language_manager::fetch_string($existingoptions[$i]->textid, $language);

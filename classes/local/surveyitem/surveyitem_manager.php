@@ -41,6 +41,10 @@ use core\exception\coding_exception;
  */
 class surveyitem_manager {
 
+    /**
+     * Returns an associative array of all surveyitemtypes.
+     * @return array
+     */
     public static function get_all_surveyitemtypes(): array {
         static $surveyitemtypes = [
             'singlechoice' => new singlechoice(),
@@ -52,11 +56,15 @@ class surveyitem_manager {
         return $surveyitemtypes;
     }
 
+    /**
+     * Returns one surveyitemtype for a identifier.
+     * @param string $type
+     * @return surveyitemtype
+     */
     public static function get_surveyitemtype(string $type): surveyitemtype {
         if (!isset(self::get_all_surveyitemtypes()[$type])) {
             throw new coding_exception('Survey element type ' .  $type . ' not found.');
         }
         return self::get_all_surveyitemtypes()[$type];
     }
-
 }

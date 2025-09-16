@@ -46,8 +46,11 @@ class pagebreak extends surveyitemtype {
         return new lang_string('pagebreak', 'block_coursefeedback');
     }
 
+    /**
+     * No settings.
+     * @return null
+     */
     public function get_settings_mform() {
         return null;
     }
-
 }

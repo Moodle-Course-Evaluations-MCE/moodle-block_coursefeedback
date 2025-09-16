@@ -32,9 +32,6 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
 
-// Override active url for admin tree / breadcrumbs.
-// navigation_node::override_active_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
-// admin_externalpage_setup('mod_bookit_surveyparts');
 require_admin();
 
 $id = optional_param('id', null, PARAM_INT);
@@ -135,4 +132,3 @@ echo $OUTPUT->header();
 $mform->display();
 
 echo $OUTPUT->footer();
-

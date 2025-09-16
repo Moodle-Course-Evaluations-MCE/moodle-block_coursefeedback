@@ -36,6 +36,9 @@ use block_coursefeedback\local\surveyitem\surveyitem_form;
  */
 class ms_choice_form extends surveyitem_form {
 
+    /**
+     * Definition for the form.
+     */
     protected function definition() {
         $mform =& $this->_form;
 
@@ -50,7 +53,10 @@ class ms_choice_form extends surveyitem_form {
 
         $this->add_action_buttons();
     }
-    
+
+    /**
+     * Definition after data for the form.
+     */
     public function definition_after_data() {
         $mform =& $this->_form;
 
@@ -79,6 +85,5 @@ class ms_choice_form extends surveyitem_form {
                 'add_blanks',
             );
         }
-
     }
 }

@@ -37,7 +37,7 @@ use core\persistent;
 class surveypart extends persistent {
 
     /** Table name for the persistent. */
-    const TABLE = 'block_coursefeedback_surveypart';
+    public const TABLE = 'block_coursefeedback_surveypart';
 
     /**
      * Return the definition of the properties of this model.

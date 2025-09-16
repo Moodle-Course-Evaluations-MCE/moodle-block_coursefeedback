@@ -81,8 +81,12 @@ class surveyparts_table extends \table_sql {
         $alt = get_string('edit');
         $icon = 't/edit';
         $url = new \moodle_url('/blocks/coursefeedback/surveypart_edit.php', ['id' => $row->id]);
-        $output .= $OUTPUT->action_icon($url, new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
-            null, ['title' => $alt]);
+        $output .= $OUTPUT->action_icon(
+            $url,
+            new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+            null,
+            ['title' => $alt]
+        );
 
         return $output;
     }

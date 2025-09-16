@@ -37,7 +37,7 @@ use core\persistent;
 class surveyitem extends persistent {
 
     /** Table name for the persistent. */
-    const TABLE = 'block_coursefeedback_surveyitem';
+    public const TABLE = 'block_coursefeedback_surveyitem';
 
     /**
      * Return the definition of the properties of this model.
@@ -62,6 +62,11 @@ class surveyitem extends persistent {
         ];
     }
 
+    /**
+     * Get surveyitem records for the surveypart.
+     * @param int $surveypartid
+     * @return array
+     */
     public static function get_surveyitem_records_for_surveypart(int $surveypartid) {
         global $DB;
         return $DB->get_records_sql(
@@ -73,6 +78,10 @@ class surveyitem extends persistent {
         );
     }
 
+    /**
+     * Delete this surveyitem and fix the sortorder.
+     * @return void
+     */
     public function delete_and_fix_sortorder() {
         global $DB;
         $sortindex = $this->get('sortindex');
@@ -81,7 +90,7 @@ class surveyitem extends persistent {
         $DB->execute("UPDATE {" . self::TABLE . "} SET sortindex = sortindex - 1 " .
             "WHERE sortindex > :thissortindex AND surveypartid = :surveypartid", [
                 'thissortindex' => $sortindex,
-                'surveypartid' => $surveypartid
+                'surveypartid' => $surveypartid,
         ]);
     }
 }

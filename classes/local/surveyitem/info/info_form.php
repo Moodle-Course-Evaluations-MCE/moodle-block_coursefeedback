@@ -36,6 +36,10 @@ use block_coursefeedback\local\surveyitem\surveyitem_form;
  */
 class info_form extends surveyitem_form {
 
+    /**
+     * The definition of the form.
+     * @return void
+     */
     protected function definition() {
         $mform =& $this->_form;
 

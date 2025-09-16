@@ -28,6 +28,11 @@ use core\hook\output\after_standard_main_region_html_generation;
  */
 class hook_callbacks {
 
+    /**
+     * Hook callback after_standard_main_region_html_generation.
+     * Calls JS to show survey to user.
+     * @param after_standard_main_region_html_generation $hook
+     */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
         global $PAGE;
         if ($PAGE->context->contextlevel === CONTEXT_COURSE) {
@@ -36,5 +41,4 @@ class hook_callbacks {
             $PAGE->requires->js_call_amd('block_coursefeedback/do-survey', 'doSurvey', []);
         }
     }
-
 }

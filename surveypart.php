@@ -41,7 +41,7 @@ $PAGE->set_heading(get_string('surveyparts', 'block_coursefeedback'));
 if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     require_sesskey();
     if ($action === 'delete') {
-        $surveyitem = surveyitem::get_record(['id' => required_param('deleteid',  PARAM_INT)], MUST_EXIST);
+        $surveyitem = surveyitem::get_record(['id' => required_param('deleteid', PARAM_INT)], MUST_EXIST);
         $surveyitem->delete_and_fix_sortorder();
         redirect($PAGE->url);
     }
@@ -59,7 +59,10 @@ $actionmenu->set_menu_left();
 foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
     $actionmenu->add_secondary_action(
         new \core\output\action_link(
-            new \moodle_url('/blocks/coursefeedback/surveyitem_edit.php', ['type' => $type, 'surveypartid' => $id, 'sesskey' => sesskey()]),
+            new \moodle_url(
+                '/blocks/coursefeedback/surveyitem_edit.php',
+                ['type' => $type, 'surveypartid' => $id, 'sesskey' => sesskey()]
+            ),
             $class->get_name(),
         )
     );
@@ -75,8 +78,10 @@ foreach ($records as &$record) {
     if (surveyitem_manager::get_surveyitemtype($record->surveyitemtype)->get_settings_mform()) {
         $editstr = get_string('edit');
         $actionmenu->add_secondary_action(new \core\output\action_link(
-            new \moodle_url('/blocks/coursefeedback/surveyitem_edit.php',
-                ['type' => $record->surveyitemtype, 'surveypartid' => $id, 'id' => $record->id]),
+            new \moodle_url(
+                '/blocks/coursefeedback/surveyitem_edit.php',
+                ['type' => $record->surveyitemtype, 'surveypartid' => $id, 'id' => $record->id]
+            ),
             $editstr,
             null,
             null,
@@ -86,7 +91,8 @@ foreach ($records as &$record) {
 
     $deletestr = get_string('delete');
     $actionmenu->add_secondary_action(new \core\output\action_link(
-        new \moodle_url($PAGE->url,
+        new \moodle_url(
+            $PAGE->url,
             ['action' => 'delete', 'deleteid' => $record->id, 'sesskey' => sesskey()],
         ),
         $deletestr,
@@ -102,10 +108,9 @@ foreach ($records as &$record) {
 }
 
 echo $OUTPUT->render_from_template('block_coursefeedback/surveyitems', [
-    'surveyitems' => $records
+    'surveyitems' => $records,
 ]);
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag-and-drop-reorder', 'init');
 
 echo $OUTPUT->footer();
-

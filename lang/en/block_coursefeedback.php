@@ -24,24 +24,24 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Course feedback';
-$string['organization'] = 'Organization';
-$string['tools'] = 'Tools';
-$string['name'] = 'Name';
-$string['text'] = 'Text';
-$string['infotext'] = 'Infotext';
+$string['add_more_blanks'] = 'Add more blanks';
 $string['add_surveyitem'] = 'Add survey element';
+$string['answer-i'] = 'Answer #{$a}';
+$string['edit_surveyitem'] = 'Edit surveyitem';
+$string['infotext'] = 'Infotext';
+$string['multiplechoice'] = 'Multiple choice';
+$string['name'] = 'Name';
+$string['new_surveyitem'] = 'New surveyitem';
+$string['new_surveypart'] = 'New surveypart';
+$string['organization'] = 'Organization';
+$string['pagebreak'] = 'Page break';
+$string['pluginname'] = 'Course feedback';
+$string['question'] = 'Question';
+$string['singlechoice'] = 'Single choice';
 $string['surveyitem'] = 'Survey item';
 $string['surveyitems'] = 'Survey items';
 $string['surveypart'] = 'Survey part';
 $string['surveyparts'] = 'Survey parts';
-$string['edit_surveyitem'] = 'Edit surveyitem';
-$string['new_surveyitem'] = 'New surveyitem';
-$string['new_surveypart'] = 'New surveypart';
 $string['surveys'] = 'Surveys';
-$string['pagebreak'] = 'Page break';
-$string['question'] = 'Question';
-$string['answer-i'] = 'Answer #{$a}';
-$string['multiplechoice'] = 'Multiple choice';
-$string['add_more_blanks'] = 'Add more blanks';
-$string['singlechoice'] = 'Single choice';
+$string['text'] = 'Text';
+$string['tools'] = 'Tools';

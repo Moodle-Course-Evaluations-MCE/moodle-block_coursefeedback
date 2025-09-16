@@ -42,14 +42,31 @@ abstract class surveyitemtype {
      * Return the name of the survey element type.
      * @return lang_string
      */
-    public abstract function get_name(): lang_string;
+    abstract public function get_name(): lang_string;
 
-    public abstract function get_settings_mform();
+    /**
+     * Return a class-string of a moodleform class for the settings of this element.
+     * @return string.
+     */
+    abstract public function get_settings_mform();
 
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language) {
+    /**
+     * Extend this method to save the settings edited in the mform.
+     *
+     * @param int $surveyitemid
+     * @param object $formdata
+     * @param string $language
+     */
+    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         throw new coding_exception('save_settings_mform must be implemented if surveyitemtype has settings.');
     }
 
+    /**
+     * Extend this method to load the settings for the mform.
+     * @param surveyitem $surveyitem
+     * @param string $language
+     * @return object
+     */
     public function load_settings_mform(surveyitem $surveyitem, string $language): object {
         global $DB;
 
@@ -65,6 +82,11 @@ abstract class surveyitemtype {
         return $record;
     }
 
+    /**
+     * Get all textids for the given surveyitemids in a nested array.
+     * @param array $surveyitemids
+     * @return array
+     */
     public function get_textids(array $surveyitemids): array {
         $textids = [];
         foreach ($surveyitemids as $surveyitemid) {
@@ -72,5 +94,4 @@ abstract class surveyitemtype {
         }
         return $textids;
     }
-
 }

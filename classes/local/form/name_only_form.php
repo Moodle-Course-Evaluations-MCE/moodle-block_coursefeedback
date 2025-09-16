@@ -50,5 +50,4 @@ class name_only_form extends \moodleform {
 
         $this->add_action_buttons();
     }
-
 }
