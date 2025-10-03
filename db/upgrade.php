@@ -33,6 +33,8 @@
 function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
     global $DB;
 
+    $dbman = $DB->get_manager();
+
     // 1) Enforce minimum starting version.
     if ($oldversion < 2025_05_09_00) {
         throw new coding_exception(

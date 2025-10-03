@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\table\surveyparts_table;
+
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
@@ -30,9 +32,11 @@ require_once($CFG->libdir . '/adminlib.php');
 require_admin();
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
-$PAGE->set_heading(get_string('surveyparts', 'block_coursefeedback'));
+$title = get_string('surveyparts', 'block_coursefeedback');
+$PAGE->set_heading($title);
+$PAGE->set_title($title);
 
-$table = new \block_coursefeedback\local\table\surveyparts_table();
+$table = new surveyparts_table();
 
 echo $OUTPUT->header();
 

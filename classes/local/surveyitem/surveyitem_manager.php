@@ -27,6 +27,7 @@ namespace block_coursefeedback\local\surveyitem;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
+use block_coursefeedback\local\surveyitem\scalequestion\scalequestion;
 use block_coursefeedback\local\surveyitem\singlechoice\singlechoice;
 use block_coursefeedback\local\surveyitem\text\text;
 use core\exception\coding_exception;
@@ -51,6 +52,7 @@ class surveyitem_manager {
             'multiplechoice' => new multiplechoice(),
             'text' => new text(),
             'pagebreak' => new pagebreak(),
+            'scalequestion' => new scalequestion(),
             'info' => new info(),
         ];
         return $surveyitemtypes;

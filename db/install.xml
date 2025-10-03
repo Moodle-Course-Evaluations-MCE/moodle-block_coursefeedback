@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/coursefeedback/db" VERSION="20250722" COMMENT="XMLDB file for Moodle blocks/coursefeedback"
+<XMLDB PATH="blocks/coursefeedback/db" VERSION="20251008" COMMENT="XMLDB file for Moodle blocks/coursefeedback"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -68,6 +68,26 @@
         <KEY NAME="fk_organizationid" TYPE="foreign" FIELDS="organizationid" REFTABLE="block_coursefeedback_organization" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="block_coursefeedback_scale" COMMENT="Saves scales for a specific surveyitempart">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="surveypartid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="optionamount" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="minoptiontextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="maxoptiontextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="hasnoansweroption" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="noansweroptiontextid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_surveypartid" TYPE="foreign" FIELDS="surveypartid" REFTABLE="block_coursefeedback_surveypart" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="block_coursefeedback_surveyitem" COMMENT="Saves surveyitems.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -89,6 +109,22 @@
         <INDEX NAME="ui_surveypartid_sortindex" UNIQUE="true" FIELDS="surveypartid, sortindex"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="block_coursefeedback_surveyitemscalequestion" COMMENT="Contains scalequestions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="surveyitemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="scaleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="forceshowscale" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_scaleid" TYPE="foreign" FIELDS="scaleid" REFTABLE="block_coursefeedback_scale" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="block_coursefeedback_surveyitemansweroption" COMMENT="Answer options for single and multiple choice.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -108,25 +144,6 @@
       <INDEXES>
         <INDEX NAME="ui_surveyitemid_sortindex" UNIQUE="false" FIELDS="surveyitemid, sortindex"/>
       </INDEXES>
-    </TABLE>
-    <TABLE NAME="block_coursefeedback_surveyitemscale" COMMENT="Contains additional information for surveyitems of type &quot;scale&quot;.">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="surveyitemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="optionamount" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="How many options the scale should consist out of."/>
-        <FIELD NAME="minpoletextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="maxpoletextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="fk_surveyitemid" TYPE="foreign" FIELDS="surveyitemid" REFTABLE="block_coursefeedback_surveyitem" REFFIELDS="id"/>
-        <KEY NAME="fk_minpoletextid" TYPE="foreign" FIELDS="minpoletextid" REFTABLE="block_coursefeedback_text" REFFIELDS="id"/>
-        <KEY NAME="fk_maxpoletextid" TYPE="foreign" FIELDS="maxpoletextid" REFTABLE="block_coursefeedback_text" REFFIELDS="id"/>
-      </KEYS>
     </TABLE>
     <TABLE NAME="block_coursefeedback_survey" COMMENT="Table containing surveys, consisting of survey parts (that get shown depending on the unicoursetype)">
       <FIELDS>

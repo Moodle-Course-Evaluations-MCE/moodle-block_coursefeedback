@@ -23,6 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
@@ -32,15 +33,18 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
+require_login();
 
 $id = optional_param('id', null, PARAM_INT);
 $surveypartid = required_param('surveypartid', PARAM_INT);
+$surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
+
+permission_manager::require_permission_for_editing_surveypart($surveypart);
+
 $type = required_param('type', PARAM_ALPHANUMEXT);
 $surveyitemtype = surveyitem_manager::get_surveyitemtype($type);
 
 $params = ['surveypartid' => $surveypartid, 'type' => $type];
-$surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 
 $surveyitem = null;
 if ($id) {
@@ -84,7 +88,9 @@ if (!$mformclass) {
 }
 
 /** @var surveyitem_form $mform */
-$mform = new $mformclass($PAGE->url);
+$mform = new $mformclass($PAGE->url, [
+    'surveypart' => $surveypart,
+]);
 $language = \block_coursefeedback\local\manager\language_manager::get_default_language_for_surveypart($surveypartid);
 
 if ($surveyitem) {

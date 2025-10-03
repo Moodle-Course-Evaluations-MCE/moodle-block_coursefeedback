@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\persistent\surveyitem;
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 
 require_once(__DIR__ . '/../../config.php');
@@ -32,11 +33,12 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_admin();
 $id = required_param('id', PARAM_INT);
-$surveypart = \block_coursefeedback\local\persistent\surveypart::get_record(['id' => $id], MUST_EXIST);
-
+$surveypart = surveypart::get_record(['id' => $id], MUST_EXIST);
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $id]));
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('surveyparts', 'block_coursefeedback'));
+$title = $surveypart->get('name');
+$PAGE->set_heading($title);
+$PAGE->set_title($title);
 
 if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     require_sesskey();
@@ -48,7 +50,6 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
 }
 
 echo $OUTPUT->header();
-
 $actionmenu = new \core\output\action_menu();
 $actionmenu->set_menu_trigger(
     get_string('add_surveyitem', 'block_coursefeedback'),
@@ -68,7 +69,18 @@ foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
     );
 }
 
+echo html_writer::start_div('d-flex');
 echo $OUTPUT->render($actionmenu);
+
+if ($DB->count_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')])) {
+    echo html_writer::link(
+        new moodle_url('/blocks/coursefeedback/scales.php', ['surveypartid' => $surveypart->get('id')]),
+        get_string('view_scales', 'block_coursefeedback'),
+        ['class' => 'btn btn-secondary ml-2']
+    );
+}
+
+echo html_writer::end_div();
 
 $records = array_values(surveyitem::get_surveyitem_records_for_surveypart($surveypart->get('id')));
 foreach ($records as &$record) {
