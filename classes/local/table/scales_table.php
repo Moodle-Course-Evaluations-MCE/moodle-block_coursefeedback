@@ -42,11 +42,17 @@ require_once($CFG->libdir . '/tablelib.php');
 class scales_table extends \table_sql {
 
     /**
+     * @var int The surveypartid.
+     */
+    private int $surveypartid;
+
+    /**
      * Constructor.
      */
-    public function __construct(private int $surveypartid) {
+    public function __construct(int $surveypartid) {
         global $PAGE;
         parent::__construct('block_coursefeedback-scales_table');
+        $this->surveypartid = $surveypartid;
         $this->define_baseurl($PAGE->url);
         // I need a subquery because it conflicts with the sqltables COUNT(1) query otherwise.
         $this->set_sql(

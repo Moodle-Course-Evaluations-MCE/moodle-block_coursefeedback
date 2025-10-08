@@ -39,6 +39,9 @@ class scale extends persistent {
     /** Table name for the persistent. */
     public const TABLE = 'block_coursefeedback_scale';
 
+    /**
+     * Lists the fields which have (translatable) text in them.
+     */
     public const TEXT_FIELDS = [
         'minoptiontext',
         'maxoptiontext',

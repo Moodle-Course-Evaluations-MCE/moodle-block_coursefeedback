@@ -75,6 +75,7 @@ class scalequestion_form extends surveyitem_form {
         $mform->disable_form_change_checker();
     }
 
+    #[\Override]
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 

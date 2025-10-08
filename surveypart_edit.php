@@ -52,7 +52,8 @@ if ($id) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-$PAGE->navbar->add($title, new moodle_url($PAGE->url));
+
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_edit_survey($surveypart);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveyparts.php');
 

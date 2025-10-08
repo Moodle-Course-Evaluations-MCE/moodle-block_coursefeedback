@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveypart;
 
@@ -41,6 +42,7 @@ $PAGE->set_url(new moodle_url('/blocks/coursefeedback/scales.php', ['surveyparti
 $title = get_string('view_scales', 'block_coursefeedback');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
+breadcrumbs_manager::setup_survey_scales($surveypart);
 
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 if ($action) {

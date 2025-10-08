@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\table\surveyparts_table;
 
 require_once(__DIR__ . '/../../config.php');
@@ -35,6 +36,8 @@ $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
 $title = get_string('surveyparts', 'block_coursefeedback');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
+
+breadcrumbs_manager::setup_surveys();
 
 $table = new surveyparts_table();
 

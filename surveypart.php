@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
@@ -39,6 +40,7 @@ $PAGE->set_context(context_system::instance());
 $title = $surveypart->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
+breadcrumbs_manager::setup_survey($surveypart);
 
 if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     require_sesskey();

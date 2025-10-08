@@ -23,6 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
+use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
@@ -66,7 +68,7 @@ if ($id) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-$PAGE->navbar->add($title, new moodle_url($PAGE->url));
+breadcrumbs_manager::setup_edit_surveyitem($surveypart, $surveyitem);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $surveypartid]);
 
@@ -91,7 +93,7 @@ if (!$mformclass) {
 $mform = new $mformclass($PAGE->url, [
     'surveypart' => $surveypart,
 ]);
-$language = \block_coursefeedback\local\manager\language_manager::get_default_language_for_surveypart($surveypartid);
+$language = language_manager::get_default_language_for_surveypart($surveypartid);
 
 if ($surveyitem) {
     $data = $surveyitemtype->load_settings_mform($surveyitem, $language);
@@ -112,18 +114,17 @@ if ($mform->is_cancelled()) {
     if (isset($data->text)) {
         $textid = $surveyitem->get('textid');
         if ($textid) {
-            $DB->execute('UPDATE {block_coursefeedback_texttranslation} SET text = :text WHERE textid = :textid', [
-                'text'  => $data->text['text'],
-                'format' => $data->text['format'],
-                'textid' => $textid,
-            ]);
+            language_manager::update_string(
+                $textid,
+                $data->text['text'],
+                language_manager::get_default_language_for_surveypart($surveypart->get('id'))
+            );
         } else {
-            $textid = $DB->get_field_sql('SELECT max(id) + 1 FROM {block_coursefeedback_texttranslation}') ?: 1;
-            $DB->insert_record('block_coursefeedback_texttranslation', [
-                'textid' => $textid,
-                'text' => $data->text['text'],
-                'format' => $data->text['format'],
-            ]);
+            $textid = language_manager::create_string(
+                $data->text['text'],
+                language_manager::get_default_language_for_surveypart($surveypart->get('id')),
+                $data->text['format']
+            );
             $surveyitem->set('textid', $textid);
         }
     }

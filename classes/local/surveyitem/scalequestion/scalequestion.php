@@ -39,21 +39,14 @@ use core\lang_string;
  */
 class scalequestion extends surveyitemtype {
 
-    /**
-     * Return the settings form for this surveyitemtype.
-     * @return string
-     */
+
+    #[\Override]
     public function get_settings_mform() {
         return scalequestion_form::class;
     }
 
-    /**
-     * Saves the settings.
-     * @param int $surveyitemid
-     * @param object $formdata
-     * @param string $language
-     * @return void
-     */
+
+    #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         global $DB;
         $formdata->forceshowscale ??= false;
@@ -69,18 +62,14 @@ class scalequestion extends surveyitemtype {
         }
     }
 
-    /**
-     * Loads the settings for the mform.
-     * @param surveyitem $surveyitem
-     * @param string $language
-     * @return object
-     */
+    #[\Override]
     public function load_settings_mform(surveyitem $surveyitem, string $language): object {
         global $DB;
         $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitem->get('id')]);
         return $record ?: new \stdClass();
     }
 
+    #[\Override]
     public function get_name(): lang_string {
         return new lang_string('scalequestion', 'block_coursefeedback');
     }

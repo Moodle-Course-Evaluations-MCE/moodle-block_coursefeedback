@@ -23,6 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\scale;
@@ -57,12 +58,19 @@ if ($id) {
 }
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/scale_edit.php', $params));
 $PAGE->set_context(context_system::instance());
-$title = get_string('edit_scale', 'block_coursefeedback');
+if ($scale) {
+    $title = get_string('edit_scale', 'block_coursefeedback');
+} else {
+    $title = get_string('new_scale', 'block_coursefeedback');
+}
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
+breadcrumbs_manager::setup_edit_survey_scale($surveypart, $id);
 
-$returnurl = new moodle_url('/blocks/coursefeedback/surveyitem_edit.php',
-    ['surveypartid' => $surveypartid, 'type' => 'scalequestion']);
+$returnurl = new moodle_url(
+    '/blocks/coursefeedback/surveyitem_edit.php',
+    ['surveypartid' => $surveypartid, 'type' => 'scalequestion']
+);
 
 $mform = new \block_coursefeedback\local\form\edit_scale_form(null, ['surveypart' => $surveypart, 'id' => $id]);
 $mform->set_data($scale);

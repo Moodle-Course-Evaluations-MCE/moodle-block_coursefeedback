@@ -36,8 +36,11 @@ use block_coursefeedback\local\persistent\surveypart;
  */
 class permission_manager {
 
+    /**
+     * Helper function which checks the permission for editing something in the surveypart.
+     * @param surveypart $surveypart
+     */
     public static function require_permission_for_editing_surveypart(surveypart $surveypart) {
         require_admin();
     }
-
 }
