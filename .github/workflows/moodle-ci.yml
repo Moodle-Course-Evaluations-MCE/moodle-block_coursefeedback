@@ -81,7 +81,7 @@ jobs:
 
       - name: Moodle Code Checker
         if: ${{ always() }}
-        run: moodle-plugin-ci codechecker
+        run: moodle-plugin-ci codechecker --standard '.phpcs.xml'
 
       - name: Moodle PHPDoc Checker
         if: ${{ always() }}
