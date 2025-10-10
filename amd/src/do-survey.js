@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as Ajax from 'core/ajax';
 import Templates from "core/templates";
 
 /**
@@ -25,13 +24,9 @@ import Templates from "core/templates";
  */
 
 /**
- * Initialize the survey doing.
- * @param {number} surveyPartId
+ * Shows the survey popup.
+ * @returns {Promise<void>}
  */
-export function init(surveyPartId) {
-
-}
-
 export async function doSurvey() {
     const userNotificationsEl = document.getElementById('user-notifications');
     const {html, js} = await Templates.renderForPromise('block_coursefeedback/show_survey', {});

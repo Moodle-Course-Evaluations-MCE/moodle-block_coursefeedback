@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scales table class.
+ * A table listing all scales of a surveypart.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
- * Scales table class.
+ * A table listing all scales of a surveypart.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -47,7 +47,8 @@ class scales_table extends \table_sql {
     private int $surveypartid;
 
     /**
-     * Constructor.
+     * Constructor for the scales_table.
+     * @param int $surveypartid
      */
     public function __construct(int $surveypartid) {
         global $PAGE;

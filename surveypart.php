@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\manager\breadcrumbs_manager;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
@@ -32,11 +33,13 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
 require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
+require_login();
 $id = required_param('id', PARAM_INT);
 $surveypart = surveypart::get_record(['id' => $id], MUST_EXIST);
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $id]));
 $PAGE->set_context(context_system::instance());
+permission_manager::require_permission_for_editing_surveypart($surveypart);
+
 $title = $surveypart->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
@@ -49,9 +52,18 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
         $surveyitem->delete_and_fix_sortorder();
         redirect($PAGE->url);
     }
+    if ($action === 'reorder') {
+        $orderingjson = required_param('ordering', PARAM_RAW);
+        $ordering = json_decode($orderingjson);
+        $surveypart->reorder_surveyitems($ordering);
+        redirect($PAGE->url);
+    }
 }
 
 echo $OUTPUT->header();
+
+$context = [];
+
 $actionmenu = new \core\output\action_menu();
 $actionmenu->set_menu_trigger(
     get_string('add_surveyitem', 'block_coursefeedback'),
@@ -71,21 +83,16 @@ foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
     );
 }
 
-echo html_writer::start_div('d-flex');
-echo $OUTPUT->render($actionmenu);
-
-if ($DB->count_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')])) {
-    echo html_writer::link(
-        new moodle_url('/blocks/coursefeedback/scales.php', ['surveypartid' => $surveypart->get('id')]),
-        get_string('view_scales', 'block_coursefeedback'),
-        ['class' => 'btn btn-secondary ml-2']
-    );
-}
-
-echo html_writer::end_div();
+$scale_url = new moodle_url('/blocks/coursefeedback/scales.php', ['surveypartid' => $surveypart->get('id')]);
+$context['id'] = $surveypart->get('id');
+$context['action_url'] = $PAGE->url->out_omit_querystring();
+$context['add_element_menu'] = $actionmenu->export_for_template($OUTPUT);
+$context['has_scales'] = (bool) $DB->count_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')]);
+$context['scale_url'] = $scale_url->out(false);
+$context['sesskey'] = sesskey();
 
 $records = array_values(surveyitem::get_surveyitem_records_for_surveypart($surveypart->get('id')));
-foreach ($records as &$record) {
+foreach ($records as $record) {
     $actionmenu = new \core\output\action_menu();
 
     // If item is editable.
@@ -119,11 +126,12 @@ foreach ($records as &$record) {
     $record->actionmenu = $actionmenu->export_for_template($OUTPUT);
     $record->type = $record->surveyitemtype;
     $record->text = format_text($record->text, $record->format ?? FORMAT_HTML);
+    $record->itemid = $record->id;
 }
 
-echo $OUTPUT->render_from_template('block_coursefeedback/surveyitems', [
-    'surveyitems' => $records,
-]);
+$context['surveyitems'] = $records;
+
+echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag-and-drop-reorder', 'init');
 

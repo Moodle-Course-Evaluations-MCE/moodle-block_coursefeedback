@@ -13,8 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as Ajax from 'core/ajax';
-
 /**
  * Does dragging and dropping.
  *
@@ -25,9 +23,26 @@ import * as Ajax from 'core/ajax';
 
 /**
  * Initialize drag and drop reorder.
- * @param {number} surveyPartId
  */
-export function init(surveyPartId) {
+export function init() {
+    const submitForm = document.getElementById('coursefeedback-save-ordering-form');
+    const list = document.querySelector('.coursefeedback-dnd-list');
+    const orderingInput = submitForm.querySelector('input[name="ordering"]');
+    submitForm.addEventListener('submit', () => {
+        let data = [];
+        for (let item of list.querySelectorAll('.coursefeedback-dnd-item')) {
+            data.push(parseInt(item.dataset.itemid));
+        }
+        orderingInput.value = JSON.stringify(data);
+    });
+
+    doDragAndDrop();
+}
+
+/**
+ * Does the dragging and the dropping.
+ */
+export function doDragAndDrop() {
     const list = document.querySelector('.coursefeedback-dnd-list');
 
     let movingElement = null;
@@ -127,9 +142,6 @@ export function init(surveyPartId) {
         move(event);
         movingElement.style.transform = null;
         movingElement.classList.remove('grabbed');
-        const index = [...list.querySelectorAll('.coursefeedback-dnd-item')].indexOf(movingElement);
-        const id = movingElement.dataset.id;
-        void updateSortindex(surveyPartId, id, index);
         movingElement = null;
 
         return true;
@@ -138,22 +150,4 @@ export function init(surveyPartId) {
     list.addEventListener('pointerdown', pointerDownListener);
     list.addEventListener('pointermove', pointerMoveListener);
     list.addEventListener('pointerup', pointerUpListener);
-}
-
-/**
- * Reorders a survey item.
- * @param {number} surveyPartId
- * @param {number} surveyItemId
- * @param {number} sortindex
- * @returns {Promise<void>}
- */
-async function updateSortindex(surveyPartId, surveyItemId, sortindex) {
-    await Ajax.call([{
-        methodname: 'block_coursefeedback_reorder_surveyitem',
-        args: {
-            surveypartid: surveyPartId,
-            id: surveyItemId,
-            sortindex,
-        }
-    }])[0];
 }

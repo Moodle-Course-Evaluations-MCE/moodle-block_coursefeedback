@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\persistent;
 
+use core\exception\coding_exception;
 use core\persistent;
 
 /**
@@ -49,5 +50,49 @@ class surveypart extends persistent {
                 'type' => PARAM_TEXT,
             ],
         ];
+    }
+
+    /**
+     * Returns the ids of all surveyitems belonging to this surveypart.
+     * @return int[]
+     */
+    public function get_surveyitemids(): array {
+        global $DB;
+
+        return $DB->get_fieldset(
+            'block_coursefeedback_surveyitem',
+            'id',
+            ['surveypartid' => $this->get('id')]
+        );
+    }
+
+    /**
+     * Reorders the surveyitems according to the given $itemids.
+     * @param int[] $itemids Array of (all) surveyitemids in the desired order.
+     * @return void
+     */
+    public function reorder_surveyitems(array $itemids) {
+        global $DB;
+        $existingids = array_flip($this->get_surveyitemids());
+
+        if (count($itemids) !== count($existingids)) {
+            throw new coding_exception('$itemids and $existingids have different lengths.');
+        }
+        foreach ($itemids as $itemid) {
+            if (!array_key_exists($itemid, $existingids)) {
+                throw new coding_exception('$itemids contains extraneous key ' . $itemid);
+            }
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        for ($i = 0; $i < count($itemids); $i++) {
+            $DB->update_record('block_coursefeedback_surveyitem', [
+                'id' => $itemids[$i],
+                'sortindex' => $i,
+            ], true);
+        }
+
+        $transaction->allow_commit();
     }
 }
