@@ -38,18 +38,12 @@ use core\lang_string;
  */
 class pagebreak extends surveyitemtype {
 
-    /**
-     * Return the name of the survey element type.
-     * @return lang_string
-     */
+    #[\Override]
     public function get_name(): lang_string {
         return new lang_string('pagebreak', 'block_coursefeedback');
     }
 
-    /**
-     * No settings.
-     * @return null
-     */
+    #[\Override]
     public function get_settings_mform() {
         return null;
     }

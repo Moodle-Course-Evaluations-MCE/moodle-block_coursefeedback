@@ -39,12 +39,10 @@ use core\lang_string;
  */
 class scalequestion extends surveyitemtype {
 
-
     #[\Override]
     public function get_settings_mform() {
         return scalequestion_form::class;
     }
-
 
     #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {

@@ -37,10 +37,7 @@ use core\lang_string;
  */
 class singlechoice extends ms_choice {
 
-    /**
-     * Return the name of the survey element type.
-     * @return lang_string
-     */
+    #[\Override]
     public function get_name(): lang_string {
         return new lang_string('singlechoice', 'block_coursefeedback');
     }

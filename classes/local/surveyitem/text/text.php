@@ -37,30 +37,18 @@ use core\lang_string;
  */
 class text extends surveyitemtype {
 
-    /**
-     * Return the name of the survey element type.
-     * @return lang_string
-     */
+    #[\Override]
     public function get_name(): lang_string {
         return new lang_string('text', 'block_coursefeedback');
     }
 
-    /**
-     * The settings mform for the text element.
-     * @return string
-     */
+    #[\Override]
     public function get_settings_mform() {
         return text_form::class;
     }
 
-    /**
-     * Loads the settings for the mform.
-     * @param int $surveyitemid
-     * @param object $formdata
-     * @param string $language
-     * @return object
-     */
+    #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
-        // TODO: Implement save_settings_mform() method.
+        // Nothing to do.
     }
 }

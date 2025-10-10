@@ -38,21 +38,12 @@ use block_coursefeedback\local\surveyitem\surveyitemtype;
  */
 abstract class ms_choice extends surveyitemtype {
 
-    /**
-     * Return the settings form for this surveyitemtype.
-     * @return string
-     */
+    #[\Override]
     public function get_settings_mform() {
         return ms_choice_form::class;
     }
 
-    /**
-     * Saves the settings.
-     * @param int $surveyitemid
-     * @param object $formdata
-     * @param string $language
-     * @return void
-     */
+    #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         global $DB;
         $existingoptions = $DB->get_records(
@@ -85,12 +76,7 @@ abstract class ms_choice extends surveyitemtype {
         }
     }
 
-    /**
-     * Loads the settings for the mform.
-     * @param surveyitem $surveyitem
-     * @param string $language
-     * @return object
-     */
+    #[\Override]
     public function load_settings_mform(surveyitem $surveyitem, string $language): object {
         global $DB;
         $data = parent::load_settings_mform($surveyitem, $language);
