@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\manager\breadcrumbs_manager;
+use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
@@ -134,5 +135,14 @@ $context['surveyitems'] = $records;
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag-and-drop-reorder', 'init');
+
+echo '<br><br>';
+echo $OUTPUT->render_from_template(
+    'block_coursefeedback/show_survey',
+    surveyitem_manager::get_templatedata_for_surveypart(
+        $surveypart,
+        language_manager::get_default_language_for_surveypart($surveypart->get('id'))
+    )
+);
 
 echo $OUTPUT->footer();

@@ -7,3 +7,24 @@
 .coursefeedback-custom-content :last-child {
     margin-bottom: 0;
 }
+
+.coursefeedback-scale-questiontext {
+    flex-basis: 25%;
+}
+
+@media (max-width: 767px) {
+    .block_coursefeedback-survey .block_coursefeedback-scaleoption {
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+
+    .coursefeedback-small-flex-basis-100 {
+        flex-basis: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .coursefeedback-no-show-scale {
+        /* margin-top: -20px; */
+    }
+}

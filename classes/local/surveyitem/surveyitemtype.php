@@ -83,15 +83,46 @@ abstract class surveyitemtype {
     }
 
     /**
-     * Get all textids for the given surveyitemids in a nested array.
-     * @param array $surveyitemids
-     * @return array
+     * Load more data for the surveyitems, works in tandem with @see self::create_question_structure .
+     * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
+     * @return array[] Two arrays. First one is an associative array with surveyitemids as key,
+     * and an array of textids to load as value.
+     * Second one is an associative array with surveyitemids as key, and arbitrary data as value,
+     * which will get passed onto create_question_structure,
+     * to avoid loading the same things twice.
      */
-    public function get_textids(array $surveyitemids): array {
+    public function load_questiondata_for(array $surveyitems): array {
         $textids = [];
-        foreach ($surveyitemids as $surveyitemid) {
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemid = $surveyitem->get('id');
             $textids[$surveyitemid] = [];
+            if ($textid = $surveyitem->get('textid')) {
+                $textids[$surveyitemid]['question'] = $textid;
+            }
         }
-        return $textids;
+        return [$textids, []];
+    }
+
+    /**
+     * Create template data from requested $texts and given $additionaldata by @see self::load_questiondata_for()
+     * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
+     * @param array $texts Array like the first returned value from @see self::load_questiondata_for(),
+     * but with textids replaced by loaded text.
+     * @param array $additionaldata Array from the second returned value from @see self::load_questiondata_for().
+     * @return array assocative array of surveyitemid => templatedata for surveyitemid.
+     */
+    public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
+        $template_data = [];
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemid = $surveyitem->get('id');
+            $template_data[$surveyitemid] = [
+                'type_' . $surveyitem->get('surveyitemtype') => true,
+                'surveyitemid' => $surveyitemid,
+            ];
+            if ($surveyitem->get('textid')) {
+                $template_data[$surveyitemid]['questiontext'] = $texts[$surveyitemid]['question'];
+            }
+        }
+        return $template_data;
     }
 }

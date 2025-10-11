@@ -199,6 +199,7 @@
         <FIELD NAME="textid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="lang" TYPE="char" LENGTH="8" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="text" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="format" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

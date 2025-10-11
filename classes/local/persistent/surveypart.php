@@ -67,6 +67,17 @@ class surveypart extends persistent {
     }
 
     /**
+     * Returns all surveyitemds belonging to this surveypart.
+     * @return surveyitem[]
+     */
+    public function get_surveyitems(): array {
+        return surveyitem::get_records(
+            ['surveypartid' => $this->get('id')],
+            'sortindex'
+        );
+    }
+
+    /**
      * Reorders the surveyitems according to the given $itemids.
      * @param int[] $itemids Array of (all) surveyitemids in the desired order.
      * @return void

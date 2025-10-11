@@ -1,0 +1,43 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/survey_questions
+
+    Render a collection of questions.
+
+    Example context (json):
+    {
+    }
+
+}}
+
+{{# questions }}
+    <div class="mb-5">
+        {{# type_text }}
+            {{> block_coursefeedback/surveyitems/text }}
+        {{/ type_text }}
+        {{# type_multiplechoice }}
+            {{> block_coursefeedback/surveyitems/multiplechoice }}
+        {{/ type_multiplechoice }}
+        {{# type_singlechoice }}
+            {{> block_coursefeedback/surveyitems/singlechoice }}
+        {{/ type_singlechoice }}
+        {{# type_scalequestion }}
+            {{> block_coursefeedback/surveyitems/scalequestion }}
+        {{/ type_scalequestion }}
+    </div>
+{{/ questions }}

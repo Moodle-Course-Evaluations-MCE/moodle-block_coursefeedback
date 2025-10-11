@@ -92,4 +92,45 @@ abstract class ms_choice extends surveyitemtype {
         }
         return $data;
     }
+
+    #[\Override]
+    public function load_questiondata_for(array $surveyitems) {
+        global $DB;
+        [$textids, $additionaldata] = parent::load_questiondata_for($surveyitems);
+        $surveyitemids = [];
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemids[] = $surveyitem->get('id');
+        }
+        [$insql, $params] = $DB->get_in_or_equal($surveyitemids, SQL_PARAMS_NAMED);
+        $records = $DB->get_records_select(
+            'block_coursefeedback_surveyitemansweroption',
+            "surveyitemid $insql",
+            $params,
+            'sortindex'
+        );
+        foreach ($records as $record) {
+            $textids[$record->surveyitemid]['option_' . $record->id] = $record->textid;
+            if (!isset($additionaldata[$record->surveyitemid])) {
+                $additionaldata[$record->surveyitemid] = [];
+            }
+            $additionaldata[$record->surveyitemid][] = $record;
+        }
+
+        return [$textids, $additionaldata];
+    }
+
+    #[\Override]
+    public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
+        $template_data = parent::create_question_structure($surveyitems, $texts, $additionaldata);
+        foreach ($surveyitems as $surveyitem) {
+            $template_data[$surveyitem->get('id')]['options'] = [];
+            foreach ($additionaldata[$surveyitem->get('id')] as $option) {
+                $template_data[$surveyitem->get('id')]['options'][] = [
+                    'optiontext' => $texts[$surveyitem->get('id')]['option_' . $option->id],
+                    'optionid' => $option->surveyitemid,
+                ];
+            }
+        }
+        return $template_data;
+    }
 }
