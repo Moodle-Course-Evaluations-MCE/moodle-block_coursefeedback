@@ -124,7 +124,7 @@ function block_coursefeedback_get_courserankings(
     $sql = "
         SELECT course.courseid, cenrol.enroleduserssum, c.shortname, c.category, cc.path,  
                answer.one, answer.two, answer.three, answer.four, answer.five, answer.six, 
-               ROUND((answer.answersum::decimal / (NULLIF((course.answerstotal - abstentions), 0))), 3) as avfeedbackresult,
+               ROUND((CAST(answer.answersum as decimal(10,2)) / (NULLIF((course.answerstotal - abstentions), 0))), 3) as avfeedbackresult,
                (course.answerstotal - abstentions) as adjanswerstotal, answer.abstentions
     -- Initially get all courses with answers for the specific question and count the answers --
           FROM ( SELECT course as courseid, count(*) as answerstotal 
