@@ -173,3 +173,15 @@ function block_coursefeedback_get_courserankings(
     }
     return $courserecords;
 }
+
+/**
+ * Formats an essay answer with proper newlines that are compatible with HTML display and
+ * CSV export.
+ *
+ * @param string The essay answer
+ * @return string The essay answer in which all newline characters have been replaced by HTML
+ * newline <br> for proper display and easy identification in CSV files.
+ *
+function block_coursefeedback_format_essay($answer):string {
+    return str_replace(["\r\n","\n","\r"],'',format_text($answer,FORMAT_PLAIN,['newline' => false])); 
+}

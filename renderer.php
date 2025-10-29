@@ -237,7 +237,8 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             $questiontext];
 
         foreach ($answers as $answer) {
-            $cell = new html_table_cell(format_string($answer->textanswer));
+	    $formatted_answer = block_coursefeedback_format_essay($answer->textanswer);
+            $cell = new html_table_cell($formatted_answer);
             $cell->colspan = 2;
             $table->data[] = new html_table_row([$cell]);
         }

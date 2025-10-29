@@ -140,8 +140,9 @@ class essay_exporter {
                 'coursefeedbackid' => $feedbackid,
                 'questionid' => $question->questionid], 'id', 'id,textanswer');
             foreach($answers as $answer) {
+		$formatted_answer = block_coursefeedback_format_essay($answer->textanswer);
                 $answersdata = [
-                    format_string($answer->textanswer),
+                   $formatted_answer 
                 ];
                 $this->csvexportwriter->add_data($answersdata);
             }
