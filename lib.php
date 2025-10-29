@@ -310,12 +310,17 @@ function block_coursefeedback_move_question(int $feedbackid, int $oldposition, i
 }
 
 /**
+ * Updates an existing question in a feedback.
+ *
+ * This function updates the text, type, and modification time of a question
+ * in the feedback if the specified language is supported.
+ *
  * @param int $feedbackid
  * @param int $questionid
- * @param string $question
- * @param string $language
- * @param bool $deleteanswers
- * @return bool Success of operation
+ * @param string $question The updated question text.
+ * @param string $language The language code of the question.
+ * @param int $questiontype The typeid of the question.
+ * @return bool True if the update was successful, false otherwise.
  */
 function block_coursefeedback_update_question($feedbackid, $questionid, $question, $language, $questiontype) {
     global $DB;

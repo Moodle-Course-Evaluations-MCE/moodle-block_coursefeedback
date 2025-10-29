@@ -17,7 +17,7 @@
 /**
  * Display answered feedbacks for a course.
  *
- * @package    block
+ * @package    block_coursefeedback
  * @copyright  2022 Felix Di Lenarda (@ innoCampus, TU Berlin)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

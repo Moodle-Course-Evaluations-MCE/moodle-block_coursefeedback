@@ -33,7 +33,7 @@ require_once(__DIR__ . "/locallib.php");
 /**
  * Export feedback data for a course.
  *
- * @package block
+ * @package block_coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -84,7 +84,7 @@ class feedback_exporter {
 /**
  * Export essay answers for a given course.
  *
- * @package block
+ * @package block_coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -157,7 +157,7 @@ class essay_exporter {
 /**
  * Export feedback data for an entire feedback.
  *
- * @package block
+ * @package block_coursefeedback
  * @copyright innoCampus, TU Berlin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
