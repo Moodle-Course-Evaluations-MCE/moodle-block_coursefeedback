@@ -74,7 +74,7 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_questiondata_for(array $surveyitems) {
+    public function load_questiondata_for(array $surveyitems): array {
         global $DB;
         [$textids, $additionaldata] = parent::load_questiondata_for($surveyitems);
         $surveyitemids = [];

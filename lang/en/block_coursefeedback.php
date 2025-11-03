@@ -32,6 +32,7 @@ $string['create_new_scale'] = '- Create new scale -';
 $string['edit_scale'] = 'Edit scale';
 $string['edit_surveyitem'] = 'Edit surveyitem';
 $string['edit_surveypart'] = 'Edit surveypart';
+$string['finish'] = 'Finish';
 $string['forceshowscale'] = 'Show scale even if it is immediately preceded by a question with the same scale.';
 $string['has_no_answer'] = 'Should the item have a "n/a" option?';
 $string['infotext'] = 'Infotext';

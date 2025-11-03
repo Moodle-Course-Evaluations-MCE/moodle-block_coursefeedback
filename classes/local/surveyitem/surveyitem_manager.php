@@ -134,6 +134,6 @@ class surveyitem_manager {
         }
         $template_data[] = $current_page;
 
-        return ['questions' => $template_data[0]];
+        return $template_data;
     }
 }

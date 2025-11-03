@@ -94,7 +94,7 @@ abstract class ms_choice extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_questiondata_for(array $surveyitems) {
+    public function load_questiondata_for(array $surveyitems): array {
         global $DB;
         [$textids, $additionaldata] = parent::load_questiondata_for($surveyitems);
         $surveyitemids = [];
@@ -127,7 +127,7 @@ abstract class ms_choice extends surveyitemtype {
             foreach ($additionaldata[$surveyitem->get('id')] as $option) {
                 $template_data[$surveyitem->get('id')]['options'][] = [
                     'optiontext' => $texts[$surveyitem->get('id')]['option_' . $option->id],
-                    'optionid' => $option->surveyitemid,
+                    'optionid' => $option->id,
                 ];
             }
         }

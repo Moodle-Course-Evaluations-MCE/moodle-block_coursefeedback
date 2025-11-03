@@ -83,7 +83,7 @@ abstract class surveyitemtype {
     }
 
     /**
-     * Load more data for the surveyitems, works in tandem with @see self::create_question_structure .
+     * Load more data for the surveyitems, works in tandem with {@see self::create_question_structure}.
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
      * @return array[] Two arrays. First one is an associative array with surveyitemids as key,
      * and an array of textids to load as value.
@@ -104,11 +104,11 @@ abstract class surveyitemtype {
     }
 
     /**
-     * Create template data from requested $texts and given $additionaldata by @see self::load_questiondata_for()
+     * Create template data from requested $texts and given $additionaldata by {@see self::load_questiondata_for}
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
-     * @param array $texts Array like the first returned value from @see self::load_questiondata_for(),
+     * @param array $texts Array like the first returned value from {@see self::load_questiondata_for},
      * but with textids replaced by loaded text.
-     * @param array $additionaldata Array from the second returned value from @see self::load_questiondata_for().
+     * @param array $additionaldata Array from the second returned value from {@see self::load_questiondata_for}.
      * @return array assocative array of surveyitemid => templatedata for surveyitemid.
      */
     public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
@@ -117,6 +117,7 @@ abstract class surveyitemtype {
             $surveyitemid = $surveyitem->get('id');
             $template_data[$surveyitemid] = [
                 'type_' . $surveyitem->get('surveyitemtype') => true,
+                'type' => $surveyitem->get('surveyitemtype'),
                 'surveyitemid' => $surveyitemid,
             ];
             if ($surveyitem->get('textid')) {

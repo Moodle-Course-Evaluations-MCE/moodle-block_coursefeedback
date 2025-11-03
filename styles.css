@@ -12,6 +12,11 @@
     flex-basis: 25%;
 }
 
+#block_coursefeedback-survey-root span.current-page::before {
+    display: inline;
+    content: var(--current-page-text);
+}
+
 @media (max-width: 767px) {
     .block_coursefeedback-survey .block_coursefeedback-scaleoption {
         max-width: 100%;

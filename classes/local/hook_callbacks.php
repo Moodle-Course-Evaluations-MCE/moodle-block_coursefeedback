@@ -16,6 +16,9 @@
 
 namespace block_coursefeedback\local;
 
+use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use core\hook\output\after_standard_main_region_html_generation;
 
 /**
@@ -37,8 +40,12 @@ class hook_callbacks {
         global $PAGE;
         if ($PAGE->context->contextlevel === CONTEXT_COURSE) {
             // TODO lookup whether to use a survey, and if so, which one.
-
-            $PAGE->requires->js_call_amd('block_coursefeedback/do-survey', 'doSurvey', []);
+            $surveypart = surveypart::get_record();
+            $templatedata = surveyitem_manager::get_templatedata_for_surveypart(
+                $surveypart,
+                language_manager::get_default_language_for_surveypart($surveypart->get('id'))
+            );
+            $PAGE->requires->js_call_amd('block_coursefeedback/do-survey', 'doSurvey', [$templatedata]);
         }
     }
 }

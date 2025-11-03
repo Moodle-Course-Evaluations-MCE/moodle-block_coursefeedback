@@ -46,6 +46,7 @@ class language_manager {
      * Fetch the given texts in a specific language.
      * @param array $requests Array of textids.
      * @param string $language Identifier for language.
+     * @param bool $format_text
      * @return array
      */
     public static function fetch_strings(array $requests, string $language, bool $format_text = true) {
