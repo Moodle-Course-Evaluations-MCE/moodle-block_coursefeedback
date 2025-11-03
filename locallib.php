@@ -229,7 +229,6 @@ function block_coursefeedback_get_courseessay(
         $courserecords = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
     } else {
         $courserecords = $DB->get_records_sql($sql, $params);
-
     }
     return $courserecords;
 }
