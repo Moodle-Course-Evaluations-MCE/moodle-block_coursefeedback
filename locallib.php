@@ -194,18 +194,10 @@ function block_coursefeedback_format_essay($answer):string {
  * @param int $answerlimit Minimum of answers given to the specific question (courses with less are not returned)
  * @param int $showperpage Limits the results to a specific number
  * @param int $page Defines together with $showperpage which part of the results is returned
- * @return array of objects of courses and the results for the given $questionid as follows:
- * [ obj1 { ["courseid"]=>int
- *          ["enroleduserssum"]=>int    - Users enrolled in the course
- *          ["shortname"]=>string       - Shortname of the Course
- *          ["category"]=>int           - Categoryid of the course
- *          ["path"]=>string            - Categorpath of the course
- *           --- Following the amount of votes for each option (1 to 6, where one is the best and 6 the worst) ----
- *          ["one"]=>int ["two"]=>int ["three"]=>int ["four"]=>int ["five"]=>int ["six"]=>int
- *          ["avfeedbackresult"]=>int   - The average of all counted votes (excludes abstentions)
- *          ["adjanswerstotal"]=>int    - The Amount of counted votes (excludes abstentions)
- *          ["abstentions"]=>int }      - The Amount of abstentions
- * ... ]
+ * @return array of objects that contain the results for essays for the given $questionid as follows:
+ * [ obj1 { ["answerid"]=>int           - id of the free-text answer
+ *          ["id"]=>int                 - Course id
+ *          ["textanswer"]=>string      - Answer writter by a participant
  * @throws \moodle_exception
  */
 function block_coursefeedback_get_courseessay(
@@ -214,9 +206,7 @@ function block_coursefeedback_get_courseessay(
     // Get courseids and the amount of answers in this course for the current question.
     $params = [
         'feedbackid' => $coursefeedbackid,
-        'feedbackid2' => $coursefeedbackid,
         'questionid' => $questionid,
-        'questionid2' => $questionid,
         'answerlimit' => $answerlimit,
         'specificcourseid' => $specificcourseid,
         'specificcourseid2' => $specificcourseid
