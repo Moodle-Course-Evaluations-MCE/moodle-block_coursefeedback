@@ -53,6 +53,7 @@ $string['except_not_active'] = 'Given feedback not active at the monent';
 $string['except_wrong_questiontype'] = 'Invalid answertype received';
 $string['form_area_questiontext'] = 'Edit text';
 $string['form_button_downloadfb'] = 'Download rankings for the selected feedback';
+$string['form_button_downloadfb_essays'] = 'Download essays for the selected feedback';
 $string['form_button_downloadqu'] = 'Download rankings for the selected question';
 $string['form_copyof'] = 'Copy';
 $string['form_feedback_infotext'] = 'Feedback info text';

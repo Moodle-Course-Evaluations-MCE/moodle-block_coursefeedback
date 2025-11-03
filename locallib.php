@@ -173,3 +173,52 @@ function block_coursefeedback_get_courserankings(
     }
     return $courserecords;
 }
+
+/**
+ * Returns the coursefeedback results essays for all courses and a given feedback and question
+ * Returns only the results for a specific course if $specificcourseid is provided
+ *
+ * @param int $questionid
+ * @param int $coursefeedbackid
+ * @param int $answerlimit Minimum of answers given to the specific question (courses with less are not returned)
+ * @param int $showperpage Limits the results to a specific number
+ * @param int $page Defines together with $showperpage which part of the results is returned
+ * @return array of objects of courses and the results for the given $questionid as follows:
+ * [ obj1 { ["courseid"]=>int
+ *          ["enroleduserssum"]=>int    - Users enrolled in the course
+ *          ["shortname"]=>string       - Shortname of the Course
+ *          ["category"]=>int           - Categoryid of the course
+ *          ["path"]=>string            - Categorpath of the course
+ *           --- Following the amount of votes for each option (1 to 6, where one is the best and 6 the worst) ----
+ *          ["one"]=>int ["two"]=>int ["three"]=>int ["four"]=>int ["five"]=>int ["six"]=>int
+ *          ["avfeedbackresult"]=>int   - The average of all counted votes (excludes abstentions)
+ *          ["adjanswerstotal"]=>int    - The Amount of counted votes (excludes abstentions)
+ *          ["abstentions"]=>int }      - The Amount of abstentions
+ * ... ]
+ * @throws \moodle_exception
+ */
+function block_coursefeedback_get_courseessay(
+        $questionid, $coursefeedbackid, $specificcourseid = 0,  $answerlimit = 0, $showperpage = 0, $page = 0) {
+    global $DB;
+    // Get courseids and the amount of answers in this course for the current question.
+    $params = [
+        'feedbackid' => $coursefeedbackid,
+        'feedbackid2' => $coursefeedbackid,
+        'questionid' => $questionid,
+        'questionid2' => $questionid,
+        'answerlimit' => $answerlimit,
+        'specificcourseid' => $specificcourseid,
+        'specificcourseid2' => $specificcourseid
+    ];
+    $sql = "
+	select a.id as answerid, c.id, a.textanswer from mdl_course c, mdl_block_coursefeedback_textans a where a.course=c.id and a.coursefeedbackid=:feedbackid and a.questionid=:questionid";
+    if ($showperpage != 0 && $page < 0) {
+        $limitnum = $showperpage * ($page -1);
+        $limitfrom = $showperpage;
+        $courserecords = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+    } else {
+        $courserecords = $DB->get_records_sql($sql, $params);
+
+    }
+    return $courserecords;
+}

@@ -58,9 +58,11 @@ if ($form->is_submitted() && $form->is_validated()) {
     } else {
         $rankingexport = new ranking_exporter();
         if (isset($data->downloadfb)) {
-            $rankingexport->create_file($data->feedback);
+            $rankingexport->create_file($data->feedback,0,1);
         } else if (isset($data->downloadqu)) {
             $rankingexport->create_file($data->feedback, $data->question);
+        } else if (isset($data->downloadfbessay)) {
+		$rankingexport->create_file($data->feedback,0,0); 
         }
     }
 }

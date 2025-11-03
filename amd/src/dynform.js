@@ -43,10 +43,12 @@ export const init = () => {
 
     let downQuest = jQuery('#id_downloadqu');
     let downFeed = jQuery('#id_downloadfb');
+    let downFeedEssay = jQuery('#id_downloadfbessay');
 
     // Initially hide the downloadbuttons ($mform->hideIF unfortunately doesn't work properly in this case)
     downQuest.hide();
     downFeed.hide();
+    downFeedEssay.hide();
 
     // Eventlistener for changing the selected feedback.
     jQuery('#id_feedback').change(function () {
@@ -55,8 +57,10 @@ export const init = () => {
         // Check if a valid fb is selected
         if (selectedFeedback == '0') {
             downFeed.hide();
+            downFeedEssay.hide();
         } else {
             downFeed.show();
+            downFeedEssay.show();
         }
 
         // Get fb questions

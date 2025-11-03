@@ -53,6 +53,7 @@ $string['except_not_active'] = 'Die Umfrage ist nicht aktiv im Moment';
 $string['except_wrong_questiontype'] = 'Ungültiger Antworttyp übermittelt';
 $string['form_area_questiontext'] = 'Text bearbeiten';
 $string['form_button_downloadfb'] = 'Download Rankings für das gewählte Feedback';
+$string['form_button_downloadfb_essays'] = 'Download Freitextantworten für das gewählte Feedback';
 $string['form_button_downloadqu'] = 'Download Rankings für die gewählte Frage';
 $string['form_copyof'] = 'Kopie';
 $string['form_feedback_infotext'] = 'Feedback Infotext';
