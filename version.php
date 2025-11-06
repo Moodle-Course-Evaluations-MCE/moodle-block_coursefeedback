@@ -21,13 +21,14 @@
  * @copyright  2023 innoCampus, Technische Universität Berlin
  * @author     2011-2023 onwards Jan Eberhardt
  * @author     2022 onwards Felix Di Lenarda
+ * @author     2025 Mickael Clavreul
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined("MOODLE_INTERNAL") || die();
 
-$plugin->version = 2025021900;
+$plugin->version = 2025110600;
 $plugin->requires = 2014051200;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = "3.3.4 (Build: 2025021900)";
+$plugin->release = "3.3.6 (Build: 2025110600)";
 $plugin->component = "block_coursefeedback";
