@@ -184,6 +184,7 @@ function block_coursefeedback_get_courserankings(
  */
 function block_coursefeedback_format_essay($answer):string {
     return str_replace(["\r\n","\n","\r"],'',format_text($answer,FORMAT_PLAIN,['newline' => false])); 
+}
 
 /**
  * Returns the coursefeedback results essays for all courses and a given feedback and question
