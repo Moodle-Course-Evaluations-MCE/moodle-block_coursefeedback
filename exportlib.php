@@ -140,7 +140,7 @@ class essay_exporter {
             // Get textanswers for question.
             $answers = $DB->get_records('block_coursefeedback_textans', ['course' => $courseid,
                 'coursefeedbackid' => $feedbackid,
-                'questionid' => $question->questionid], 'id', 'id,textanswer');
+                'questionid' => $question->questionid], 'id', 'idnumber', 'id,textanswer');
             foreach($answers as $answer) {
 		$formatted_answer = block_coursefeedback_format_essay($answer->textanswer);
                 $answersdata = [
@@ -204,8 +204,8 @@ class ranking_exporter {
 
             $this->csvexportwriter->add_data([
                 get_string('course'),
-		get_string('numusers','block_coursefeedback'),
                 get_string('name'),
+		get_string('numusers','block_coursefeedback'),
                 get_string('categories'),
                 get_string('categorypath', 'block_coursefeedback'),
                 get_string('notif_emoji_super', 'block_coursefeedback'),
@@ -237,7 +237,7 @@ class ranking_exporter {
         foreach ($questions as $question) {
             $questiondata = [
                 get_string("download_thead_questions", "block_coursefeedback")
-                    . " " . $question->questionid .": ",
+                    . " " . $question->questionid .": ",get_string('name'),
                 format_string($question->question)
             ];
             $this->csvexportwriter->add_data($questiondata);
@@ -245,7 +245,7 @@ class ranking_exporter {
             // Get textanswers for question.
             $courses = block_coursefeedback_get_courseessay($question->questionid, $feedbackid);
             foreach ($courses as $course) {
-		$answersdata = [$course->id,block_coursefeedback_format_essay($course->textanswer)];
+		$answersdata = [$course->id,$course->idnumber,block_coursefeedback_format_essay($course->textanswer)];
 		$this->csvexportwriter->add_data((array) $answersdata);
 	    }
         }

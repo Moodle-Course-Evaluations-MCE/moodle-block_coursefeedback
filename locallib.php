@@ -96,8 +96,8 @@ function install_and_remove_block() {
  * @param int $page Defines together with $showperpage which part of the results is returned
  * @return array of objects of courses and the results for the given $questionid as follows:
  * [ obj1 { ["courseid"]=>int
+ *          ["idnumber"]=>string        - Course idnumber
  *          ["enroleduserssum"]=>int    - Users enrolled in the course
- *          ["shortname"]=>string       - Shortname of the Course
  *          ["category"]=>int           - Categoryid of the course
  *          ["path"]=>string            - Categorpath of the course
  *           --- Following the amount of votes for each option (1 to 6, where one is the best and 6 the worst) ----
@@ -122,7 +122,7 @@ function block_coursefeedback_get_courserankings(
         'specificcourseid2' => $specificcourseid,
     ];
     $sql = "
-        SELECT course.courseid, cenrol.enroleduserssum, c.shortname, c.category, cc.path,  
+        SELECT course.courseid, c.idnumber, cenrol.enroleduserssum, c.category, cc.path,  
                answer.one, answer.two, answer.three, answer.four, answer.five, answer.six, 
                ROUND((CAST(answer.answersum as decimal(10,2)) / (NULLIF((course.answerstotal - abstentions), 0))), 3) as avfeedbackresult,
                (course.answerstotal - abstentions) as adjanswerstotal, answer.abstentions
@@ -198,6 +198,7 @@ function block_coursefeedback_format_essay($answer):string {
  * @return array of objects that contain the results for essays for the given $questionid as follows:
  * [ obj1 { ["answerid"]=>int           - id of the free-text answer
  *          ["id"]=>int                 - Course id
+ *          ["idnumber"]=>string        - Course idnumber
  *          ["textanswer"]=>string      - Answer writter by a participant
  * @throws \moodle_exception
  */
@@ -213,7 +214,7 @@ function block_coursefeedback_get_courseessay(
         'specificcourseid2' => $specificcourseid
     ];
     $sql = "
-	select a.id as answerid, c.id, a.textanswer from mdl_course c, mdl_block_coursefeedback_textans a where a.course=c.id and a.coursefeedbackid=:feedbackid and a.questionid=:questionid";
+	select a.id as answerid, c.id, c.idnumber, a.textanswer from mdl_course c, mdl_block_coursefeedback_textans a where a.course=c.id and a.coursefeedbackid=:feedbackid and a.questionid=:questionid";
     if ($showperpage != 0 && $page < 0) {
         $limitnum = $showperpage * ($page -1);
         $limitfrom = $showperpage;
