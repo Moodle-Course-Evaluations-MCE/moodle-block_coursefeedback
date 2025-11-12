@@ -67,6 +67,8 @@ function install_and_remove_block() {
             foreach ($instances as $instance) {
                 blocks_delete_instance($instance);
             }
+            // Clear default_hidden configuration
+	    set_config('default_hidden',0,'block_coursefeedback');
         }
     } else {
         // The block doesn't exist.
@@ -76,12 +78,71 @@ function install_and_remove_block() {
             $page = new moodle_page();
             $page->set_context($systemcontext);
             $page->blocks->add_region(BLOCK_POS_RIGHT);
-            $page->blocks->add_block('coursefeedback',
+            $block = $page->blocks->add_block('coursefeedback',
                 BLOCK_POS_RIGHT, 0, true, 'course-view-*');
 
             // Disable feedbacks for now.
             set_config("active_feedback", 0, "block_coursefeedback");
         }
+    }
+}
+
+/**
+* Applies configuration to hide or unhide all coursefeedbackblocks in courses when
+* sticky block is active.
+*/
+function hide_and_show_block() {
+    global $DB;
+    // Check the current setting.
+    $config = get_config("block_coursefeedback");
+    $globalenablesetting = $config->global_enable;
+    // Only applies visibility if the block is sticky
+    if ($globalenablesetting == 1) {
+        // Get block instance id
+        $blockinstanceid = $DB->get_field_select('block_instances', 'id', 'blockname=:blockname',['blockname' => 'coursefeedback'], MUST_EXIST);
+        $defaulthidden = $config->default_hidden;
+        if($defaulthidden == 1){
+            // Default visibility for feedback instances in courses is set to "hidden"
+            // to let teachers decide when to enable feedback for student
+
+            // First retrieve all course contexts
+            $coursecontextids = $DB->get_records_select('context', 'contextlevel=:contextlevel',['contextlevel'=> 50],'id,instanceid');
+            // Create or update block_positions with hidden value by default
+            foreach($coursecontextids as $ccid){
+                // We need the course format to properly record the block_position for the course
+                $courseformat = $DB->get_field_select('course', 'format', 'id=:id', ['id' => $ccid->instanceid]);
+                // If positions already exist, update visibility
+                $positions = $DB->get_records('block_positions', ['blockinstanceid' => $blockinstanceid, 'contextid' => $ccid->id]);
+                if(!empty($positions)){
+                    foreach($positions as $position){
+                        $DB->set_field('block_positions', 'visible', 0, ['id' => $position->id]);
+                    }
+                } else {
+                    $DB->insert_record('block_positions', [
+                        'blockinstanceid' => $blockinstanceid,
+                        'contextid' => $ccid->id,
+                        'pagetype' => 'course-view-'.$courseformat,
+                        'subpagepattern' => null,
+                        'visible' => 0,
+                        'region' => 'side-post',
+                        'weight' => 0
+                    ]);
+                }
+            }
+        } else {
+            // Default visibility for feedback instances in courses is set to "show" as global_enable settings initially does.
+            
+            // Get block instance id
+            $blockinstanceid = $DB->get_field_select('block_instances', 'id', 'blockname=:blockname',['blockname' => 'coursefeedback'], MUST_EXIST);
+            $positions = $DB->get_records('block_positions', ['blockinstanceid' => $blockinstanceid]);
+            foreach($positions as $position){
+                console_log($position);
+                $DB->set_field('block_positions', 'visible', 1, ['id' => $position->id]);
+            }
+        }
+    } else {
+        // Reset the default hidden configuration
+        set_config("default_hidden", 0, "block_coursefeedback"); 
     }
 }
 

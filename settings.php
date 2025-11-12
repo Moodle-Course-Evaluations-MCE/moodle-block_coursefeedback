@@ -62,6 +62,20 @@ $globalenablesetting = new admin_setting_configcheckbox("block_coursefeedback/gl
 $globalenablesetting->set_updatedcallback('install_and_remove_block');
 $settings->add($globalenablesetting);
 
+/* Sticky block default visibility in all courses */
+$settings->add(new admin_setting_heading('block_coursefeedback/headingdefault_hidden',
+    get_string("adminpage_html_headingdefault_hiddena", "block_coursefeedback"),
+    get_string("adminpage_html_headingdefault_hiddenb", "block_coursefeedback")));
+$settings->hide_if('block_coursefeedback/headingdefault_hidden', 'block_coursefeedback/global_enable');
+
+$visibilitysetting = new admin_setting_configcheckbox('block_coursefeedback/default_hidden',
+  get_string("adminpage_html_default_hiddena", "block_coursefeedback"),
+  get_string("adminpage_html_default_hiddenb", "block_coursefeedback"),
+  false);
+$visibilitysetting->set_updatedcallback('hide_and_show_block');
+$settings->add($visibilitysetting);
+$settings->hide_if('block_coursefeedback/default_hidden', 'block_coursefeedback/global_enable');
+
 $settings->add(new admin_setting_heading('block_coursefeedback/headinginfobanner',
     get_string("adminpage_html_headinginfobannera", "block_coursefeedback"),
     get_string("adminpage_html_headinginfobannerb", "block_coursefeedback")));

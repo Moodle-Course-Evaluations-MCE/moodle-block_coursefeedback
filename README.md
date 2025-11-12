@@ -21,3 +21,7 @@ Therefore, individual "Course Context" blocks are no longer allowed as they coul
 Also for this reason only managers are allowed to add or delete the block. There can only be exactly one block in each course.
 
 To make things as easy as possible, the necessary system block can now be added to, and removed from, all courses through the adminsettings of the block.
+
+Upgrade from version 3.3.5
+==============
+Since version 3.3.7, additional setting help you hide all coursefeedback blocks in courses to help better manage how and when feedback is available for students. Teachers, if the setting is enable, can make it visible at any time, like any other moodle block.
