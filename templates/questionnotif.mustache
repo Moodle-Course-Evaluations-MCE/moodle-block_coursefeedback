@@ -46,9 +46,29 @@
                 </div>
             </div>
         </div>
+	
         <div class="block_coursefeedback">
             <div class="d-none container-fluid pl-sm-1 pl-0 cfb-schoolgrades-container" >
                 <div class="row flex-nowrap" >
+                {{#numeric}}
+                {{#numbers}}
+                    <div class="col btn btn-secondary btn-sm mx-xl-2  mx-1 rounded" >
+                        <span style="font-size: 1.5rem;">{{.}}</span><br>
+                    </div>
+                {{/numbers}}
+                {{/numeric}}
+                
+                {{#userdefined}}
+                {{#answers}}
+                    <div class="col btn btn-secondary btn-sm mx-xl-2  mx-1 rounded" >
+			<span class="text-nowrap">
+                            <b>{{.}}</b>
+                        </span>
+                    </div>
+                {{/answers}}
+                {{/userdefined}}
+                
+                {{#classic}}
                     <div class="col btn btn-secondary btn-sm mx-xl-2  mx-1 rounded cfb-fbemoji" >
                         <span style="font-size: 1.5rem;">&#128515;</span><br>
                         <span class="onlydesktop text-nowrap">
@@ -85,6 +105,7 @@
                             {{#str}} notif_emoji_superbad, block_coursefeedback {{/str}}
                         </span>
                     </div>
+                {{/classic}}
                 </div>
                 <div class="mt-2">
                     {{#str}} notif_pleaseclick, block_coursefeedback {{/str}}

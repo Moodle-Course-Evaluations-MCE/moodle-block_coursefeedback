@@ -92,6 +92,37 @@ $settings->add(new admin_setting_configcheckbox("block_coursefeedback/enable_inf
     false));
 $settings->hide_if('block_coursefeedback/enable_infobanner', 'block_coursefeedback/global_enable');
 
+/* New scaling system */
+$PAGE->requires->js_call_amd('block_coursefeedback/settings', 'init');
+
+
+$settings->add(new admin_setting_heading('block_coursefeedback/headingscale',
+    get_string("adminpage_html_headingscale", "block_coursefeedback"), ''));
+$scales = [
+    get_string("adminpage_html_headingscale1", "block_coursefeedback") => get_string("adminpage_html_headingscale1", "block_coursefeedback"),
+    get_string("adminpage_html_headingscale2", "block_coursefeedback") => get_string("adminpage_html_headingscale2", "block_coursefeedback"),
+    get_string("adminpage_html_headingscale3", "block_coursefeedback") => get_string("adminpage_html_headingscale3", "block_coursefeedback"),
+];
+
+$settings->add(new admin_setting_configselect("block_coursefeedback/scale",
+    get_string("adminpage_html_defaultscalea", "block_coursefeedback"),
+    get_string("adminpage_html_defaultscaleb", "block_coursefeedback"),
+    'Classic', $scales, PARAM_TEXT));
+    
+$scale = get_config('block_coursefeedback', 'scale');
+
+$settings->add(new admin_setting_configtext('block_coursefeedback/scalenumber',
+    get_string("adminpage_html_scalenumbera", "block_coursefeedback"), 
+    get_string("adminpage_html_scalenumberb", "block_coursefeedback"), 6, PARAM_INT));
+
+$settings->add(new admin_setting_configtextarea('block_coursefeedback/scaletexts',
+    get_string("adminpage_html_scaletextsa", "block_coursefeedback"),
+    get_string("adminpage_html_scaletextsb", "block_coursefeedback"),
+    'very good,good,satisfactory,sufficient,insufficient,deficient'));
+    if(get_config('block_coursefeedback','scaletexts') === ''){
+        set_config('scaletexts','very good,good,satisfactory,sufficient,insufficient,deficient','block_coursefeedback');
+    }
+
 /* Create/Edit survey link */
 $url = new moodle_url("/blocks/coursefeedback/admin.php", ["mode" => "feedback", "action" => "view"]);
 $settings->add(new admin_setting_heading("othersettings",

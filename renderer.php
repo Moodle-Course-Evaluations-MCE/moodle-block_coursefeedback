@@ -85,6 +85,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             'feedback' => $feedback->id,
             'course' => $this->page->course->id,
         ];
+
         $data = [
             'fbheading' => format_text($feedback->heading, FORMAT_HTML),
             'qid' => $openquestions['currentopenqstn']->questionid,
@@ -92,8 +93,25 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
             'qtext' => $openquestions['currentopenqstn']->question,
             'link' => new moodle_url("/blocks/coursefeedback/feedbackinfo.php", $urlparams),
             'questiontype' => intval($openquestions['currentopenqstn']->questiontype),
-
         ];
+
+        // Implementation of new scales
+        $scaletype = get_config('block_coursefeedback','scale');
+        if($scaletype == 1){ // Numeric scale
+	        $numvalue = get_config('block_coursefeedback','scalenumber'); // Gets the number of values from config
+	        if($numvalue > 0){
+		        $numbers = range(1,$numvalue);
+	        } else {
+		        $numbers = [];
+	        }
+	        $data['numeric'] = true;
+	        $data['numbers'] = $numbers;
+        } else if($scaletype == 2){ // User defined values
+	        $data['userdefined'] = true;
+	        $data['answers'] = explode(',',get_config('block_coursefeedback','scaletexts')); // Gets the values from config
+        } else {
+	        $data['classic'] = true; // Original rendering
+        }
 
         $questiontype = intval($openquestions['currentopenqstn']->questiontype);
         return parent::render_from_template('block_coursefeedback/questionnotif', $data);
