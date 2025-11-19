@@ -89,71 +89,89 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         upgrade_block_savepoint(true, 2025050901, 'coursefeedback');
     }
-    if ($oldversion < 2025070802) {
-        // 1) block_coursefeedback_organization
+    if ($oldversion < 2025112400) {
+        // Define table block_coursefeedback_course_eventtype to be created.
+        $table = new xmldb_table('block_coursefeedback_course_eventtype');
+
+        // Adding fields to table block_coursefeedback_course_eventtype.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventtypeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('teacherid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_course_eventtype.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+        $table->add_key('fk_eventtypeid', XMLDB_KEY_FOREIGN, ['eventtypeid'], 'block_coursefeedback_eventtype', ['id']);
+        $table->add_key('fk_teacherid', XMLDB_KEY_FOREIGN, ['teacherid'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_course_eventtype.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_eventtype to be created.
+        $table = new xmldb_table('block_coursefeedback_eventtype');
+
+        // Adding fields to table block_coursefeedback_eventtype.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_eventtype.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_eventtype.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_organization to be created.
         $table = new xmldb_table('block_coursefeedback_organization');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
-        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
 
-        // 2) block_coursefeedback_organization_coursecat
-        $table = new xmldb_table('block_coursefeedback_organization_coursecat');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('coursecatid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('coursecatid_fk', XMLDB_KEY_FOREIGN, ['coursecatid'], 'course_categories', ['id']);
-        $table->add_key('organizationid_fk', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
-        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // 3) block_coursefeedback_organization_user
-        $table = new xmldb_table('block_coursefeedback_organization_user');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('userid_fk', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
-        $table->add_key('organizationid_fk', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
-        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        upgrade_block_savepoint(true, 2025070802, 'coursefeedback');
-    }
-
-    if ($oldversion < 2025090100) {
-        // Define table block_coursefeedback_survey to be created.
-        $table = new xmldb_table('block_coursefeedback_survey');
-
-        // Adding fields to table block_coursefeedback_survey.
+        // Adding fields to table block_coursefeedback_organization.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
-        // Adding keys to table block_coursefeedback_survey.
+        // Adding keys to table block_coursefeedback_organization.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
 
-        // Conditionally launch create table for block_coursefeedback_survey.
+        // Conditionally launch create table for block_coursefeedback_organization.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_organization_coursecat to be created.
+        $table = new xmldb_table('block_coursefeedback_organization_coursecat');
+
+        // Adding fields to table block_coursefeedback_organization_coursecat.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('coursecatid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_organization_coursecat.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fuk_coursecatid', XMLDB_KEY_FOREIGN_UNIQUE, ['coursecatid'], 'course_category', ['id']);
+        $table->add_key('fk_organizationid', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_organization_coursecat.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
@@ -181,8 +199,442 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
             $dbman->create_table($table);
         }
 
-        // Block_coursefeedback savepoint reached.
-        upgrade_block_savepoint(true, 2025090100, 'coursefeedback');
+        // Define table block_coursefeedback_organization_user to be created.
+        $table = new xmldb_table('block_coursefeedback_organization_user');
+
+        // Adding fields to table block_coursefeedback_organization_user.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_organization_user.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('fk_organizationid', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_organization_user.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_scale to be created.
+        $table = new xmldb_table('block_coursefeedback_scale');
+
+        // Adding fields to table block_coursefeedback_scale.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('optionamount', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('minoptiontextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('maxoptiontextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('hasnoansweroption', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('noansweroptiontextid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_scale.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_surveypartid', XMLDB_KEY_FOREIGN, ['surveypartid'], 'block_coursefeedback_surveypart', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_scale.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_survey to be created.
+        $table = new xmldb_table('block_coursefeedback_survey');
+
+        // Adding fields to table block_coursefeedback_survey.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_survey.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fk_organizationid', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_survey.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyitem to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitem');
+
+        // Adding fields to table block_coursefeedback_surveyitem.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveyitemtype', XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sortindex', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('textid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveyitem.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_textid', XMLDB_KEY_FOREIGN, ['textid'], 'block_coursefeedback_text', ['id']);
+        $table->add_key('fk_surveypartid', XMLDB_KEY_FOREIGN, ['surveypartid'], 'block_coursefeedback_surveypart', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyitem.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyitemscalequestion to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitemscalequestion');
+
+        // Adding fields to table block_coursefeedback_surveyitemscalequestion.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveyitemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('scaleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('forceshowscale', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveyitemscalequestion.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_scaleid', XMLDB_KEY_FOREIGN, ['scaleid'], 'block_coursefeedback_scale', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyitemscalequestion.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyitemansweroption to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitemansweroption');
+
+        // Adding fields to table block_coursefeedback_surveyitemansweroption.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveyitemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('textid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sortindex', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveyitemansweroption.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_surveyitemid', XMLDB_KEY_FOREIGN, ['surveyitemid'], 'block_coursefeedback_surveyitem', ['id']);
+        $table->add_key('fk_textid', XMLDB_KEY_FOREIGN, ['textid'], 'block_coursefeedback_text', ['id']);
+
+        // Adding indexes to table block_coursefeedback_surveyitemansweroption.
+        $table->add_index('ui_surveyitemid_sortindex', XMLDB_INDEX_NOTUNIQUE, ['surveyitemid', 'sortindex']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyitemansweroption.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypart to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypart');
+
+        // Adding fields to table block_coursefeedback_surveypart.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveypart.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveypart.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypart_language to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypart_language');
+
+        // Adding fields to table block_coursefeedback_surveypart_language.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('language', XMLDB_TYPE_CHAR, '8', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('isprimary', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveypart_language.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveypart_language.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_text to be created.
+        $table = new xmldb_table('block_coursefeedback_text');
+
+        // Adding fields to table block_coursefeedback_text.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+
+        // Adding keys to table block_coursefeedback_text.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_text.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_texttranslation to be created.
+        $table = new xmldb_table('block_coursefeedback_texttranslation');
+
+        // Adding fields to table block_coursefeedback_texttranslation.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('textid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lang', XMLDB_TYPE_CHAR, '8', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('text', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('format', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_texttranslation.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('fk_textid', XMLDB_KEY_FOREIGN, ['textid'], 'block_coursefeedback_text', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_texttranslation.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyexecution to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution');
+
+        // Adding fields to table block_coursefeedback_surveyexecution.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('starttime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('endtime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveyexecution.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('frk_courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyexecution.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypartexecution to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecution');
+
+        // Adding fields to table block_coursefeedback_surveypartexecution.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveyexecutionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveypartexecution.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key(
+            'frk_surveyexecutionid',
+            XMLDB_KEY_FOREIGN,
+            ['surveyexecutionid'],
+            'block_coursefeedback_surveyexecution',
+            ['id']
+        );
+        $table->add_key(
+            'frk_surveypartid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartid'],
+            'block_coursefeedback_surveypart',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_surveypartexecution.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyexecution_user to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+
+        // Adding fields to table block_coursefeedback_surveyexecution_user.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveyexecutionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveyexecution_user.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyexecution_user.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypartexecutionoption to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecutionoption');
+
+        // Adding fields to table block_coursefeedback_surveypartexecutionoption.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartexecutionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('externalid', XMLDB_TYPE_CHAR, '32', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveypartexecutionoption.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key(
+            'frk_surveypartexecutionid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartexecutionid'],
+            'block_coursefeedback_surveypartexecution',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_surveypartexecutionoption.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypartexecutionoption_user to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecutionoption_user');
+
+        // Adding fields to table block_coursefeedback_surveypartexecutionoption_user.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartexecutionoptionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_surveypartexecutionoption_user.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key(
+            'frk_surveypartexecutionoptionid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartexecutionoptionid'],
+            'block_coursefeedback_surveypartexecutionoption',
+            ['id']
+        );
+        $table->add_key('frk_userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveypartexecutionoption_user.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveypartexecutionoptionresp to be created.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecutionoptionresp');
+
+        // Adding fields to table block_coursefeedback_surveypartexecutionoptionresp.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartexecutionoptionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_coursefeedback_surveypartexecutionoptionresp.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key(
+            'frk_surveypartexecutionoptionid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartexecutionoptionid'],
+            'block_coursefeedback_surveypartexecutionoption',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_surveypartexecutionoptionresp.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyitemtextresponse to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitemtextresponse');
+
+        // Adding fields to table block_coursefeedback_surveyitemtextresponse.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartexecutionoptionresponseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveyitemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('value', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_coursefeedback_surveyitemtextresponse.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key(
+            'frk_surveypartexecutionoptionresponseid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartexecutionoptionresponseid'],
+            'block_coursefeedback_surveypartexecutionoptionresp',
+            ['id']
+        );
+        $table->add_key(
+            'frk_surveyitemid',
+            XMLDB_KEY_FOREIGN,
+            ['surveyitemid'],
+            'block_coursefeedback_surveyitem',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_surveyitemtextresponse.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table block_coursefeedback_surveyitemintresponse to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitemintresponse');
+
+        // Adding fields to table block_coursefeedback_surveyitemintresponse.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveypartexecutionoptionresponseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveyitemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('value', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_coursefeedback_surveyitemintresponse.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key(
+            'frk_surveypartexecutionoptionresponseid',
+            XMLDB_KEY_FOREIGN,
+            ['surveypartexecutionoptionresponseid'],
+            'block_coursefeedback_surveypartexecutionoptionresp',
+            ['id']
+        );
+        $table->add_key(
+            'frk_surveyitemid',
+            XMLDB_KEY_FOREIGN,
+            ['surveyitemid'],
+            'block_coursefeedback_surveyitem',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_surveyitemintresponse.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_block_savepoint(true, 2025112400, 'coursefeedback');
     }
 
     return true;
