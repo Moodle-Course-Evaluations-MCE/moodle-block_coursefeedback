@@ -61,22 +61,23 @@ class edit_organization_form extends \moodleform {
                 $details['extrafields'] = [
                     [
                         'name' => 'email',
-                        'value' => $user->email
+                        'value' => $user->email,
                     ],
                 ];
                 return $OUTPUT->render_from_template(
-                    'core_user/form_user_selector_suggestion', $details);
+                    'core_user/form_user_selector_suggestion',
+                    $details
+                );
             },
         ]);
 
-        // TODO durch ajax ersetzen damit nicht die ganze Liste ans frontend geschickt werden muss
+        // TODO durch ajax ersetzen damit nicht die ganze Liste ans frontend geschickt werden muss.
         $allcats = \core_course_category::make_categories_list();
 
         $options = [
             'multiple'          => true,
-            'noselectionstring' => false,     // kein “Alle”-Eintrag
-            'minchars'          => 0,         // direkt filtern, auch ohne tippen
-            // 'ajax'            => null,      // kein ajax – lokal filtern
+            'noselectionstring' => false, // Kein “Alle”-Eintrag.
+            'minchars'          => 0, // Direkt filtern, auch ohne tippen.
         ];
 
         $mform->addElement(
@@ -90,5 +91,4 @@ class edit_organization_form extends \moodleform {
 
         $this->add_action_buttons();
     }
-
 }

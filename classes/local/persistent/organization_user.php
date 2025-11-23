@@ -54,12 +54,22 @@ class organization_user extends persistent {
         ];
     }
 
+    /**
+     * Get all userids for the organization.
+     * @param int $organizationid
+     * @return array
+     */
     public static function get_organization_userids(int $organizationid): array {
         global $DB;
 
         return $DB->get_fieldset(self::TABLE, 'userid', ['organizationid' => $organizationid]);
     }
 
+    /**
+     * Set the userids for the organization.
+     * @param int $organizationid
+     * @param array $userids
+     */
     public static function set_organization_userids(int $organizationid, array $userids): void {
         global $DB;
         $existinguserids = self::get_organization_userids($organizationid);

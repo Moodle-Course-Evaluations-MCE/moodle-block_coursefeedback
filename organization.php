@@ -44,4 +44,3 @@ $PAGE->set_title($title);
 echo $OUTPUT->header();
 
 echo $OUTPUT->footer();
-

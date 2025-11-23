@@ -82,7 +82,7 @@ class organizations_table extends \table_sql {
         $categoryids = array_values(organization_category::get_organization_coursecatids($row->id));
         $params['organizationid'] = $row->id;
         if (!empty($categoryids)) {
-            list($insql, $params) = $DB->get_in_or_equal($categoryids, SQL_PARAMS_NAMED);
+            [$insql, $params] = $DB->get_in_or_equal($categoryids, SQL_PARAMS_NAMED);
             $categorynames = $DB->get_fieldset_select(
                 'course_categories',
                 'name',
@@ -110,14 +110,14 @@ class organizations_table extends \table_sql {
      */
     public function col_users($row) {
         global $DB;
-        list($fields, $params) = \core_user\fields::get_sql_fullname();
+        [$fields, $params] = \core_user\fields::get_sql_fullname();
         $params['organizationid'] = $row->id;
         $usernames = $DB->get_fieldset_sql("SELECT {$fields} FROM {block_coursefeedback_organization} o " .
             "JOIN {block_coursefeedback_organization_user} ou ON o.id = ou.organizationid " .
             "JOIN {user} u ON u.id = ou.userid " .
             "WHERE o.id = :organizationid", $params);
 
-        // TODO Darstellung verbessern User klickbar machen
+        // TODO Darstellung verbessern User klickbar machen.
         return join(", ", $usernames);
     }
 
@@ -133,8 +133,12 @@ class organizations_table extends \table_sql {
         $alt = get_string('edit');
         $icon = 't/edit';
         $url = new \moodle_url('/blocks/coursefeedback/organization_edit.php', ['id' => $row->id]);
-        $output .= $OUTPUT->action_icon($url, new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
-            null, ['title' => $alt]);
+        $output .= $OUTPUT->action_icon(
+            $url,
+            new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+            null,
+            ['title' => $alt]
+        );
 
         return $output;
     }

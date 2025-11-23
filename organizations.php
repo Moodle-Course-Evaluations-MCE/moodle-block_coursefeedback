@@ -50,4 +50,3 @@ echo $OUTPUT->render(new single_button(
 $table->out(48, false);
 
 echo $OUTPUT->footer();
-

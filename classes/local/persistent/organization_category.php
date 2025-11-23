@@ -54,19 +54,31 @@ class organization_category extends persistent {
         ];
     }
 
+    /**
+     * Returns all coursecatids for the organization.
+     * @param int $organizationid
+     * @return array
+     */
     public static function get_organization_coursecatids(int $organizationid): array {
         global $DB;
 
         return $DB->get_fieldset(self::TABLE, 'coursecatid', ['organizationid' => $organizationid]);
     }
 
+    /**
+     * Sets the coursecatids for the organization.
+     * @param int $organizationid
+     * @param array $coursecatids
+     */
     public static function set_organization_coursecatids(int $organizationid, array $coursecatids): void {
         global $DB;
         $existingcoursecatids = self::get_organization_coursecatids($organizationid);
         foreach ($existingcoursecatids as $existingcoursecatid) {
             if (!in_array($existingcoursecatid, $coursecatids)) {
-                $DB->delete_records(self::TABLE,
-                    ['coursecatid' => $existingcoursecatid, 'organizationid' => $organizationid]);
+                $DB->delete_records(
+                    self::TABLE,
+                    ['coursecatid' => $existingcoursecatid, 'organizationid' => $organizationid]
+                );
             }
         }
 

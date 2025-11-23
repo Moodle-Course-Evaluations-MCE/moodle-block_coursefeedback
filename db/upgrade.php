@@ -34,8 +34,6 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
     global $DB;
     $dbman = $DB->get_manager();
 
-    $dbman = $DB->get_manager();
-
     // 1) Enforce minimum starting version.
     if ($oldversion < 2025_05_09_00) {
         throw new coding_exception(
@@ -92,15 +90,14 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2025050901, 'coursefeedback');
     }
     if ($oldversion < 2025070802) {
-
         // 1) block_coursefeedback_organization
         $table = new xmldb_table('block_coursefeedback_organization');
-        $table->add_field('id',           XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('name',         XMLDB_TYPE_TEXT,    null,  null, XMLDB_NOTNULL);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated',  XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary',       XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -108,40 +105,40 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         // 2) block_coursefeedback_organization_coursecat
         $table = new xmldb_table('block_coursefeedback_organization_coursecat');
-        $table->add_field('id',           XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('coursecatid',  XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('coursecatid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated',  XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary',          XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('coursecatid_fk',   XMLDB_KEY_FOREIGN, ['coursecatid'], 'course_categories', ['id']);
-        $table->add_key('organizationid_fk',XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
-        $table->add_key('usermodified_fk',  XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('coursecatid_fk', XMLDB_KEY_FOREIGN, ['coursecatid'], 'course_categories', ['id']);
+        $table->add_key('organizationid_fk', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         // 3) block_coursefeedback_organization_user
         $table = new xmldb_table('block_coursefeedback_organization_user');
-        $table->add_field('id',           XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('userid',       XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('timecreated',  XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $table->add_key('primary',          XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('userid_fk',        XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
-        $table->add_key('organizationid_fk',XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
-        $table->add_key('usermodified_fk',  XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('userid_fk', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('organizationid_fk', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+        $table->add_key('usermodified_fk', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         upgrade_block_savepoint(true, 2025070802, 'coursefeedback');
     }
-    if ($oldversion < 2025090100) {
 
+    if ($oldversion < 2025090100) {
         // Define table block_coursefeedback_survey to be created.
         $table = new xmldb_table('block_coursefeedback_survey');
 
