@@ -45,7 +45,7 @@ class hook_callbacks {
                 $surveypart,
                 language_manager::get_default_language_for_surveypart($surveypart->get('id'))
             );
-            $PAGE->requires->js_call_amd('block_coursefeedback/do-survey', 'doSurvey', [$templatedata]);
+            $PAGE->requires->js_call_amd('block_coursefeedback/do_survey', 'doSurvey', [$templatedata]);
         }
     }
 }

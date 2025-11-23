@@ -23,7 +23,7 @@ import {getStrings} from 'core/str';
 /**
  * Shows and submits a survey.
  *
- * @module     block_coursefeedback/do-survey
+ * @module     block_coursefeedback/do_survey
  * @copyright  2025 Justus Dieckmann RUB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -63,7 +63,7 @@ function createSurveyItemHandlers(surveyItems, questionRoot, values = {}) {
  * @param {object} pages
  * @returns {Promise<void>}
  */
-export async function doSurvey(pages) {
+export async function do_survey(pages) {
     const userNotificationsEl = document.getElementById('user-notifications');
 
     let currentPage = 0;

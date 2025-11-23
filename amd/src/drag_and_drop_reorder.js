@@ -16,7 +16,7 @@
 /**
  * Does dragging and dropping.
  *
- * @module     block_coursefeedback/drag-and-drop-reorder
+ * @module     block_coursefeedback/drag_and_drop_reorder
  * @copyright  2025 Justus Dieckmann RUB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

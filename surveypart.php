@@ -134,7 +134,7 @@ $context['surveyitems'] = $records;
 
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
-$PAGE->requires->js_call_amd('block_coursefeedback/drag-and-drop-reorder', 'init');
+$PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
 
 echo '<br><br>';
 
