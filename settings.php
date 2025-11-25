@@ -28,8 +28,27 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('block_coursefeedback_settings', new lang_string('pluginname', 'block_coursefeedback'));
 
+    $ADMIN->add('blocksettings', new admin_category(
+        'block_coursefeedback_category',
+        new lang_string('pluginname', 'block_coursefeedback')
+    ));
+
+    $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
+        'block_coursefeedback_category_organization',
+        get_string('organization', 'block_coursefeedback'),
+        new moodle_url('/blocks/coursefeedback/organization.php')
+    ));
+
+    $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
+        'block_coursefeedback_category_survey',
+        get_string('surveys', 'block_coursefeedback'),
+        new moodle_url('/blocks/coursefeedback/surveyparts.php')
+    ));
+
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
         // TO-DO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
     }
 }
+
+$settings = null;

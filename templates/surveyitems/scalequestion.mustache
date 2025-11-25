@@ -1,0 +1,95 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/surveyitems/scalequestion
+
+    This template renders the display of a scale question.
+
+    Example context (json):
+    {
+      "type_scalequestion": true,
+      "type": "scalequestion",
+      "surveyitemid": 4,
+      "questiontext": "<p>Mein Zeitaufwand f\u00fcr die Veranstaltung ist im Verh\u00e4ltnis zu den vergebenen Leistungspunkten \/ Credit Points (1CP = 30 Zeitstunden)<\/p>",
+      "max_pole": "sehr gut",
+      "min_pole": "sehr schlecht",
+      "has_na_option": "0",
+      "na_option": null,
+      "optionamount": "5",
+      "options": [
+        {
+          "id": 1,
+          "text": "sehr schlecht"
+        },
+        {
+          "id": 2,
+          "text": null
+        },
+        {
+          "id": 3,
+          "text": null
+        },
+        {
+          "id": 4,
+          "text": null
+        },
+        {
+          "id": 5,
+          "text": "sehr gut"
+        }
+      ],
+      "show_scale": false
+    }
+
+}}
+<form id="scalequestion-form-{{surveyitemid}}">
+    {{# show_scale }}
+        <div class="d-none d-md-flex" style="margin-left: 25%" aria-hidden="true">
+            <div class="d-flex flex-grow-1 justify-content-between align-items-start px-3 mb-2">
+                {{# options }}
+                    <span>{{text}}</span>
+                {{/ options }}
+            </div>
+            {{# has_na_option }}
+                <div class="text-center" style="flex-basis: calc(100% / {{optionamount}})">
+                    {{ na_option }}
+                </div>
+            {{/ has_na_option }}
+        </div>
+    {{/ show_scale }}
+    <div class="d-flex flex-wrap flex-md-nowrap {{^show_scale}}coursefeedback-no-show-scale{{/show_scale}}">
+        <div class="coursefeedback-scale-questiontext coursefeedback-small-flex-basis-100">{{{ questiontext }}}</div>
+        <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap ms-3 mt-2 m-md-0">
+            <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap coursefeedback-small-flex-basis-100 justify-content-around align-items-center md-px-3">
+                {{# options }}
+                    <label class="block_coursefeedback-scaleoption coursefeedback-small-flex-basis-100 mt-1 mb-0">
+                        <input class="" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
+                        <span class="ms-1 d-md-none">{{{ text }}}</span>
+                    </label>
+                {{/ options }}
+            </div>
+            {{# has_na_option }}
+                <div class="d-flex text-md-center align-items-center justify-content-around coursefeedback-small-flex-basis-100 mt-2 mt-md-2" style="flex-basis: calc(100% / {{ optionamount }})">
+                    <label class="block_coursefeedback-scaleoption mt-1 mb-0">
+                        <input class="" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{ na_option }}}" value="-1">
+                        <span class="ms-1 d-md-none">{{{ na_option }}}</span>
+                    </label>
+                </div>
+            {{/ has_na_option }}
+        </div>
+    </div>
+</form>

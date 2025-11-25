@@ -1,0 +1,35 @@
+.coursefeedback-dnd-item.grabbed {
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    user-select: none;
+}
+
+.coursefeedback-custom-content :last-child {
+    margin-bottom: 0;
+}
+
+.coursefeedback-scale-questiontext {
+    flex-basis: 25%;
+}
+
+#block_coursefeedback-survey-root span.current-page::before {
+    display: inline;
+    content: var(--current-page-text);
+}
+
+@media (max-width: 767px) {
+    .block_coursefeedback-survey .block_coursefeedback-scaleoption {
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+
+    .coursefeedback-small-flex-basis-100 {
+        flex-basis: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .coursefeedback-no-show-scale {
+        /* margin-top: -20px; */
+    }
+}

@@ -25,17 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = [
-    "block/coursefeedback:addinstance" => [
-        "captype" => "write",
-        "contextlevel" => CONTEXT_BLOCK,
-        "archetypes" => [],
-    ],
-    'block/coursefeedback:manageorganizations' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'manager' => CAP_ALLOW,
-        ],
+$callbacks = [
+    [
+        'hook' => \core\hook\output\after_standard_main_region_html_generation::class,
+        'callback' => [\block_coursefeedback\local\hook_callbacks::class, 'after_standard_main_region_html_generation'],
+        'priority' => 500,
     ],
 ];

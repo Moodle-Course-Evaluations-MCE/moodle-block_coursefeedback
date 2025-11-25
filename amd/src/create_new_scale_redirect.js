@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,27 +14,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Coursefeedback block capabilities
+ * Redirects to create a new scale if that option is chosen in dropdown.
  *
- * @package    block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
+ * @module     block_coursefeedback/create_new_scale_redirect
+ * @copyright  2025 Justus Dieckmann RUB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+import * as Cfg from 'core/config';
 
-$capabilities = [
-    "block/coursefeedback:addinstance" => [
-        "captype" => "write",
-        "contextlevel" => CONTEXT_BLOCK,
-        "archetypes" => [],
-    ],
-    'block/coursefeedback:manageorganizations' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-];
+/**
+ * Initialize the survey doing.
+ * @param {number} surveyPartId
+ */
+export function init(surveyPartId) {
+    const el = document.getElementById('id_scaleid');
+    el.addEventListener('change', () => {
+        if (el.value == -1) {
+            window.location = Cfg.wwwroot + '/blocks/coursefeedback/scale_edit.php?surveypartid=' + surveyPartId;
+        }
+    });
+}

@@ -15,27 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Coursefeedback block capabilities
+ * Abstract surveyitem class, to be extended by all survey elements.
  *
- * @package    block_coursefeedback
+ * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace block_coursefeedback\local\surveyitem;
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = [
-    "block/coursefeedback:addinstance" => [
-        "captype" => "write",
-        "contextlevel" => CONTEXT_BLOCK,
-        "archetypes" => [],
-    ],
-    'block/coursefeedback:manageorganizations' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-];
+global $CFG;
+require_once($CFG->libdir . '/formslib.php');
+
+/**
+ * Abstract surveyitem class, to be extended by all survey elements.
+ *
+ * @package     block_coursefeedback
+ * @copyright   2025 innoCampus, Technische Universität Berlin
+ * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+abstract class surveyitem_form extends \moodleform {
+
+
+}

@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,28 +13,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+import {SurveyItem} from "block_coursefeedback/surveyitem";
+
 /**
- * Coursefeedback block capabilities
+ * Implement SurveyItem for Scalequestion
  *
- * @package    block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
+ * @module     block_coursefeedback/surveyitems/scale
+ * @copyright  2025 Justus Dieckmann RUB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+export class Scale extends SurveyItem {
 
-$capabilities = [
-    "block/coursefeedback:addinstance" => [
-        "captype" => "write",
-        "contextlevel" => CONTEXT_BLOCK,
-        "archetypes" => [],
-    ],
-    'block/coursefeedback:manageorganizations' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-];
+    form = this.surveyItemRootElement.querySelector('form');
+
+    getValue() {
+        return this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value;
+    }
+
+    setValue(value) {
+        this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value = value;
+    }
+
+}

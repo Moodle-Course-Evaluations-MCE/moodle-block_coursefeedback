@@ -1,0 +1,618 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/edit_survey
+
+    This template renders the editing of a survey.
+
+    Example context (json):
+    {
+      "id": 1,
+      "action_url": "http://localhost/moodle405/blocks/coursefeedback/surveypart.php",
+      "add_element_menu": {
+        "instance": 1,
+        "classes": "moodle-actionmenu",
+        "attributes": [
+          {
+            "name": "id",
+            "value": "action-menu-1"
+          },
+          {
+            "name": "data-enhance",
+            "value": "moodle-core-actionmenu"
+          }
+        ],
+        "primary": {
+          "title": "Add survey element",
+          "prioritise": false,
+          "classes": "menubar",
+          "attributes": [
+            {
+              "name": "id",
+              "value": "action-menu-1-menubar"
+            }
+          ],
+          "triggerattributes": [],
+          "menutrigger": "Add survey element",
+          "triggerextraclasses": "btn btn-primary",
+          "triggerrole": "button",
+          "iconraw": "",
+          "actiontext": "",
+          "items": []
+        },
+        "secondary": {
+          "classes": "menu",
+          "attributes": [
+            {
+              "name": "id",
+              "value": "action-menu-1-menu"
+            },
+            {
+              "name": "data-rel",
+              "value": "menu-content"
+            },
+            {
+              "name": "aria-labelledby",
+              "value": "action-menu-toggle-1"
+            },
+            {
+              "name": "role",
+              "value": "menu"
+            }
+          ],
+          "items": [
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da7",
+                "disabled": false,
+                "text": "Single choice",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=singlechoice&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            },
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da8",
+                "disabled": false,
+                "text": "Multiple choice",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=multiplechoice&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            },
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da9",
+                "disabled": false,
+                "text": "Text",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=text&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            },
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da10",
+                "disabled": false,
+                "text": "Page break",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=pagebreak&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            },
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da11",
+                "disabled": false,
+                "text": "Scale question",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=scalequestion&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            },
+            {
+              "simpleitem": true,
+              "actionlink": {
+                "id": "action_link68e8d609c86da12",
+                "disabled": false,
+                "text": "Infotext",
+                "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=info&surveypartid=1&sesskey=1soivS31CD",
+                "icon": null,
+                "classes": "",
+                "attributes": [
+                  {
+                    "name": "role",
+                    "value": "menuitem"
+                  },
+                  {
+                    "name": "tabindex",
+                    "value": "-1"
+                  }
+                ],
+                "actions": [],
+                "hasactions": false
+              }
+            }
+          ]
+        },
+        "dropdownalignment": "dropdown-menu-left"
+      },
+      "has_scales": true,
+      "scale_url": "http://localhost/moodle405/blocks/coursefeedback/scales.php?surveypartid=1",
+      "sesskey": "1soivS31CD",
+      "surveyitems": [
+        {
+          "id": "1",
+          "surveyitemtype": "info",
+          "sortindex": "0",
+          "text": "<p>Thank you for taking time for this survey!</p>",
+          "actionmenu": {
+            "instance": 2,
+            "classes": "moodle-actionmenu",
+            "attributes": [
+              {
+                "name": "id",
+                "value": "action-menu-2"
+              },
+              {
+                "name": "data-enhance",
+                "value": "moodle-core-actionmenu"
+              }
+            ],
+            "primary": {
+              "title": "",
+              "prioritise": false,
+              "classes": "menubar",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-2-menubar"
+                }
+              ],
+              "triggerattributes": [],
+              "menutrigger": "<i class=\"icon fa fa-ellipsis-vertical fa-fw \" title=\"Actions\" role=\"img\" aria-label=\"Actions\"></i>",
+              "triggerextraclasses": "btn btn-icon d-flex align-items-center justify-content-center no-caret ",
+              "triggerrole": "button",
+              "iconraw": "",
+              "actiontext": "",
+              "items": []
+            },
+            "secondary": {
+              "classes": "menu",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-2-menu"
+                },
+                {
+                  "name": "data-rel",
+                  "value": "menu-content"
+                },
+                {
+                  "name": "aria-labelledby",
+                  "value": "action-menu-toggle-2"
+                },
+                {
+                  "name": "role",
+                  "value": "menu"
+                }
+              ],
+              "items": [
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da13",
+                    "disabled": false,
+                    "text": "Edit",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=info&surveypartid=1&id=1",
+                    "icon": {
+                      "key": "t/edit",
+                      "component": "moodle",
+                      "title": "Edit"
+                    },
+                    "classes": "",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                },
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da14",
+                    "disabled": false,
+                    "text": "Delete",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveypart.php?id=1&action=delete&deleteid=1&sesskey=1soivS31CD",
+                    "icon": {
+                      "key": "t/delete",
+                      "component": "moodle",
+                      "title": "Delete"
+                    },
+                    "classes": "text-danger",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                }
+              ]
+            },
+            "dropdownalignment": "dropdown-menu-right"
+          },
+          "type": "info",
+          "itemid": "1"
+        },
+        {
+          "id": "2",
+          "surveyitemtype": "singlechoice",
+          "sortindex": "1",
+          "text": "<p>Which one do you like best?</p>",
+          "actionmenu": {
+            "instance": 3,
+            "classes": "moodle-actionmenu",
+            "attributes": [
+              {
+                "name": "id",
+                "value": "action-menu-3"
+              },
+              {
+                "name": "data-enhance",
+                "value": "moodle-core-actionmenu"
+              }
+            ],
+            "primary": {
+              "title": "",
+              "prioritise": false,
+              "classes": "menubar",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-3-menubar"
+                }
+              ],
+              "triggerattributes": [],
+              "menutrigger": "<i class=\"icon fa fa-ellipsis-vertical fa-fw \" title=\"Actions\" role=\"img\" aria-label=\"Actions\"></i>",
+              "triggerextraclasses": "btn btn-icon d-flex align-items-center justify-content-center no-caret ",
+              "triggerrole": "button",
+              "iconraw": "",
+              "actiontext": "",
+              "items": []
+            },
+            "secondary": {
+              "classes": "menu",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-3-menu"
+                },
+                {
+                  "name": "data-rel",
+                  "value": "menu-content"
+                },
+                {
+                  "name": "aria-labelledby",
+                  "value": "action-menu-toggle-3"
+                },
+                {
+                  "name": "role",
+                  "value": "menu"
+                }
+              ],
+              "items": [
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da15",
+                    "disabled": false,
+                    "text": "Edit",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=singlechoice&surveypartid=1&id=2",
+                    "icon": {
+                      "key": "t/edit",
+                      "component": "moodle",
+                      "title": "Edit"
+                    },
+                    "classes": "",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                },
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da16",
+                    "disabled": false,
+                    "text": "Delete",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveypart.php?id=1&action=delete&deleteid=2&sesskey=1soivS31CD",
+                    "icon": {
+                      "key": "t/delete",
+                      "component": "moodle",
+                      "title": "Delete"
+                    },
+                    "classes": "text-danger",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                }
+              ]
+            },
+            "dropdownalignment": "dropdown-menu-right"
+          },
+          "type": "singlechoice",
+          "itemid": "2"
+        },
+        {
+          "id": "3",
+          "surveyitemtype": "scalequestion",
+          "sortindex": "2",
+          "text": "<p>Did you like this course?</p>",
+          "actionmenu": {
+            "instance": 4,
+            "classes": "moodle-actionmenu",
+            "attributes": [
+              {
+                "name": "id",
+                "value": "action-menu-4"
+              },
+              {
+                "name": "data-enhance",
+                "value": "moodle-core-actionmenu"
+              }
+            ],
+            "primary": {
+              "title": "",
+              "prioritise": false,
+              "classes": "menubar",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-4-menubar"
+                }
+              ],
+              "triggerattributes": [],
+              "menutrigger": "<i class=\"icon fa fa-ellipsis-vertical fa-fw \" title=\"Actions\" role=\"img\" aria-label=\"Actions\"></i>",
+              "triggerextraclasses": "btn btn-icon d-flex align-items-center justify-content-center no-caret ",
+              "triggerrole": "button",
+              "iconraw": "",
+              "actiontext": "",
+              "items": []
+            },
+            "secondary": {
+              "classes": "menu",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": "action-menu-4-menu"
+                },
+                {
+                  "name": "data-rel",
+                  "value": "menu-content"
+                },
+                {
+                  "name": "aria-labelledby",
+                  "value": "action-menu-toggle-4"
+                },
+                {
+                  "name": "role",
+                  "value": "menu"
+                }
+              ],
+              "items": [
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da17",
+                    "disabled": false,
+                    "text": "Edit",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveyitem_edit.php?type=scalequestion&surveypartid=1&id=3",
+                    "icon": {
+                      "key": "t/edit",
+                      "component": "moodle",
+                      "title": "Edit"
+                    },
+                    "classes": "",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                },
+                {
+                  "simpleitem": true,
+                  "actionlink": {
+                    "id": "action_link68e8d609c86da18",
+                    "disabled": false,
+                    "text": "Delete",
+                    "url": "http://localhost/moodle405/blocks/coursefeedback/surveypart.php?id=1&action=delete&deleteid=3&sesskey=1soivS31CD",
+                    "icon": {
+                      "key": "t/delete",
+                      "component": "moodle",
+                      "title": "Delete"
+                    },
+                    "classes": "text-danger",
+                    "attributes": [
+                      {
+                        "name": "role",
+                        "value": "menuitem"
+                      },
+                      {
+                        "name": "tabindex",
+                        "value": "-1"
+                      }
+                    ],
+                    "actions": [],
+                    "hasactions": false
+                  }
+                }
+              ]
+            },
+            "dropdownalignment": "dropdown-menu-right"
+          },
+          "type": "scalequestion",
+          "itemid": "3"
+        }
+      ]
+    }
+
+}}
+
+<div class="d-flex">
+    {{# add_element_menu }}
+        {{> core/action_menu }}
+    {{/ add_element_menu }}
+    {{# has_scales }}
+        <a href="{{{scale_url}}}" class="btn btn-secondary ml-2">{{# str }} view_scales, block_coursefeedback {{/str}}</a>
+    {{/ has_scales }}
+</div>
+
+<div class="coursefeedback-dnd-list">
+    {{# surveyitems }}
+        <div class="d-flex border rounded p-3 mt-3 coursefeedback-dnd-item align-items-center"
+             data-itemid="{{ itemid }}">
+            <div class="p-2 coursefeedback-dnd-handle" style="cursor: move">
+                {{# pix }} t/move {{/ pix }}
+            </div>
+            <div class="flex-grow-1 coursefeedback-custom-content">
+                {{{ text }}}
+            </div>
+            <div class="text-muted mr-3">
+                {{ type }}
+            </div>
+            {{# actionmenu }}
+                {{> core/action_menu }}
+            {{/ actionmenu }}
+        </div>
+    {{/ surveyitems }}
+</div>
+
+<form class="mt-2" id="coursefeedback-save-ordering-form" method="post" action="{{{ action_url }}}">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <input type="hidden" name="action" value="reorder">
+    <input type="hidden" name="ordering">
+    <input type="submit" value="{{# str }} save {{/ str }}" class="btn btn-primary">
+</form>

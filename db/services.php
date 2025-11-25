@@ -15,18 +15,15 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Web API function definitions.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
+ * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_coursefeedback';
-$plugin->release = '4.0.0 (Build: 2025050900)';
-$plugin->version = 2025112400;
-$plugin->requires = 2022042208;
-$plugin->maturity = MATURITY_ALPHA;
+$functions = [
+];

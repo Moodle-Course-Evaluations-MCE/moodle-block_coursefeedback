@@ -1,0 +1,89 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/surveyitems/multiplechoice
+
+    This template renders the display of a multiplechoice question.
+
+    Example context (json):
+    {
+      "type_multiplechoice": true,
+      "type": "multiplechoice",
+      "surveyitemid": 2,
+      "questiontext": "<p>In welchem Fachsemester studieren Sie?<\/p>",
+      "options": [
+        {
+          "optiontext": "1",
+          "optionid": "3"
+        },
+        {
+          "optiontext": "2",
+          "optionid": "4"
+        },
+        {
+          "optiontext": "3",
+          "optionid": "5"
+        },
+        {
+          "optiontext": "4",
+          "optionid": "6"
+        },
+        {
+          "optiontext": "5",
+          "optionid": "7"
+        },
+        {
+          "optiontext": "6",
+          "optionid": "8"
+        },
+        {
+          "optiontext": "7",
+          "optionid": "9"
+        },
+        {
+          "optiontext": "8",
+          "optionid": "10"
+        },
+        {
+          "optiontext": "9",
+          "optionid": "11"
+        },
+        {
+          "optiontext": "10",
+          "optionid": "12"
+        },
+        {
+          "optiontext": "&gt;10",
+          "optionid": "13"
+        }
+      ]
+    }
+
+}}
+{{{ questiontext }}}
+<div class="mt-2 ms-3">
+    <form id="multiplechoice-form-{{surveyitemid}}">
+        {{# options }}
+            <div class="form-check mt-1">
+                <input class="form-check-input" type="checkbox" name="surveyitem-{{surveyitemid}}" value="{{optionid}}" id="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}">
+                <label class="form-check-label" for="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}">
+                    {{{optiontext}}}
+                </label>
+            </div>
+        {{/ options }}
+    </form>
+</div>
