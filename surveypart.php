@@ -136,14 +136,4 @@ echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context)
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
 
-echo '<br><br>';
-
-echo htmlentities(json_encode(['questions' =>
-    surveyitem_manager::get_templatedata_for_surveypart(
-        $surveypart,
-        language_manager::get_default_language_for_surveypart($surveypart->get('id'))
-    )[1],
-        'amount_pages' => 4,
-]));
-
 echo $OUTPUT->footer();
