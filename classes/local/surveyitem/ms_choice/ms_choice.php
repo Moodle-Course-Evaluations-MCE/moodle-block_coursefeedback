@@ -50,7 +50,7 @@ abstract class ms_choice extends surveyitemtype {
             'block_coursefeedback_surveyitemansweroption',
             ['surveyitemid' => $surveyitemid],
             'sortindex ASC',
-            'sortindex, *'
+            'sortindex, id, textid'
         );
         $index = 0;
         for ($i = 1; $i <= $formdata->choices_amount; $i++) {
@@ -84,7 +84,7 @@ abstract class ms_choice extends surveyitemtype {
             'block_coursefeedback_surveyitemansweroption',
             ['surveyitemid' => $surveyitem->get('id')],
             'sortindex ASC',
-            'sortindex, *'
+            'sortindex, id, textid'
         );
         $data->choices_amount = count($existingoptions);
         for ($i = 1; $i <= $data->choices_amount; $i++) {
