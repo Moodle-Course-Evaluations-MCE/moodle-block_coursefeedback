@@ -64,8 +64,13 @@ class scalequestion extends surveyitemtype {
     #[\Override]
     public function load_settings_mform(surveyitem $surveyitem, string $language): object {
         global $DB;
+        $data = parent::load_settings_mform($surveyitem, $language);
         $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitem->get('id')]);
-        return $record ?: new \stdClass();
+        if ($record) {
+            $data->scaleid = $record->scaleid;
+            $data->forceshowscale = $record->forceshowscale;
+        }
+        return $data;
     }
 
     #[\Override]

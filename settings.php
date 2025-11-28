@@ -35,8 +35,8 @@ if ($hassiteconfig) {
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_organization',
-        get_string('organization', 'block_coursefeedback'),
-        new moodle_url('/blocks/coursefeedback/organization.php')
+        get_string('organizations', 'block_coursefeedback'),
+        new moodle_url('/blocks/coursefeedback/organizations.php')
     ));
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(

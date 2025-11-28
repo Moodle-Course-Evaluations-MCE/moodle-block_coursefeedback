@@ -63,7 +63,7 @@ function createSurveyItemHandlers(surveyItems, questionRoot, values = {}) {
  * @param {object} pages
  * @returns {Promise<void>}
  */
-export async function do_survey(pages) {
+export async function doSurvey(pages) {
     const userNotificationsEl = document.getElementById('user-notifications');
 
     let currentPage = 0;
@@ -101,6 +101,11 @@ export async function do_survey(pages) {
             if (surveyItemHandlers[surveyItem.surveyitemid]) {
                 values[surveyItem.surveyitemid] = surveyItemHandlers[surveyItem.surveyitemid].getValue();
             }
+        }
+
+        // TODO remove
+        if (currentPage + delta >= amountPages || currentPage + delta < 0) {
+            return;
         }
 
         currentPage += delta;
