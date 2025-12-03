@@ -765,7 +765,8 @@ function block_coursefeedback_print_noperm_page($errors, $feedbackid) {
  */
 function block_coursefeedback_create_activate_button($feedbackid, $value = "") {
     global $DB;
-    if ($DB->record_exists("block_coursefeedback_answers", array("coursefeedbackid" => $feedbackid))) {
+    if ($DB->record_exists("block_coursefeedback_answers", array("coursefeedbackid" => $feedbackid))
+        || $DB->record_exists("block_coursefeedback_textans", array("coursefeedbackid" => $feedbackid))) {
         // Reactivation of FB's for whom answers exist is not possible.
         return get_string("page_html_wasactive", "block_coursefeedback", $feedbackid);
     }
@@ -1028,7 +1029,7 @@ function block_coursefeedbck_coursestartcheck_good($config, $courseid) {
 }
 
 /**
- * Return all feedbacks with answers for this course
+ * Return all feedbacks with answers (numeric or text) for this course
  *
  * @param int $courseid
  * @return array
@@ -1036,10 +1037,18 @@ function block_coursefeedbck_coursestartcheck_good($config, $courseid) {
 function block_coursefeedbck_get_fbsfor_course($courseid) {
     global $DB;
     $sql = "SELECT DISTINCT cf.id, cf.name, ans.course
-              FROM {block_coursefeedback_answers} ans
-              JOIN {block_coursefeedback} cf ON ans.coursefeedbackid = cf.id
-             WHERE ans.course = ?";
-    $answerredfbs = $DB->get_records_sql($sql, array($courseid));
+              FROM {block_coursefeedback} cf
+              JOIN (
+                    SELECT course, coursefeedbackid
+                      FROM {block_coursefeedback_answers}
+                     WHERE course = ?
+                    UNION
+                    SELECT course, coursefeedbackid
+                      FROM {block_coursefeedback_textans}
+                     WHERE course = ?
+                   ) ans
+                ON ans.coursefeedbackid = cf.id";
+    $answerredfbs = $DB->get_records_sql($sql, array($courseid, $courseid));
 
     return $answerredfbs;
 }
