@@ -30,5 +30,9 @@ $callbacks = [
         'hook' => \core\hook\output\after_standard_main_region_html_generation::class,
         'callback' => [\block_coursefeedback\local\hook_callbacks::class, 'after_standard_main_region_html_generation'],
         'priority' => 500,
+    ], [
+        'hook' => \core\hook\navigation\primary_extend::class,
+        'callback' => [\block_coursefeedback\local\hook_callbacks::class, 'primary_extend'],
+        'priority' => 500,
     ],
 ];

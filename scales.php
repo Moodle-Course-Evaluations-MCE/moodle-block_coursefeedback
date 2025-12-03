@@ -28,8 +28,7 @@ use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveypart;
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $OUTPUT, $PAGE;
-require_once($CFG->libdir . '/adminlib.php');
+global $CFG, $DB, $OUTPUT, $PAGE;
 
 require_login();
 $surveypartid = required_param('surveypartid', PARAM_INT);

@@ -28,9 +28,10 @@ use block_coursefeedback\local\table\surveyparts_table;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
-require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
+require_login();
+require_capability('block/coursefeedback:managesurveysglobally', \context_system::instance());
+
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
 $title = get_string('surveyparts', 'block_coursefeedback');

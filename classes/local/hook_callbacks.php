@@ -17,9 +17,12 @@
 namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
+use moodle_url;
 
 /**
  * Place for hook callbacks.
@@ -46,6 +49,23 @@ class hook_callbacks {
                 language_manager::get_default_language_for_surveypart($surveypart->get('id'))
             );
             $PAGE->requires->js_call_amd('block_coursefeedback/do_survey', 'doSurvey', [$templatedata]);
+        }
+    }
+
+
+    /**
+     * Adds the evaluation administration overview page to evaluation admins primary navigation.
+     * @param primary_extend $hook
+     */
+    public static function primary_extend(primary_extend $hook) {
+        if (
+            permission_manager::can_do_any_evaluation_administration() &&
+            !has_capability('moodle/site:config', \context_system::instance())
+        ) {
+            $hook->primaryview->add(
+                get_string('evaluationadministration', 'block_coursefeedback'),
+                new moodle_url('/blocks/coursefeedback/overview.php'),
+            );
         }
     }
 }
