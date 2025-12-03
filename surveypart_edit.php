@@ -23,15 +23,14 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\form\edit_surveypart_form;
 use block_coursefeedback\local\form\name_only_form;
 use block_coursefeedback\local\persistent\surveypart;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
-require_once($CFG->libdir . '/adminlib.php');
 
-require_admin();
+require_login();
+require_capability('block/coursefeedback:managesurveysglobally', \context_system::instance());
 
 $id = optional_param('id', null, PARAM_INT);
 

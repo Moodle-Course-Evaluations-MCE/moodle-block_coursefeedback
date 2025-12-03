@@ -30,7 +30,6 @@ use block_coursefeedback\local\persistent\organization_category;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
-require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 $context = context_system::instance();

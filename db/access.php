@@ -31,6 +31,13 @@ $capabilities = [
         "contextlevel" => CONTEXT_BLOCK,
         "archetypes" => [],
     ],
+    'block/coursefeedback:managesurveysglobally' => [
+        'captype' => 'write',
+        'riskbitmask' => RISK_CONFIG,
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+        ],
+    ],
     'block/coursefeedback:manageorganizations' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,

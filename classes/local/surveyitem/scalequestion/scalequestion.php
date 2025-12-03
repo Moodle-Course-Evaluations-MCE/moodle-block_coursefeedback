@@ -112,7 +112,7 @@ class scalequestion extends surveyitemtype {
 
         foreach ($surveyitems as $surveyitem) {
             $record = $additionaldata[$surveyitem->get('id')];
-            $hasnaoption = $record->hasnoansweroption;
+            $hasnaoption = (bool) $record->hasnoansweroption;
             $optionamount = $record->optionamount;
             $show_scale = $record->forceshowscale || (
                     !$lastsurveyitem || (

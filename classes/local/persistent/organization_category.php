@@ -37,7 +37,7 @@ use core\persistent;
 class organization_category extends persistent {
 
     /** Table name for the persistent. */
-    const TABLE = 'block_coursefeedback_organization_coursecat';
+    public const TABLE = 'block_coursefeedback_organization_coursecat';
 
     /**
      * Return the definition of the properties of this model.

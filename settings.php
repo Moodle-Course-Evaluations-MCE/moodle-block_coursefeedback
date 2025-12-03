@@ -26,7 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('block_coursefeedback_settings', new lang_string('pluginname', 'block_coursefeedback'));
+    $settings = new admin_settingpage(
+        'block_coursefeedback_settings',
+        new lang_string('pluginname', 'block_coursefeedback'),
+    );
 
     $ADMIN->add('blocksettings', new admin_category(
         'block_coursefeedback_category',
@@ -36,13 +39,15 @@ if ($hassiteconfig) {
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_organization',
         get_string('organizations', 'block_coursefeedback'),
-        new moodle_url('/blocks/coursefeedback/organizations.php')
+        new moodle_url('/blocks/coursefeedback/organizations.php'),
+        'block/coursefeedback:manageorganizations',
     ));
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_survey',
         get_string('surveys', 'block_coursefeedback'),
-        new moodle_url('/blocks/coursefeedback/surveyparts.php')
+        new moodle_url('/blocks/coursefeedback/surveyparts.php'),
+        'block/coursefeedback:managesurveysglobally',
     ));
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf

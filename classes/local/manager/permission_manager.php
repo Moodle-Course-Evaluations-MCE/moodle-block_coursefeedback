@@ -41,6 +41,17 @@ class permission_manager {
      * @param surveypart $surveypart
      */
     public static function require_permission_for_editing_surveypart(surveypart $surveypart) {
-        require_admin();
+        require_capability('block/coursefeedback:managesurveysglobally', \context_system::instance());
+    }
+
+    /**
+     * Returns whether the current user can do any evaluation administration.
+     * @return bool
+     */
+    public static function can_do_any_evaluation_administration(): bool {
+        return has_any_capability(
+            ['block/coursefeedback:managesurveysglobally', 'block/coursefeedback:manageorganizations'],
+            \context_system::instance()
+        );
     }
 }

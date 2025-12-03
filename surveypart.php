@@ -31,8 +31,7 @@ use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $OUTPUT, $PAGE;
-require_once($CFG->libdir . '/adminlib.php');
+global $CFG, $DB, $OUTPUT, $PAGE;
 
 require_login();
 $id = required_param('id', PARAM_INT);
