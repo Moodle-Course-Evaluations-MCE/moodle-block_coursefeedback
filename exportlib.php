@@ -49,7 +49,7 @@ class feedback_exporter {
         $this->csvexportwriter->set_filename(get_string("download_html_filename", "block_coursefeedback")
             . date("_Y-m-d-H-i"));
         $scaleType = get_config('block_coursefeedback','scale');
-        $headrow = [get_string("download_thead_questions", "block_coursefeedback")];
+        $headrow = ['Course',get_string("download_thead_questions", "block_coursefeedback")];
         if($scaleType === 'Classic'){
             array_push($headrow,
                 get_string('notif_emoji_super', 'block_coursefeedback'),
@@ -85,12 +85,17 @@ class feedback_exporter {
 
         $questions = block_coursefeedback_get_questions_by_language($feedbackid, [current_language()],
             CFB_QUESTIONTYPE_SCHOOLGRADE);
+            
+        $course = $DB->get_record("course", ["id" => $courseid]);
+        
+        $answers = [$course->idnumber];
         foreach ($questions as $question) {
             // Put questionstring in front of $answerdata and add the data to the csv file
             if ($qanswercounts[$question->questionid]) {
                 $answersdata = $qanswercounts[$question->questionid];
                 array_unshift($answersdata, $question->question);
-                $this->csvexportwriter->add_data($answersdata);
+                $answers = array_merge($answers,$answersdata);
+                $this->csvexportwriter->add_data($answers);
             } else {
 		$this->csvexportwriter->add_data();
             }
@@ -149,23 +154,25 @@ class essay_exporter {
                 "questionid,question",
                 $questionid
         );
-
+        // Output headers
+        $data = [];
+        array_push($data,'Question number', get_string('download_thead_questions','block_coursefeedback'),
+        get_string('course'), 'Answer');
+        $this->csvexportwriter->add_data($data);
         // Insert all textanswers for each question.
         foreach ($questions as $question) {
-            $questiondata = [
-                'Course',get_string("download_thead_questions", "block_coursefeedback")
-                ." id: ",
-                format_string($question->question)
-            ];
-            $this->csvexportwriter->add_data($questiondata);
+            $questionnumber = 0;
+            $answerdata[] = ++$questionnumber;
+            $answerdata[] = format_string($question->question);
+            //$this->csvexportwriter->add_data($answerdata);
 
             // Get textanswers for question.
             $answers = $DB->get_records('block_coursefeedback_textans', ['course' => $courseid,
                 'coursefeedbackid' => $feedbackid,
                 'questionid' => $question->questionid], 'id', 'id,textanswer');
             foreach($answers as $answer) {
-                $answersdata = [$course->idnumber,$question->questionid,block_coursefeedback_format_essay($answer->textanswer)];
-		$this->csvexportwriter->add_data((array) $answersdata);
+                array_push($answerdata,$course->idnumber,block_coursefeedback_format_essay($answer->textanswer));
+		$this->csvexportwriter->add_data($answerdata);
                 //$this->csvexportwriter->add_data($answersdata);
             }
             $this->csvexportwriter->add_data([]);
@@ -213,73 +220,65 @@ class ranking_exporter {
                 return $q->questionid == $questionid;
             });
         }
-
-        foreach ($questions as $question) {
-            // Output headings.
-            $this->csvexportwriter->add_data([]);
-            $this->csvexportwriter->add_data([
-                'Question: ',
-                 $question->question,
-                //$question->questionid,
-            ]);
-
-// TODO add other scales
-            $data = [get_string('course'),get_string('name'),get_string('numusers','block_coursefeedback'),];
-    
-		    $scaleType = get_config('block_coursefeedback','scale');
-		    if($scaleType === 'Classic') {
-		        array_push($data,get_string('notif_emoji_super', 'block_coursefeedback'),
-                    get_string('notif_emoji_good', 'block_coursefeedback'),
-                    get_string('notif_emoji_ok', 'block_coursefeedback'),
-                    get_string('notif_emoji_neutral', 'block_coursefeedback'),
-                    get_string('notif_emoji_bad', 'block_coursefeedback'),
-                    get_string('notif_emoji_superbad', 'block_coursefeedback'),
-                );
-		    } else if($scaleType === 'Numeric') {
-		        $numvalues = get_config('block_coursefeedback','scalenumber'); // Gets the number of values from config
-		        $data = array_merge($data,range(1,$numvalues));
-		    } else {
-		        $data = array_merge($data,explode(',',get_config('block_coursefeedback','scaletexts'))); // Gets the values from config
-		    }
-		    array_push($data,get_string('table_html_average', 'block_coursefeedback'),
-                get_string('table_html_votes', 'block_coursefeedback'),
-                get_string('table_html_nochoice', 'block_coursefeedback'),
+        
+        // Output headings.
+        $data = [];
+        array_push($data,'Question number', get_string('download_thead_questions','block_coursefeedback'),
+        get_string('course'), get_string('numusers','block_coursefeedback'));
+        $scaleType = get_config('block_coursefeedback','scale');
+	    if($scaleType === 'Classic') {
+	        array_push($data,get_string('notif_emoji_super', 'block_coursefeedback'),
+                get_string('notif_emoji_good', 'block_coursefeedback'),
+                get_string('notif_emoji_ok', 'block_coursefeedback'),
+                get_string('notif_emoji_neutral', 'block_coursefeedback'),
+                get_string('notif_emoji_bad', 'block_coursefeedback'),
+                get_string('notif_emoji_superbad', 'block_coursefeedback'),
             );
-            $this->csvexportwriter->add_data($data);
-                /*get_string('categories'),
-                get_string('categorypath', 'block_coursefeedback'),*/
-                
+	    } else if($scaleType === 'Numeric') {
+	        $numvalues = get_config('block_coursefeedback','scalenumber'); // Gets the number of values from config
+	        $data = array_merge($data,range(1,$numvalues));
+	    } else {
+	        $data = array_merge($data,explode(',',get_config('block_coursefeedback','scaletexts'))); // Gets the values from config
+	    }
+	    array_push($data,get_string('table_html_average', 'block_coursefeedback'),
+            get_string('table_html_votes', 'block_coursefeedback'),
+            get_string('table_html_nochoice', 'block_coursefeedback'),
+        );
+        $this->csvexportwriter->add_data($data);
+        
+        // Output data
+        foreach ($questions as $question) {
+            $questionnumber = 0;
             $courses = block_coursefeedback_get_courserankings($question->questionid, $feedbackid);
-            
+            $answerdata[] = ++$questionnumber;
+            $answerdata[] = $question->question;
             foreach ($courses as $course) {
                 // Forces to select some fields, since the sql query is hard-coded
-                $coursedata[] = $course->courseid;
-                $coursedata[] = $course->idnumber;
-                $coursedata[] = $course->enroleduserssum;
+                $answerdata[] = $course->idnumber;
+                $answerdata[] = $course->enroleduserssum;
                 if($scaleType === 'Classic') {
-                    $coursedata[] = $course->one;
-                    $coursedata[] = $course->two;
-                    $coursedata[] = $course->three;
-                    $coursedata[] = $course->four;
-                    $coursedata[] = $course->five;
-                    $coursedata[] = $course->six;
+                    $answerdata[] = $course->one;
+                    $answerdata[] = $course->two;
+                    $answerdata[] = $course->three;
+                    $answerdata[] = $course->four;
+                    $answerdata[] = $course->five;
+                    $answerdata[] = $course->six;
                 } else if($scaleType === 'Numeric') {
-                    $coursedata[] = $course->one;
-                    $coursedata[] = $course->two;
-                    $coursedata[] = $course->three;
-                    $coursedata[] = $course->four;
+                    $answerdata[] = $course->one;
+                    $answerdata[] = $course->two;
+                    $answerdata[] = $course->three;
+                    $answerdata[] = $course->four;
                 } else {
-                    $coursedata[] = $course->one;
-                    $coursedata[] = $course->two;
-                    $coursedata[] = $course->three;
-                    $coursedata[] = $course->four;
-                    $coursedata[] = $course->five;
+                    $answerdata[] = $course->one;
+                    $answerdata[] = $course->two;
+                    $answerdata[] = $course->three;
+                    $answerdata[] = $course->four;
+                    $answerdata[] = $course->five;
                 }
-                $coursedata[] = $course->avfeedbackresult;
-                $coursedata[] = $course->adjanswerstotal;
-                $coursedata[] = $course->abstentions;
-                //$this->csvexportwriter->add_data((array) $course);
-                $this->csvexportwriter->add_data($coursedata);
+                $answerdata[] = $course->avfeedbackresult;
+                $answerdata[] = $course->adjanswerstotal;
+                $answerdata[] = $course->abstentions;
+                $this->csvexportwriter->add_data($answerdata);
             }
         }
         $this->csvexportwriter->download_file();
@@ -291,20 +290,27 @@ class ranking_exporter {
                 current_language(),
                 CFB_QUESTIONTYPE_ESSAY);
 
+        // Output header
+        $data = [];
+        array_push($data,'Question number', get_string('download_thead_questions','block_coursefeedback'),
+        get_string('course'), get_string('numusers','block_coursefeedback'));
+        $this->csvexportwriter->add_data($data);
         // Insert all textanswers for each question.
         foreach ($questions as $question) {
-            $questiondata = [
+            $questionnumber = 0;
+            $answerdata[] = ++$questionnumber;
+            $answerdata[] = format_string($question->question);
+            /*$questiondata = [
                 'Course',get_string("download_thead_questions", "block_coursefeedback")
                 ." id: ",
                 format_string($question->question)
-            ];
-            $this->csvexportwriter->add_data($questiondata);
+            ];*/
 
             // Get textanswers for question.
             $courses = block_coursefeedback_get_courseessay($question->questionid, $feedbackid);
             foreach ($courses as $course) {
-		        $answersdata = [$course->idnumber,$question->questionid,block_coursefeedback_format_essay($course->textanswer)];
-		        $this->csvexportwriter->add_data($answersdata);
+		        array_push($answerdata,$course->idnumber,$question->questionid,block_coursefeedback_format_essay($course->textanswer));
+		        $this->csvexportwriter->add_data($answerdata);
 	        }
         }
 	    $this->csvexportwriter->download_file();
