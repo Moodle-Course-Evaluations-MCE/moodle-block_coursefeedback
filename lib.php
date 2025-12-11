@@ -592,7 +592,18 @@ function block_coursefeedback_get_qanswercounts($course, $feedbackid) {
               GROUP BY answer";
 
         // Create array for the question and fill in zeros for each answeroption
-        $answers[$questionid] = array_fill(1, 6, 0);
+        $numAnswers = -1;
+        $scaleType = get_config('block_coursefeedback','scale');
+        if($scaleType === 'Classic') {
+            $numAnswers = 6;
+        } else if($scaleType === 'Numeric') {
+            $numAnswers = get_config('block_coursefeedback','scalenumber');
+        } else {
+            $scaletexts = get_config('block_coursefeedback','scaletexts');
+            $scales = explode(',',$scaletexts);
+            $numAnswers = count($scales);
+        }
+        $answers[$questionid] = array_fill(1, $numAnswers, 0);
 
         $abstentions = 0;
         // If answers for question exist, replace the zero at the right index and calculate average and choicessum

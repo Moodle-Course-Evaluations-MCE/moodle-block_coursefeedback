@@ -182,8 +182,12 @@ function block_coursefeedback_get_courserankings(
         'specificcourseid' => $specificcourseid,
         'specificcourseid2' => $specificcourseid,
     ];
+    
+    //FIXME removed c.category, cc.path as we don't need it since we got the course idnumber
+    //FIXME should be parameterized...
+    
     $sql = "
-        SELECT course.courseid, c.idnumber, cenrol.enroleduserssum, c.category, cc.path,  
+        SELECT course.courseid, c.idnumber, cenrol.enroleduserssum,  
                answer.one, answer.two, answer.three, answer.four, answer.five, answer.six, 
                ROUND((CAST(answer.answersum as decimal(10,2)) / (NULLIF((course.answerstotal - abstentions), 0))), 3) as avfeedbackresult,
                (course.answerstotal - abstentions) as adjanswerstotal, answer.abstentions

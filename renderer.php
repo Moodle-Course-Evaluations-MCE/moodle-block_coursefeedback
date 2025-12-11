@@ -97,7 +97,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
 
         // Implementation of new scales
         $scaletype = get_config('block_coursefeedback','scale');
-        if($scaletype == 1){ // Numeric scale
+        if($scaletype === 'Numeric'){ // Numeric scale
 	        $numvalue = get_config('block_coursefeedback','scalenumber'); // Gets the number of values from config
 	        if($numvalue > 0){
 		        $numbers = range(1,$numvalue);
@@ -106,7 +106,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
 	        }
 	        $data['numeric'] = true;
 	        $data['numbers'] = $numbers;
-        } else if($scaletype == 2){ // User defined values
+        } else if($scaletype === 'User defined'){ // User defined values
 	        $data['userdefined'] = true;
 	        $data['answers'] = explode(',',get_config('block_coursefeedback','scaletexts')); // Gets the values from config
         } else {
