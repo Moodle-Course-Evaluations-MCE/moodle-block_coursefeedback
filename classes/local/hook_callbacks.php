@@ -40,15 +40,43 @@ class hook_callbacks {
      * @param after_standard_main_region_html_generation $hook
      */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
-        global $PAGE;
+        global $DB, $PAGE;
         if ($PAGE->context->contextlevel === CONTEXT_COURSE) {
             // TODO lookup whether to use a survey, and if so, which one.
-            $surveypart = surveypart::get_record();
-            $templatedata = surveyitem_manager::get_templatedata_for_surveypart(
-                $surveypart,
+            $records = $DB->get_records_sql(
+                'SELECT speo.id as surveypartexecutionoptionid, se.id as surveyexecutionid, ' .
+                'spe.id as surveypartexecutionid, spe.surveypartid ' .
+                'FROM {block_coursefeedback_surveyexecution} se ' .
+                'JOIN {block_coursefeedback_surveypartexecution} spe ON se.id = spe.surveyexecutionid ' .
+                'JOIN {block_coursefeedback_surveypartexecutionoption} speo ON spe.id = speo.surveypartexecutionid ' .
+                'WHERE se.courseid = :courseid ',
+                ['courseid' => $PAGE->course->id]
+            );
+
+            if (!$records) {
+                return;
+            }
+
+            $record = array_pop($records);
+
+            $surveypart = surveypart::get_record(['id' => $record->surveypartid]);
+            if (!$surveypart) {
+                return;
+            }
+
+            $templatedata = surveyitem_manager::get_templatedata_for_surveyparts(
+                [$surveypart],
                 language_manager::get_default_language_for_surveypart($surveypart->get('id'))
             );
-            $PAGE->requires->js_call_amd('block_coursefeedback/do_survey', 'doSurvey', [$templatedata]);
+
+            $surveydata = [
+                [
+                    'surveypartexecutionoptionid' => $record->surveypartexecutionoptionid,
+                    'pages' => $templatedata[array_key_first($templatedata)],
+                ],
+            ];
+
+            $PAGE->requires->js_call_amd('block_coursefeedback/do_survey', 'doSurvey', [$surveydata, $PAGE->course->id]);
         }
     }
 

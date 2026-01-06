@@ -47,4 +47,9 @@ class pagebreak extends surveyitemtype {
     public function get_settings_mform() {
         return null;
     }
+
+    #[\Override]
+    public function check_and_save_answers(array $answers): void {
+        // Intentionally left blank.
+    }
 }

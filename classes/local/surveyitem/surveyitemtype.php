@@ -51,6 +51,16 @@ abstract class surveyitemtype {
     abstract public function get_settings_mform();
 
     /**
+     * Checks and saves a collection of answers to surveyitems of this type.
+     * @param array $answers An array of tuples with the structure ['respsetid' => int, 'answer' => mixed,
+     * 'additionaldata' => mixed], where respsetid is the id to save the answer under,
+     * additionaldata contains data as given by {@see self::load_questiondata_for}
+     * and answer is the answer as given by the client
+     * @return void Return nothing, throw error if necessary.
+     */
+    abstract public function check_and_save_answers(array $answers): void;
+
+    /**
      * Extend this method to save the settings edited in the mform.
      *
      * @param int $surveyitemid

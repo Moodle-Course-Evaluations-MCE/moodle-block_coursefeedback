@@ -25,6 +25,7 @@
 namespace block_coursefeedback\local\surveyitem\multiplechoice;
 
 use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
+use core\exception\coding_exception;
 use core\lang_string;
 
 /**
@@ -40,5 +41,27 @@ class multiplechoice extends ms_choice {
     #[\Override]
     public function get_name(): lang_string {
         return new lang_string('multiplechoice', 'block_coursefeedback');
+    }
+
+    #[\Override]
+    public function check_and_save_answers(array $answers): void {
+        global $DB;
+        $to_insert = [];
+        foreach ($answers as $answer) {
+            if (!is_array($answer['answer'])) {
+                throw new coding_exception('Answer ' . json_encode($answer) . ' must be an array');
+            }
+            foreach ($answer['answer'] as $one_answer) {
+                if (!is_number($one_answer) || !isset($answer['additionaldata'][$one_answer])) {
+                    throw new coding_exception('Answer ' . json_encode($one_answer) . ' is not valid option.');
+                }
+                $to_insert[] = [
+                    'surveypartexecutionoptionresponseid' => $answer['respsetid'],
+                    'surveyitemid' => $answer['surveyitemid'],
+                    'value' => $one_answer,
+                ];
+            }
+        }
+        $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
     }
 }

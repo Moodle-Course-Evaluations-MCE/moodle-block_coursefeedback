@@ -52,4 +52,9 @@ class info extends surveyitemtype {
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         // Nothing to do.
     }
+
+    #[\Override]
+    public function check_and_save_answers(array $answers): void {
+        // Intentionally left blank.
+    }
 }

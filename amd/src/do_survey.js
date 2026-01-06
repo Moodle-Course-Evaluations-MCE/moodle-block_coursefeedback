@@ -14,11 +14,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import Templates from "core/templates";
+import Notification from 'core/notification';
 import {MultipleChoice} from "block_coursefeedback/surveyitems/multiplechoice";
 import {SingleChoice} from "block_coursefeedback/surveyitems/singlechoice";
 import {Text} from "block_coursefeedback/surveyitems/text";
 import {Scale} from "block_coursefeedback/surveyitems/scale";
 import {getStrings} from 'core/str';
+import Ajax from 'core/ajax';
 
 /**
  * Shows and submits a survey.
@@ -32,7 +34,7 @@ const surveyItemClasses = {
     'multiplechoice': MultipleChoice,
     'singlechoice': SingleChoice,
     'text': Text,
-    'scale': Scale,
+    'scalequestion': Scale,
 };
 
 /**
@@ -60,11 +62,16 @@ function createSurveyItemHandlers(surveyItems, questionRoot, values = {}) {
 
 /**
  * Shows the survey popup.
- * @param {object} pages
+ * @param {object} surveys
+ * @param {int} courseId
  * @returns {Promise<void>}
  */
-export async function doSurvey(pages) {
+export async function doSurvey(surveys, courseId) {
     const userNotificationsEl = document.getElementById('user-notifications');
+
+    const survey = surveys[0];
+    const surveyPartExecutionOptionId = survey.surveypartexecutionoptionid;
+    const pages = survey.pages;
 
     let currentPage = 0;
     const values = {};
@@ -92,25 +99,50 @@ export async function doSurvey(pages) {
     ]);
 
     /**
+     * Refreshes the text of the next / finish button.
+     */
+    function setNextButtonString() {
+        nextButton.textContent = currentPage === amountPages - 1 ? finishStr : nextStr;
+    }
+    setNextButtonString();
+
+    /**
      * Changes the page by saving current values and loading another page.
      * @param {int} delta Either 1 for forwards or -1 for backwards.
      * @returns {Promise<void>}
      */
     async function changePage(delta) {
-        for (let surveyItem of pages[currentPage]) {
+        for (let surveyItem of pages[currentPage] || []) {
             if (surveyItemHandlers[surveyItem.surveyitemid]) {
                 values[surveyItem.surveyitemid] = surveyItemHandlers[surveyItem.surveyitemid].getValue();
             }
         }
 
-        // TODO remove
-        if (currentPage + delta >= amountPages || currentPage + delta < 0) {
-            return;
-        }
-
         currentPage += delta;
         if (currentPage >= amountPages) {
-            // User clicked 'Finish'.
+
+            const answers = [];
+            for (let surveyItemId in values) {
+                answers.push({
+                    surveyitemid: surveyItemId,
+                    value: JSON.stringify(values[surveyItemId]),
+                });
+            }
+
+            try {
+                await Ajax.call([{
+                    methodname: 'block_coursefeedback_save_survey_answers',
+                    args: {
+                        courseid: courseId,
+                        surveyparts: [{
+                            surveypartexecutionoptionid: surveyPartExecutionOptionId,
+                            answers,
+                        }]
+                    }
+                }]);
+            } catch (e) {
+                void Notification.exception(e);
+            }
             return;
         }
 
@@ -123,7 +155,7 @@ export async function doSurvey(pages) {
         surveyRoot.style.setProperty('--current-page', currentPage + 1);
         surveyRoot.style.setProperty('--current-page-text', `'${currentPage + 1}'`);
         backButton.disabled = currentPage === 0;
-        nextButton.textContent = currentPage === amountPages - 1 ? finishStr : nextStr;
+        setNextButtonString();
     }
 
     backButton.addEventListener('click', () => changePage(-1));

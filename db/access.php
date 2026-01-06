@@ -45,4 +45,13 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    'block/coursefeedback:filloutsurvey' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_PREVENT,
+            'editingteacher' => CAP_PREVENT,
+        ],
+    ],
 ];

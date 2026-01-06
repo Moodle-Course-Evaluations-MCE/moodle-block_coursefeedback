@@ -113,7 +113,7 @@ abstract class ms_choice extends surveyitemtype {
             if (!isset($additionaldata[$record->surveyitemid])) {
                 $additionaldata[$record->surveyitemid] = [];
             }
-            $additionaldata[$record->surveyitemid][] = $record;
+            $additionaldata[$record->surveyitemid][$record->id] = $record;
         }
 
         return [$textids, $additionaldata];

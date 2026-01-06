@@ -28,6 +28,7 @@ namespace block_coursefeedback\local\surveyitem\scalequestion;
 use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use core\exception\coding_exception;
 use core\lang_string;
 
 /**
@@ -143,5 +144,28 @@ class scalequestion extends surveyitemtype {
         }
 
         return $structure;
+    }
+
+    #[\Override]
+    public function check_and_save_answers(array $answers): void {
+        global $DB;
+        $to_insert = [];
+        foreach ($answers as $answer) {
+            $metadata = $answer['additionaldata'];
+            if (
+                !is_number($answer['answer']) ||
+                $answer['answer'] == 0 && !$metadata->hasnoansweroption ||
+                $answer['answer'] < 0 ||
+                $answer['answer'] > $metadata->optionamount
+            ) {
+                throw new coding_exception('Answer ' . json_encode($answer) . ' is not a valid one');
+            }
+            $to_insert[] = [
+                'surveypartexecutionoptionresponseid' => $answer['respsetid'],
+                'surveyitemid' => $answer['surveyitemid'],
+                'value' => $answer['answer'],
+            ];
+        }
+        $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
     }
 }

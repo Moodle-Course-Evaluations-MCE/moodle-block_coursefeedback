@@ -25,6 +25,7 @@
 namespace block_coursefeedback\local\surveyitem\text;
 
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use core\exception\coding_exception;
 use core\lang_string;
 
 /**
@@ -50,5 +51,22 @@ class text extends surveyitemtype {
     #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         // Nothing to do.
+    }
+
+    #[\Override]
+    public function check_and_save_answers(array $answers): void {
+        global $DB;
+        $to_insert = [];
+        foreach ($answers as $answer) {
+            if (!is_string($answer['answer'])) {
+                throw new coding_exception('Answer ' . json_encode($answer) . ' is not a string.');
+            }
+            $to_insert[] = [
+                'surveypartexecutionoptionresponseid' => $answer['respsetid'],
+                'surveyitemid' => $answer['surveyitemid'],
+                'value' => $answer['answer'],
+            ];
+        }
+        $DB->insert_records('block_coursefeedback_surveyitemtextresponse', $to_insert);
     }
 }
