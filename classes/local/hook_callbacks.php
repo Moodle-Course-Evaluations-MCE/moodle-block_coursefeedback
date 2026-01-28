@@ -76,7 +76,11 @@ class hook_callbacks {
                 ],
             ];
 
-            $PAGE->requires->js_call_amd('block_coursefeedback/do_survey', 'doSurvey', [$surveydata, $PAGE->course->id]);
+            $PAGE->requires->js_call_amd(
+                'block_coursefeedback/do_survey',
+                'doSurvey',
+                [$surveydata, $PAGE->course->id, 'user-notifications', true]
+            );
         }
     }
 

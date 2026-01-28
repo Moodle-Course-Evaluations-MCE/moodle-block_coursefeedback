@@ -64,10 +64,12 @@ function createSurveyItemHandlers(surveyItems, questionRoot, values = {}) {
  * Shows the survey popup.
  * @param {object} surveys
  * @param {int} courseId
+ * @param {int} rootElementId
+ * @param {bool} canFinish
  * @returns {Promise<void>}
  */
-export async function doSurvey(surveys, courseId) {
-    const userNotificationsEl = document.getElementById('user-notifications');
+export async function doSurvey(surveys, courseId, rootElementId, canFinish) {
+    const userNotificationsEl = document.getElementById(rootElementId);
 
     const survey = surveys[0];
     const surveyPartExecutionOptionId = survey.surveypartexecutionoptionid;
@@ -102,7 +104,11 @@ export async function doSurvey(surveys, courseId) {
      * Refreshes the text of the next / finish button.
      */
     function setNextButtonString() {
-        nextButton.textContent = currentPage === amountPages - 1 ? finishStr : nextStr;
+        const lastBtn = currentPage === amountPages - 1;
+        nextButton.textContent = lastBtn ? finishStr : nextStr;
+        if (!canFinish) {
+            nextButton.disabled = lastBtn;
+        }
     }
     setNextButtonString();
 
@@ -118,9 +124,7 @@ export async function doSurvey(surveys, courseId) {
             }
         }
 
-        currentPage += delta;
-        if (currentPage >= amountPages) {
-
+        if (currentPage + delta >= amountPages) {
             const answers = [];
             for (let surveyItemId in values) {
                 if (values[surveyItemId] !== null) {
@@ -147,6 +151,7 @@ export async function doSurvey(surveys, courseId) {
             }
             return;
         }
+        currentPage += delta;
 
         const {html, js} = await Templates.renderForPromise(
             'block_coursefeedback/survey_questions',

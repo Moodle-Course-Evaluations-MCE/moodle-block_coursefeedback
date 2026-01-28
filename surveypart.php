@@ -60,6 +60,22 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     }
 }
 
+$PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
+$templatedata = surveyitem_manager::get_templatedata_for_surveyparts(
+    [$surveypart],
+    language_manager::get_default_language_for_surveypart($surveypart->get('id'))
+);
+$surveydata = [
+    [
+        'pages' => reset($templatedata),
+    ],
+];
+$PAGE->requires->js_call_amd(
+    'block_coursefeedback/do_survey',
+    'doSurvey',
+    [$surveydata, $PAGE->course->id, 'block_coursefeedback-surveyanchor', false]
+);
+
 echo $OUTPUT->header();
 
 $context = [];
@@ -133,6 +149,6 @@ $context['surveyitems'] = $records;
 
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
-$PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
+echo html_writer::div('', 'mt-5', ['id' => 'block_coursefeedback-surveyanchor']);
 
 echo $OUTPUT->footer();

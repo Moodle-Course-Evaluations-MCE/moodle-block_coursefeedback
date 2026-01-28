@@ -24,7 +24,9 @@
  */
 
 use block_coursefeedback\local\form\name_only_form;
+use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\surveyitem\surveyitem_manager;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -76,4 +78,6 @@ if ($mform->is_cancelled()) {
 
 echo $OUTPUT->header();
 $mform->display();
+
+echo html_writer::div('', '', ['id' => 'block_coursefeedback-surveyanchor']);
 echo $OUTPUT->footer();
