@@ -28,7 +28,7 @@ export class Scale extends SurveyItem {
     form = this.surveyItemRootElement.querySelector('form');
 
     getValue() {
-        return this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value;
+        return this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value || null;
     }
 
     setValue(value) {

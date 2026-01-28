@@ -147,23 +147,23 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function check_and_save_answers(array $answers): void {
+    public function check_and_save_answers($answers): void {
         global $DB;
         $to_insert = [];
         foreach ($answers as $answer) {
-            $metadata = $answer['additionaldata'];
+            $metadata = $answer->additionaldata;
             if (
-                !is_number($answer['answer']) ||
-                $answer['answer'] == 0 && !$metadata->hasnoansweroption ||
-                $answer['answer'] < 0 ||
-                $answer['answer'] > $metadata->optionamount
+                !is_number($answer->value) ||
+                $answer->value == 0 && !$metadata->hasnoansweroption ||
+                $answer->value < 0 ||
+                $answer->value > $metadata->optionamount
             ) {
-                throw new coding_exception('Answer ' . json_encode($answer) . ' is not a valid one');
+                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a valid one');
             }
             $to_insert[] = [
-                'surveypartexecutionoptionresponseid' => $answer['respsetid'],
-                'surveyitemid' => $answer['surveyitemid'],
-                'value' => $answer['answer'],
+                'surveypartexecutionoptionresponseid' => $answer->response_set_id,
+                'surveyitemid' => $answer->surveyitem_id,
+                'value' => $answer->value,
             ];
         }
         $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);

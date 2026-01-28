@@ -123,10 +123,12 @@ export async function doSurvey(surveys, courseId) {
 
             const answers = [];
             for (let surveyItemId in values) {
-                answers.push({
-                    surveyitemid: surveyItemId,
-                    value: JSON.stringify(values[surveyItemId]),
-                });
+                if (values[surveyItemId] !== null) {
+                    answers.push({
+                        surveyitemid: surveyItemId,
+                        value: JSON.stringify(values[surveyItemId]),
+                    });
+                }
             }
 
             try {

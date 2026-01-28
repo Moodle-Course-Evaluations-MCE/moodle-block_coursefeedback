@@ -18,6 +18,7 @@ namespace block_coursefeedback\external;
 
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -34,6 +35,39 @@ use core_external\external_value;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class save_survey_answers extends external_api {
+
+    /**
+     * Returns information about the active survey (with surveypartexecution and surveypartexecutionoptions) for the given courseid.
+     * @param int $courseid
+     * @return array [int surveypartexecutionid => [int surveypartexecutionoptionid => object record]], where record contains
+     * the surveyexecutionid, surveypartexecutionid, surveypartid and surveypartexecutionoptionid.
+     */
+    private static function get_active_survey_for_course(int $courseid): array {
+        global $DB;
+        $records = $DB->get_records_sql(
+            'SELECT speo.id as surveypartexecutionoptionid, se.id as surveyexecutionid, ' .
+            'spe.id as surveypartexecutionid, spe.surveypartid ' .
+            'FROM {block_coursefeedback_surveyexecution} se ' .
+            'JOIN {block_coursefeedback_surveypartexecution} spe ON se.id = spe.surveyexecutionid ' .
+            'JOIN {block_coursefeedback_surveypartexecutionoption} speo ON spe.id = speo.surveypartexecutionid ' .
+            'WHERE se.courseid = :courseid ',
+            ['courseid' => $courseid]
+        );
+
+        $structure = [];
+
+        foreach ($records as $record) {
+            $structure[$record->surveyexecutionid] ??= [];
+            $structure[$record->surveyexecutionid][$record->surveypartexecutionid] ??= [];
+            $structure[$record->surveyexecutionid][$record->surveypartexecutionid][$record->surveypartexecutionoptionid] = $record;
+        }
+
+        if (count($structure) > 1) {
+            throw new coding_exception('Multiple surveys active at the same time.');
+        }
+
+        return reset($structure) ?: [];
+    }
 
     /**
      * Parameter description.
@@ -83,39 +117,27 @@ class save_survey_answers extends external_api {
                 = $submittedsurveypart;
         }
 
-        $records = $DB->get_records_sql(
-            'SELECT speo.id as surveypartexecutionoptionid, se.id as surveyexecutionid, ' .
-            'spe.id as surveypartexecutionid, spe.surveypartid ' .
-            'FROM {block_coursefeedback_surveyexecution} se ' .
-            'JOIN {block_coursefeedback_surveypartexecution} spe ON se.id = spe.surveyexecutionid ' .
-            'JOIN {block_coursefeedback_surveypartexecutionoption} speo ON spe.id = speo.surveypartexecutionid ' .
-            'WHERE se.courseid = :courseid ',
-            ['courseid' => $courseid]
-        );
-
         $answers_by_surveypartexecutionid = [];
         $surveypartexecutionids_by_surveypartid = [];
 
-        $surveyexecutionid = null;
-        foreach ($records as $record) {
-            if ($surveyexecutionid && $surveyexecutionid != $record->surveyexecutionid) {
-                throw new coding_exception('Multiple surveys active at the same time.');
-            }
+        $transaction = $DB->start_delegated_transaction();
 
-            if (isset($submittedsurveyparts_by_surveypartexecutionoptionid[$record->surveypartexecutionoptionid])) {
-                if (isset($answers_by_surveypartexecutionid[$record->surveypartexecutionid])) {
-                    throw new coding_exception('Multiple different options chosen at the same time.');
+        $surveypartexecutions = self::get_active_survey_for_course($courseid);
+        foreach ($surveypartexecutions as $surveypartexecutionoptions) {
+            foreach ($surveypartexecutionoptions as $record) {
+                if (isset($submittedsurveyparts_by_surveypartexecutionoptionid[$record->surveypartexecutionoptionid])) {
+                    if (isset($answers_by_surveypartexecutionid[$record->surveypartexecutionid])) {
+                        throw new coding_exception('Multiple different options chosen at the same time.');
+                    }
+                    $answers_by_surveypartexecutionid[$record->surveypartexecutionid] =
+                        $submittedsurveyparts_by_surveypartexecutionoptionid[$record->surveypartexecutionoptionid];
                 }
-                $answers_by_surveypartexecutionid[$record->surveypartexecutionid] =
-                    $submittedsurveyparts_by_surveypartexecutionoptionid[$record->surveypartexecutionoptionid];
+                $surveypartexecutionids_by_surveypartid[$record->surveypartid] ??= [];
+                $surveypartexecutionids_by_surveypartid[$record->surveypartid][] = $record->surveypartexecutionid;
             }
-            $surveypartexecutionids_by_surveypartid[$record->surveypartid] ??= [];
-            $surveypartexecutionids_by_surveypartid[$record->surveypartid][] = $record->surveypartexecutionid;
         }
 
         $surveyparts = surveypart::get_surveyparts_by_id(array_keys($surveypartexecutionids_by_surveypartid));
-
-        $transaction = $DB->start_delegated_transaction();
 
         $data_by_surveyitemtype = [];
         foreach ($surveyparts as $surveypart) {
@@ -141,12 +163,12 @@ class save_survey_answers extends external_api {
                     }
                     $surveyitemtype = $surveyitem->get('surveyitemtype');
                     $data_by_surveyitemtype[$surveyitemtype] ??= [];
-                    $data_by_surveyitemtype[$surveyitemtype][] = [
-                        'respsetid' => $respsetid,
-                        'surveyitemid' => $surveyitem->get('id'),
-                        'answer' => json_decode($answers_by_surveyitemid[$surveyitem->get('id')]),
-                        'additionaldata' => $questiondata[$surveyitemtype][$surveyitem->get('id')],
-                    ];
+                    $data_by_surveyitemtype[$surveyitemtype][] = new surveyitemtype_answerdata(
+                        $respsetid,
+                        $surveyitem->get('id'),
+                        json_decode($answers_by_surveyitemid[$surveyitem->get('id')], depth: 10, flags: JSON_THROW_ON_ERROR),
+                        $questiondata[$surveyitemtype][$surveyitem->get('id')],
+                    );
                 }
             }
         }

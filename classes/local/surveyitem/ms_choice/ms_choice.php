@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition parent class for multiple and single choice questions.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -29,7 +29,7 @@ use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition parent class for multiple and single choice questions.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin

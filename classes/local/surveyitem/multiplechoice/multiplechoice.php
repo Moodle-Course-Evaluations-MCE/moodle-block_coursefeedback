@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition for a multiple choice question.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -29,7 +29,7 @@ use core\exception\coding_exception;
 use core\lang_string;
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition for a multiple choice question.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -44,20 +44,20 @@ class multiplechoice extends ms_choice {
     }
 
     #[\Override]
-    public function check_and_save_answers(array $answers): void {
+    public function check_and_save_answers($answers): void {
         global $DB;
         $to_insert = [];
         foreach ($answers as $answer) {
-            if (!is_array($answer['answer'])) {
-                throw new coding_exception('Answer ' . json_encode($answer) . ' must be an array');
+            if (!is_array($answer->value)) {
+                throw new coding_exception('Answer ' . json_encode($answer->value) . ' must be an array');
             }
-            foreach ($answer['answer'] as $one_answer) {
-                if (!is_number($one_answer) || !isset($answer['additionaldata'][$one_answer])) {
+            foreach ($answer->value as $one_answer) {
+                if (!is_number($one_answer) || !isset($answer->additionaldata[$one_answer])) {
                     throw new coding_exception('Answer ' . json_encode($one_answer) . ' is not valid option.');
                 }
                 $to_insert[] = [
-                    'surveypartexecutionoptionresponseid' => $answer['respsetid'],
-                    'surveyitemid' => $answer['surveyitemid'],
+                    'surveypartexecutionoptionresponseid' => $answer->response_set_id,
+                    'surveyitemid' => $answer->surveyitem_id,
                     'value' => $one_answer,
                 ];
             }

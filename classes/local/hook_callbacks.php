@@ -72,7 +72,7 @@ class hook_callbacks {
             $surveydata = [
                 [
                     'surveypartexecutionoptionid' => $record->surveypartexecutionoptionid,
-                    'pages' => $templatedata[array_key_first($templatedata)],
+                    'pages' => reset($templatedata),
                 ],
             ];
 
