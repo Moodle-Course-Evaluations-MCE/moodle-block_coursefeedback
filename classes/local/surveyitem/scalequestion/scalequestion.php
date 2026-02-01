@@ -115,11 +115,10 @@ class scalequestion extends surveyitemtype {
             $record = $additionaldata[$surveyitem->get('id')];
             $hasnaoption = (bool) $record->hasnoansweroption;
             $optionamount = $record->optionamount;
-            $show_scale = $record->forceshowscale || (
-                    !$lastsurveyitem || (
-                        $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid &&
-                        $lastsurveyitem->get('sortindex') === $surveyitem->get('sortindex') - 1
-                    ));
+            $show_scale = $record->forceshowscale ||
+                    !$lastsurveyitem ||
+                    $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid ||
+                    $lastsurveyitem->get('sortindex') !== $surveyitem->get('sortindex') - 1;
             $structure[$surveyitem->get('id')] += [
                 'max_pole' => $texts[$surveyitem->get('id')]['maxpole'],
                 'min_pole' => $texts[$surveyitem->get('id')]['minpole'],
