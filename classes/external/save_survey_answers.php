@@ -177,15 +177,13 @@ class save_survey_answers extends external_api {
             $surveyitemtypelib = surveyitem_manager::get_surveyitemtype($surveyitemtype);
             $surveyitemtypelib->check_and_save_answers($data);
         }
-
-        // TODO is this problematic? Should there be retries, or moving the start of the transaction to later?
         $transaction->allow_commit();
 
         return [];
     }
 
     /**
-     * TODO
+     * Currently does not return anything.
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([]);
