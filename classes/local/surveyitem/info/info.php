@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition for info elements.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -29,7 +29,7 @@ use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\lang_string;
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements.
+ * Survey item type definition for info elements.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -51,5 +51,10 @@ class info extends surveyitemtype {
     #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         // Nothing to do.
+    }
+
+    #[\Override]
+    public function check_and_save_answers($answers): void {
+        // Intentionally left blank.
     }
 }

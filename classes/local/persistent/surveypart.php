@@ -53,6 +53,17 @@ class surveypart extends persistent {
     }
 
     /**
+     * Fetches the surveypart persistent objects by their ids.
+     * @param int[] $surveypartids
+     * @return surveypart[]
+     */
+    public static function get_surveyparts_by_id(array $surveypartids): array {
+        global $DB;
+        [$insql, $params] = $DB->get_in_or_equal($surveypartids);
+        return self::get_records_select('id ' . $insql, $params);
+    }
+
+    /**
      * Returns the ids of all surveyitems belonging to this surveypart.
      * @return int[]
      */

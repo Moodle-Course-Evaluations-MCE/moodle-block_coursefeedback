@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Surveyitem manager.
+ * Survey item type definition for a text question.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -25,10 +25,11 @@
 namespace block_coursefeedback\local\surveyitem\text;
 
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use core\exception\coding_exception;
 use core\lang_string;
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements..
+ * Survey item type definition for a text question.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
@@ -50,5 +51,22 @@ class text extends surveyitemtype {
     #[\Override]
     public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
         // Nothing to do.
+    }
+
+    #[\Override]
+    public function check_and_save_answers($answers): void {
+        global $DB;
+        $to_insert = [];
+        foreach ($answers as $answer) {
+            if (!is_string($answer->value)) {
+                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a string.');
+            }
+            $to_insert[] = [
+                'surveypartexecutionoptionresponseid' => $answer->response_set_id,
+                'surveyitemid' => $answer->surveyitem_id,
+                'value' => $answer->value,
+            ];
+        }
+        $DB->insert_records('block_coursefeedback_surveyitemtextresponse', $to_insert);
     }
 }

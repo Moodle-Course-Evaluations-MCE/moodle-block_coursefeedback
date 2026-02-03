@@ -28,6 +28,7 @@ namespace block_coursefeedback\local\surveyitem\scalequestion;
 use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use core\exception\coding_exception;
 use core\lang_string;
 
 /**
@@ -114,11 +115,10 @@ class scalequestion extends surveyitemtype {
             $record = $additionaldata[$surveyitem->get('id')];
             $hasnaoption = (bool) $record->hasnoansweroption;
             $optionamount = $record->optionamount;
-            $show_scale = $record->forceshowscale || (
-                    !$lastsurveyitem || (
-                        $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid &&
-                        $lastsurveyitem->get('sortindex') === $surveyitem->get('sortindex') - 1
-                    ));
+            $show_scale = $record->forceshowscale ||
+                    !$lastsurveyitem ||
+                    $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid ||
+                    $lastsurveyitem->get('sortindex') !== $surveyitem->get('sortindex') - 1;
             $structure[$surveyitem->get('id')] += [
                 'max_pole' => $texts[$surveyitem->get('id')]['maxpole'],
                 'min_pole' => $texts[$surveyitem->get('id')]['minpole'],
@@ -143,5 +143,28 @@ class scalequestion extends surveyitemtype {
         }
 
         return $structure;
+    }
+
+    #[\Override]
+    public function check_and_save_answers($answers): void {
+        global $DB;
+        $to_insert = [];
+        foreach ($answers as $answer) {
+            $metadata = $answer->additionaldata;
+            if (
+                !is_number($answer->value) ||
+                $answer->value == 0 && !$metadata->hasnoansweroption ||
+                $answer->value < 0 ||
+                $answer->value > $metadata->optionamount
+            ) {
+                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a valid one');
+            }
+            $to_insert[] = [
+                'surveypartexecutionoptionresponseid' => $answer->response_set_id,
+                'surveyitemid' => $answer->surveyitem_id,
+                'value' => $answer->value,
+            ];
+        }
+        $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
     }
 }

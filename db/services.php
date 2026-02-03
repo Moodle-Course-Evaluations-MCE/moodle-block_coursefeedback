@@ -26,4 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
+    'block_coursefeedback_save_survey_answers' => [
+        'classname' => 'block_coursefeedback\external\save_survey_answers',
+        'description' => 'Saves survey answers',
+        'type' => 'write',
+        'ajax' => true,
+    ],
 ];

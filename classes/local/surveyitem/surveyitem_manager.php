@@ -25,6 +25,7 @@
 namespace block_coursefeedback\local\surveyitem;
 
 use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
@@ -73,21 +74,47 @@ class surveyitem_manager {
     }
 
     /**
+     * Fetches the surveyitems for the surveyparts.
+     * @param surveypart[] $surveyparts
+     * @return array [int $surveypartid => [surveyitem $surveyitem]]
+     */
+    public static function get_surveyitems_for_surveyparts(array $surveyparts): array {
+        // TODO improve performance.
+        $surveyitems = [];
+        foreach ($surveyparts as $surveypart) {
+            $surveyitems[$surveypart->get('id')] = $surveypart->get_surveyitems();
+        }
+        return $surveyitems;
+    }
+
+    /**
+     * Groups the sets of surveyitems by surveyitemtype.
+     * @param surveyitem[][] $surveyitemsets
+     * @return array [string $surveyitemtype => [surveyitem $surveyitem]]
+     */
+    public static function group_surveyitems_by_type(array $surveyitemsets): array {
+        $surveyitems_by_type = [];
+        foreach ($surveyitemsets as $surveyitemset) {
+            foreach ($surveyitemset as $surveyitem) {
+                $surveyitemtype = $surveyitem->get('surveyitemtype');
+                if (!isset($surveyitems_by_type[$surveyitemtype])) {
+                    $surveyitems_by_type[$surveyitemtype] = [];
+                }
+                $surveyitems_by_type[$surveyitemtype][] = $surveyitem;
+            }
+        }
+        return $surveyitems_by_type;
+    }
+
+    /**
      * Constructs the template data for a specific surveypart.
-     * @param surveypart $surveypart
+     * @param array $surveyparts
      * @param string $language
      * @return array template data
      */
-    public static function get_templatedata_for_surveypart(surveypart $surveypart, string $language): array {
-        $surveyitems = $surveypart->get_surveyitems();
-        $surveyitems_by_type = [];
-        foreach ($surveyitems as $surveyitem) {
-            $surveyitemtype = $surveyitem->get('surveyitemtype');
-            if (!isset($surveyitems_by_type[$surveyitemtype])) {
-                $surveyitems_by_type[$surveyitemtype] = [];
-            }
-            $surveyitems_by_type[$surveyitemtype][] = $surveyitem;
-        }
+    public static function get_templatedata_for_surveyparts(array $surveyparts, string $language): array {
+        $surveyitemsets = self::get_surveyitems_for_surveyparts($surveyparts);
+        $surveyitems_by_type = self::group_surveyitems_by_type($surveyitemsets);
 
         $alladditionaldata = [];
         $alltextids = [];
@@ -119,21 +146,48 @@ class surveyitem_manager {
                 ->create_question_structure($surveyitemsoftype, $texts, $alladditionaldata[$surveyitemtype]);
         }
 
-        $template_data = [];
-        $current_page = [];
+        $return = [];
 
-        foreach ($surveyitems as $surveyitem) {
-            $surveyitemtype = $surveyitem->get('surveyitemtype');
-            if ($surveyitemtype === 'pagebreak') {
-                $template_data[] = $current_page;
-                $current_page = [];
-                continue;
+        foreach ($surveyparts as $surveypart) {
+            $surveyitemset = $surveyitemsets[$surveypart->get('id')];
+
+            $template_data = [];
+            $current_page = [];
+
+            foreach ($surveyitemset as $surveyitem) {
+                $surveyitemtype = $surveyitem->get('surveyitemtype');
+                if ($surveyitemtype === 'pagebreak') {
+                    $template_data[] = $current_page;
+                    $current_page = [];
+                    continue;
+                }
+
+                $current_page[] = $template_data_by_type[$surveyitemtype][$surveyitem->get('id')];
             }
-
-            $current_page[] = $template_data_by_type[$surveyitemtype][$surveyitem->get('id')];
+            $template_data[] = $current_page;
+            $return[$surveypart->get('id')] = $template_data;
         }
-        $template_data[] = $current_page;
 
-        return $template_data;
+        return $return;
+    }
+
+    /**
+     * Gets the questiondata ('additionaldata') for all surveyitems in the given surveyparts.
+     * @param surveypart[] $surveyparts
+     * @return array [string $surveyitemtype => [int $surveyitemid => mixed $data]]
+     */
+    public static function get_questiondata_for_surveyparts(array $surveyparts): array {
+        $surveyitems = self::get_surveyitems_for_surveyparts($surveyparts);
+        $surveyitems_by_type = self::group_surveyitems_by_type($surveyitems);
+
+        $alladditionaldata = [];
+
+        foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
+            [$textidsperitem, $additionaldata] = self::get_surveyitemtype($surveyitemtype)
+                ->load_questiondata_for($surveyitemsoftype);
+            $alladditionaldata[$surveyitemtype] = $additionaldata;
+        }
+
+        return $alladditionaldata;
     }
 }

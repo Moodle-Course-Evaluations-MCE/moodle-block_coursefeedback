@@ -25,6 +25,7 @@
 namespace block_coursefeedback\local\surveyitem;
 
 use block_coursefeedback\local\persistent\surveyitem;
+use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\exception\coding_exception;
 use core\lang_string;
 
@@ -49,6 +50,16 @@ abstract class surveyitemtype {
      * @return string.
      */
     abstract public function get_settings_mform();
+
+    /**
+     * Checks and saves a collection of answers to surveyitems of this type.
+     * @param surveyitemtype_answerdata[] $answers An array of surveyitemtype_answerdata objects
+     * where respsetid is the id to save the answer under,
+     * additionaldata contains data as given by {@see self::load_questiondata_for}
+     * and value is the answer as given by the client
+     * @return void Return nothing, throw error if necessary.
+     */
+    abstract public function check_and_save_answers($answers): void;
 
     /**
      * Extend this method to save the settings edited in the mform.
