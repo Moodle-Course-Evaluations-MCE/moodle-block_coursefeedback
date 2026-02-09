@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\persistent;
 
+use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
@@ -40,15 +41,6 @@ class scale extends persistent {
     public const TABLE = 'block_coursefeedback_scale';
 
     /**
-     * Lists the fields which have (translatable) text in them.
-     */
-    public const TEXT_FIELDS = [
-        'minoptiontext',
-        'maxoptiontext',
-        'noansweroptiontext',
-    ];
-
-    /**
      * Return the definition of the properties of this model.
      * @return array
      */
@@ -63,20 +55,75 @@ class scale extends persistent {
             'optionamount' => [
                 'type' => PARAM_INT,
             ],
-            'minoptiontextid' => [
-                'type' => PARAM_INT,
+            'minoptiontext' => [
+                'type' => PARAM_RAW_TRIMMED,
             ],
-            'maxoptiontextid' => [
-                'type' => PARAM_INT,
+            'maxoptiontext' => [
+                'type' => PARAM_RAW_TRIMMED,
             ],
             'hasnoansweroption' => [
                 'type' => PARAM_BOOL,
             ],
-            'noansweroptiontextid' => [
-                'type' => PARAM_INT,
-                'required' => false,
+            'noansweroptiontext' => [
+                'type' => PARAM_RAW_TRIMMED,
+                'null' => NULL_ALLOWED,
                 'default' => null,
             ],
         ];
+    }
+
+    /**
+     * Loads and deserializes 'noansweroptiontext'.
+     *
+     * @return multilang_string|null
+     */
+    protected function get_noansweroptiontext(): ?multilang_string {
+        $raw = $this->raw_get('noansweroptiontext');
+        return $raw === null ? null : multilang_string::deserialize($raw);
+    }
+
+    /**
+     * Serializes and sets 'text'.
+     *
+     * @param multilang_string $text
+     */
+    protected function set_noansweroptiontext(multilang_string $text): void {
+        $this->raw_set('noansweroptiontext', $text->serialize());
+    }
+
+    /**
+     * Loads and deserializes 'minoptiontext'.
+     *
+     * @return multilang_string|null
+     */
+    protected function get_minoptiontext(): multilang_string {
+        return multilang_string::deserialize($this->raw_get('minoptiontext'));
+    }
+
+    /**
+     * Serializes and sets 'text'.
+     *
+     * @param multilang_string $text
+     */
+    protected function set_minoptiontext(multilang_string $text): void {
+        $this->raw_set('minoptiontext', $text->serialize());
+    }
+
+    /**
+     * Loads and deserializes 'maxoptiontext'.
+     *
+     * @return multilang_string|null
+     */
+    protected function get_maxoptiontext(): multilang_string {
+        return multilang_string::deserialize($this->raw_get('maxoptiontext'));
+    }
+
+    /**
+     * Serializes and sets 'text'.
+     *
+     * @param multilang_string $text
+     */
+    protected function set_maxoptiontext(multilang_string $text): void {
+        $this->raw_set('maxoptiontext', $text->serialize());
     }
 }

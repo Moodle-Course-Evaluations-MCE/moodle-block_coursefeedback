@@ -24,7 +24,9 @@
  */
 namespace block_coursefeedback\local\surveyitem\info;
 
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
+use moodle_url;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.
@@ -37,14 +39,12 @@ use block_coursefeedback\local\surveyitem\surveyitem_form;
 class info_form extends surveyitem_form {
 
     /**
-     * The definition of the form.
-     * @return void
+     * Initialize a new form.
+     *
+     * @param moodle_url $action
+     * @param surveypart $surveypart
      */
-    protected function definition() {
-        $mform =& $this->_form;
-
-        $mform->addElement('editor', 'text', get_string('text', 'block_coursefeedback'));
-
-        $this->add_action_buttons();
+    public function __construct(moodle_url $action, surveypart $surveypart) {
+        parent::__construct($action, $surveypart, text_label_string: 'text_in_lang');
     }
 }

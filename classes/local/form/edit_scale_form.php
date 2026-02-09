@@ -24,6 +24,9 @@
  */
 namespace block_coursefeedback\local\form;
 
+use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\lang_utils;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -41,12 +44,15 @@ class edit_scale_form extends \moodleform {
 
     /**
      * Defines forms elements
+     * @throws \coding_exception
      */
     public function definition() {
         $mform = $this->_form;
+        /** @var surveypart $surveypart */
+        $surveypart = $this->_customdata['surveypart'];
 
         $mform->addElement('hidden', 'surveypartid');
-        $mform->setConstant('surveypartid', $this->_customdata['surveypart']->get('id'));
+        $mform->setConstant('surveypartid', $surveypart->get('id'));
         $mform->setType('surveypartid', PARAM_INT);
 
         if ($this->_customdata['id'] ?? null) {
@@ -63,18 +69,30 @@ class edit_scale_form extends \moodleform {
         $mform->setType('optionamount', PARAM_INT);
         $mform->addRule('optionamount', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('text', 'minoptiontext', get_string('min_option_text', 'block_coursefeedback'));
-        $mform->setType('minoptiontext', PARAM_TEXT);
-        $mform->addRule('minoptiontext', get_string('required'), 'required', null, 'client');
+        $langs = lang_utils::get_language_labels($surveypart->get_languages());
 
-        $mform->addElement('text', 'maxoptiontext', get_string('max_option_text', 'block_coursefeedback'));
-        $mform->setType('maxoptiontext', PARAM_TEXT);
-        $mform->addRule('maxoptiontext', get_string('required'), 'required', null, 'client');
+        $mform->addElement(new multilang_header_element('text_header', $langs));
+        $mform->addElement(new multilang_input_element(
+            'minoptiontext',
+            get_string('min_option_text', 'block_coursefeedback'),
+            $langs,
+        ))->require_at_least_one_translation();
+
+        $mform->addElement(new multilang_input_element(
+            'maxoptiontext',
+            get_string('min_option_text', 'block_coursefeedback'),
+            $langs,
+        ))->require_at_least_one_translation();
 
         $mform->addElement('checkbox', 'hasnoansweroption', get_string('has_no_answer', 'block_coursefeedback'));
 
-        $mform->addElement('text', 'noansweroptiontext', get_string('no_answer_option_text', 'block_coursefeedback'));
-        $mform->setType('noansweroptiontext', PARAM_TEXT);
+        // TODO: Require noansweroptiontext if hasnoansweroption.
+        $mform->addElement(new multilang_input_element(
+            'noansweroptiontext',
+            get_string('no_answer_option_text', 'block_coursefeedback'),
+            $langs,
+        ));
+
         $mform->disabledIf('noansweroptiontext', 'hasnoansweroption', 'notchecked');
 
         $this->add_action_buttons();

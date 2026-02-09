@@ -23,10 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\form\name_only_form;
-use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\form\surveypart_edit_form;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitem_manager;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -58,23 +56,32 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveyparts.php');
 
-$mform = new name_only_form($PAGE->url);
+$mform = new surveypart_edit_form($PAGE->url);
 if ($surveypart) {
-    $mform->set_data($surveypart->to_record());
+    $mform->set_data($surveypart->to_form_data());
 }
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $mform->get_data()) {
+    $transaction = $DB->start_delegated_transaction();
+
+    $surveypart = new surveypart($id ?? 0, $data);
+
     if ($id) {
-        $surveypart = new surveypart($id, $data);
         $surveypart->update();
     } else {
-        $surveypart = new surveypart(0, $data);
         $surveypart->create();
     }
+
+    if (isset($data->languages)) {
+        $surveypart->set_languages($data->languages);
+    }
+
+    $transaction->allow_commit();
     redirect($returnurl);
-} // Else display form.
+}
+// Else display form.
 
 echo $OUTPUT->header();
 $mform->display();

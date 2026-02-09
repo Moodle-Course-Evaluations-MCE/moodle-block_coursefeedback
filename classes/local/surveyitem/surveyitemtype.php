@@ -25,6 +25,7 @@
 namespace block_coursefeedback\local\surveyitem;
 
 use block_coursefeedback\local\persistent\surveyitem;
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\exception\coding_exception;
 use core\lang_string;
@@ -64,75 +65,61 @@ abstract class surveyitemtype {
     /**
      * Extend this method to save the settings edited in the mform.
      *
-     * @param int $surveyitemid
+     * @param surveyitem $surveyitem
+     * @param surveypart $surveypart
      * @param object $formdata
-     * @param string $language
      */
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
+    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         throw new coding_exception('save_settings_mform must be implemented if surveyitemtype has settings.');
     }
 
     /**
      * Extend this method to load the settings for the mform.
      * @param surveyitem $surveyitem
-     * @param string $language
      * @return object
      */
-    public function load_settings_mform(surveyitem $surveyitem, string $language): object {
-        global $DB;
-
-        $record = $surveyitem->to_record();
-        if (isset($record->textid)) {
-            $texttranslation = $DB->get_record('block_coursefeedback_texttranslation', ['textid' => $record->textid]);
-            $record->text = [
-                'text' => $texttranslation->text,
-                'format' => $texttranslation->format ?? FORMAT_HTML,
-            ];
-        }
-
-        return $record;
+    public function load_settings_mform(surveyitem $surveyitem): object {
+        $multilang_text = $surveyitem->get('text');
+        return (object) [
+            'text' => array_map(fn($translation) => [
+                'text' => $translation,
+                'format' => $surveyitem->get('textformat'),
+            ], $multilang_text->translations),
+        ];
     }
 
     /**
      * Load more data for the surveyitems, works in tandem with {@see self::create_question_structure}.
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
-     * @return array[] Two arrays. First one is an associative array with surveyitemids as key,
-     * and an array of textids to load as value.
-     * Second one is an associative array with surveyitemids as key, and arbitrary data as value,
-     * which will get passed onto create_question_structure,
-     * to avoid loading the same things twice.
+     * @return array An associative array with surveyitemids as keys, and arbitrary data as value, which will get passed onto
+     *               create_question_structure.
      */
     public function load_questiondata_for(array $surveyitems): array {
-        $textids = [];
-        foreach ($surveyitems as $surveyitem) {
-            $surveyitemid = $surveyitem->get('id');
-            $textids[$surveyitemid] = [];
-            if ($textid = $surveyitem->get('textid')) {
-                $textids[$surveyitemid]['question'] = $textid;
-            }
-        }
-        return [$textids, []];
+        return [];
     }
 
     /**
      * Create template data from requested $texts and given $additionaldata by {@see self::load_questiondata_for}
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
-     * @param array $texts Array like the first returned value from {@see self::load_questiondata_for},
-     * but with textids replaced by loaded text.
-     * @param array $additionaldata Array from the second returned value from {@see self::load_questiondata_for}.
-     * @return array assocative array of surveyitemid => templatedata for surveyitemid.
+     * @param array $additionaldata Array from {@see self::load_questiondata_for}.
+     * @return array associative array of surveyitemid => templatedata for surveyitemid.
      */
-    public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
+    public function create_question_structure(array $surveyitems, array $additionaldata): array {
         $template_data = [];
         foreach ($surveyitems as $surveyitem) {
             $surveyitemid = $surveyitem->get('id');
+
             $template_data[$surveyitemid] = [
                 'type_' . $surveyitem->get('surveyitemtype') => true,
                 'type' => $surveyitem->get('surveyitemtype'),
                 'surveyitemid' => $surveyitemid,
             ];
-            if ($surveyitem->get('textid')) {
-                $template_data[$surveyitemid]['questiontext'] = $texts[$surveyitemid]['question'];
+
+            if ($text = $surveyitem->get('text')) {
+                $template_data[$surveyitemid]['questiontext'] = format_text(
+                    $text->translate(),
+                    $surveyitem->get('textformat') ?? FORMAT_PLAIN
+                );
             }
         }
         return $template_data;

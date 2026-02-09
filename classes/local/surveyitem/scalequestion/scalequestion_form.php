@@ -26,6 +26,8 @@ namespace block_coursefeedback\local\surveyitem\scalequestion;
 
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
+use coding_exception;
+use dml_exception;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.
@@ -39,10 +41,15 @@ class scalequestion_form extends surveyitem_form {
 
     /**
      * Definition for the form.
+     *
+     * @throws dml_exception
+     * @throws coding_exception
      */
-    protected function definition() {
-        global $DB, $PAGE;
+    #[\Override]
+    protected function definition(): void {
+        parent::definition();
 
+        global $DB, $PAGE;
         $mform =& $this->_form;
 
         /** @var surveypart $surveypart */
@@ -52,8 +59,7 @@ class scalequestion_form extends surveyitem_form {
 
         $scales = $DB->get_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')]);
 
-        $options = [
-        ];
+        $options = [];
         foreach ($scales as $scale) {
             $options[$scale->id] = $scale->name;
         }
@@ -65,18 +71,13 @@ class scalequestion_form extends surveyitem_form {
 
         $mform->addElement('select', 'scaleid', get_string('scale', 'block_coursefeedback'), $options);
 
-        $mform->addElement('editor', 'text', get_string('question', 'block_coursefeedback'));
-        $mform->setType('text', PARAM_RAW);
-
         $mform->addElement('checkbox', 'forceshowscale', get_string('forceshowscale', 'block_coursefeedback'));
-
-        $this->add_action_buttons();
 
         $mform->disable_form_change_checker();
     }
 
     #[\Override]
-    public function validation($data, $files) {
+    public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
 
         if ($data['scaleid'] <= 0) {

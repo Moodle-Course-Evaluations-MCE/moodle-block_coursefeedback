@@ -36,14 +36,4 @@ use block_coursefeedback\local\surveyitem\surveyitem_form;
  */
 class text_form extends surveyitem_form {
 
-    /**
-     * The definition for the form.
-     */
-    protected function definition() {
-        $mform =& $this->_form;
-
-        $mform->addElement('editor', 'text', get_string('text', 'block_coursefeedback'));
-
-        $this->add_action_buttons();
-    }
 }

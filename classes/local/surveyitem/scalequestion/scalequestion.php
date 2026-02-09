@@ -25,8 +25,9 @@
 
 namespace block_coursefeedback\local\surveyitem\scalequestion;
 
-use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\persistent\scale;
 use block_coursefeedback\local\persistent\surveyitem;
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\exception\coding_exception;
 use core\lang_string;
@@ -47,11 +48,11 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
+    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         global $DB;
         $formdata->forceshowscale ??= false;
-        $formdata->surveyitemid = $surveyitemid;
-        $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitemid]);
+        $formdata->surveyitemid = $surveyitem->get('id');
+        $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitem->get('id')]);
         if ($record) {
             foreach ($formdata as $key => $value) {
                 $record->$key = $value;
@@ -63,9 +64,9 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_settings_mform(surveyitem $surveyitem, string $language): object {
+    public function load_settings_mform(surveyitem $surveyitem): object {
         global $DB;
-        $data = parent::load_settings_mform($surveyitem, $language);
+        $data = parent::load_settings_mform($surveyitem);
         $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitem->get('id')]);
         if ($record) {
             $data->scaleid = $record->scaleid;
@@ -82,56 +83,55 @@ class scalequestion extends surveyitemtype {
     #[\Override]
     public function load_questiondata_for(array $surveyitems): array {
         global $DB;
-        [$textids, $additionaldata] = parent::load_questiondata_for($surveyitems);
-        $surveyitemids = [];
-        foreach ($surveyitems as $surveyitem) {
-            $surveyitemids[] = $surveyitem->get('id');
-        }
+        $additionaldata = parent::load_questiondata_for($surveyitems);
+
+        $surveyitemids = array_map(fn($surveyitem) => $surveyitem->get('id'), $surveyitems);
+        $scale_fields = scale::get_sql_fields('s', 's_');
         [$insql, $params] = $DB->get_in_or_equal($surveyitemids);
         $records = $DB->get_records_sql(
-            'SELECT sq.surveyitemid, sq.*, s.* FROM {block_coursefeedback_surveyitemscalequestion} sq ' .
+            "SELECT sq.surveyitemid, sq.*, $scale_fields FROM {block_coursefeedback_surveyitemscalequestion} sq " .
             'JOIN {block_coursefeedback_scale} s ON sq.scaleid = s.id ' .
             "WHERE sq.surveyitemid $insql",
             $params
         );
         foreach ($records as $record) {
-            $additionaldata[$record->surveyitemid] = $record;
-            $textids[$record->surveyitemid]['minpole'] = $record->minoptiontextid;
-            $textids[$record->surveyitemid]['maxpole'] = $record->maxoptiontextid;
-            if ($record->hasnoansweroption) {
-                $textids[$record->surveyitemid]['noansweroption'] = $record->noansweroptiontextid;
-            }
+            $additionaldata[$record->surveyitemid] = (object) [
+                ...array_filter((array) $record, fn($key) => !str_starts_with($key, 's_'), ARRAY_FILTER_USE_KEY),
+                'scale' => new scale(record: scale::extract_record($record, 's_')),
+            ];
         }
-        return [$textids, $additionaldata];
+        return $additionaldata;
     }
 
     #[\Override]
-    public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
-        $structure = parent::create_question_structure($surveyitems, $texts, $additionaldata);
+    public function create_question_structure(array $surveyitems, array $additionaldata): array {
+        $structure = parent::create_question_structure($surveyitems, $additionaldata);
 
         $lastsurveyitem = null;
 
         foreach ($surveyitems as $surveyitem) {
             $record = $additionaldata[$surveyitem->get('id')];
-            $hasnaoption = (bool) $record->hasnoansweroption;
-            $optionamount = $record->optionamount;
+            $hasnaoption = (bool) $record->scale->get('hasnoansweroption');
+            $optionamount = $record->scale->get('optionamount');
             $show_scale = $record->forceshowscale ||
                     !$lastsurveyitem ||
                     $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid ||
                     $lastsurveyitem->get('sortindex') !== $surveyitem->get('sortindex') - 1;
+
             $structure[$surveyitem->get('id')] += [
-                'max_pole' => $texts[$surveyitem->get('id')]['maxpole'],
-                'min_pole' => $texts[$surveyitem->get('id')]['minpole'],
+                'max_pole' => $record->scale->get('maxoptiontext')->translate(),
+                'min_pole' => $record->scale->get('minoptiontext')->translate(),
                 'has_na_option' => $hasnaoption,
-                'na_option' => $hasnaoption ? $texts[$surveyitem->get('id')]['noansweroption'] : null,
+                'na_option' => $hasnaoption ? $record->scale->get('noansweroptiontext')->translate() : null,
                 'optionamount' => $optionamount,
                 'options' => [],
                 'show_scale' => $show_scale,
             ];
+
             for ($i = 1; $i <= $optionamount; $i++) {
                 $text = null;
                 if ($i == 1 || $i == $optionamount) {
-                    $text = $texts[$surveyitem->get('id')][$i == 1 ? 'minpole' : 'maxpole'];
+                    $text = $record->scale->get($i == 1 ? 'minoptiontext' : 'maxoptiontext')->translate();
                 }
 
                 $structure[$surveyitem->get('id')]['options'][] = [
