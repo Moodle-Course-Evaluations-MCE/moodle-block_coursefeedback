@@ -73,6 +73,7 @@ $surveydata = [
 $PAGE->requires->js_call_amd(
     'block_coursefeedback/do_survey',
     'doSurvey',
+    // FIXME: Moodle limits this to 1024 characters, which we reach in just a few survey items.
     [$surveydata, $PAGE->course->id, 'block_coursefeedback-surveyanchor', false]
 );
 
