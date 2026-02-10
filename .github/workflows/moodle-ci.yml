@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Start PostgreSQL
-        run: docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -d postgres:14
+        run: docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -d postgres:15
 
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -58,7 +58,7 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci 4.5.8
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci 4.5.10
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
@@ -140,7 +140,7 @@ jobs:
 
       - name: Start PostgreSQL
         if: matrix.database == 'pgsql'
-        run: docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -d postgres:14
+        run: docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -d postgres:15
 
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -174,7 +174,7 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci 4.5.8
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci 4.5.10
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
