@@ -21,8 +21,8 @@ use Generator;
 use JsonException;
 use JsonSerializable;
 
-// PHPCS is confused by readonly classes.
-// phpcs:disable moodle.Commenting.InlineComment.DocBlock,moodle.Files.MoodleInternal.MoodleInternalGlobalState,moodle.Commenting.VariableComment.Missing
+// PHPCS is confused by constructor property promotion.
+// phpcs:disable moodle.Commenting.VariableComment.Missing
 /**
  * A representing one or more translations of a string entered by a user.
  *
@@ -31,7 +31,7 @@ use JsonSerializable;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-readonly class multilang_string implements JsonSerializable {
+class multilang_string implements JsonSerializable {
 
     /**
      * Initialize a multilang string consisting of the given translations.
