@@ -16,8 +16,8 @@
 
 namespace block_coursefeedback\local;
 
-// PHPCS is confused by readonly classes.
-// phpcs:disable moodle.Commenting.InlineComment.DocBlock,moodle.Files.MoodleInternal.MoodleInternalGlobalState,moodle.Commenting.VariableComment.Missing
+// PHPCS is confused by constructor parameters being promoted to class properties.
+// phpcs:disable moodle.Commenting.VariableComment.Missing
 /**
  * Struct for passing answerdata to surveyitemtypes {@see surveyitemtype::check_and_save_answers()}.
  *
@@ -26,7 +26,7 @@ namespace block_coursefeedback\local;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-readonly class surveyitemtype_answerdata {
+class surveyitemtype_answerdata {
 
     /**
      * Creates the answerdata.
@@ -37,10 +37,10 @@ readonly class surveyitemtype_answerdata {
      * @param mixed $additionaldata Additionaldata, as given by {@see surveyitemtype::load_questiondata_for()}
      */
     public function __construct(
-        public int $response_set_id,
-        public int $surveyitem_id,
-        public mixed $value,
-        public mixed $additionaldata,
+        public readonly int $response_set_id,
+        public readonly int $surveyitem_id,
+        public readonly mixed $value,
+        public readonly mixed $additionaldata,
     ) {
     }
 }
