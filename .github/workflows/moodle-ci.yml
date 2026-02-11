@@ -11,8 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        php: ['8.2', '8.3']
-        moodle-branch: ['MOODLE_405_STABLE', 'MOODLE_500_STABLE', 'MOODLE_501_STABLE']
+        php: &php_versions ['8.1', '8.2', '8.3']
+        moodle-branch: &moodle_branches ['MOODLE_405_STABLE', 'MOODLE_500_STABLE', 'MOODLE_501_STABLE']
         database: ['pgsql']
 
     steps:
@@ -107,8 +107,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3']
-        moodle-branch: ['MOODLE_405_STABLE', 'MOODLE_500_STABLE', 'MOODLE_501_STABLE']
+        php: *php_versions
+        moodle-branch: *moodle_branches
         database: ['mariadb', 'pgsql']
     steps:
       - name: Start MariaDB
