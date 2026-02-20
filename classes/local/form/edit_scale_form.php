@@ -80,7 +80,7 @@ class edit_scale_form extends \moodleform {
 
         $mform->addElement(new multilang_input_element(
             'maxoptiontext',
-            get_string('min_option_text', 'block_coursefeedback'),
+            get_string('max_option_text', 'block_coursefeedback'),
             $langs,
         ))->require_at_least_one_translation();
 
