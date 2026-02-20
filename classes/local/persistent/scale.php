@@ -63,6 +63,7 @@ class scale extends persistent {
             ],
             'hasnoansweroption' => [
                 'type' => PARAM_BOOL,
+                'default' => false,
             ],
             'noansweroptiontext' => [
                 'type' => PARAM_RAW_TRIMMED,
