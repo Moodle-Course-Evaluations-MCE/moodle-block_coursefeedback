@@ -88,6 +88,21 @@ class surveyitem extends persistent {
     }
 
     /**
+     * If this item has text, translate and format it using the saved `textformat`, or return null otherwise.
+     *
+     * @return string|null
+     */
+    public function maybe_format_text(): ?string {
+        if ($text = $this->get('text')) {
+            return format_text(
+                $text->translate(),
+                $this->get('textformat') ?? FORMAT_PLAIN
+            );
+        }
+        return null;
+    }
+
+    /**
      * Get surveyitem records for the surveypart.
      * @param int $surveypartid
      * @return array

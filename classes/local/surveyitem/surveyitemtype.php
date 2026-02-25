@@ -113,14 +113,8 @@ abstract class surveyitemtype {
                 'type_' . $surveyitem->get('surveyitemtype') => true,
                 'type' => $surveyitem->get('surveyitemtype'),
                 'surveyitemid' => $surveyitemid,
+                'questiontext' => $surveyitem->maybe_format_text(),
             ];
-
-            if ($text = $surveyitem->get('text')) {
-                $template_data[$surveyitemid]['questiontext'] = format_text(
-                    $text->translate(),
-                    $surveyitem->get('textformat') ?? FORMAT_PLAIN
-                );
-            }
         }
         return $template_data;
     }

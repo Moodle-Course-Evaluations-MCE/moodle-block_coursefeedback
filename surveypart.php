@@ -142,11 +142,8 @@ foreach ($surveyitems as $surveyitem) {
         'actionmenu' => $actionmenu->export_for_template($OUTPUT),
         'type' => $surveyitem->get('surveyitemtype'),
         'itemid' => $surveyitem->get('id'),
+        'text' => $surveyitem->maybe_format_text(),
     ];
-
-    if ($text = $surveyitem->get('text')) {
-        $item_context->text = format_text($text->translate(), $surveyitem->get('textformat'));
-    }
 
     $context['surveyitems'][] = $item_context;
 }
