@@ -15,41 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Survey item type definition for a page break element.
+ * Surveyitem manager.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_coursefeedback\local\surveyitem\pagebreak;
+namespace block_coursefeedback\local\surveyitem\emoji;
 
-use block_coursefeedback\local\surveyitem\info\multiplechoice_form;
-use block_coursefeedback\local\surveyitem\surveyitemtype;
-use core\lang_string;
+use block_coursefeedback\local\form\multilang_header_element;
+use block_coursefeedback\local\form\multilang_input_element;
+use block_coursefeedback\local\multilang_string;
+use block_coursefeedback\local\surveyitem\surveyitem_form;
+use block_coursefeedback\local\lang_utils;
+use core\exception\coding_exception;
+use HTML_QuickForm_element;
+use function array_combine;
+use function array_map;
 
 /**
- * Survey item type definition for a page break element.
+ * Form for emoji scales.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class pagebreak extends surveyitemtype {
+class emoji_surveyitem_form extends surveyitem_form {
 
     #[\Override]
-    public function get_name(): lang_string {
-        return new lang_string('pagebreak', 'block_coursefeedback');
-    }
+    protected function definition(): void {
+        parent::definition();
 
-    #[\Override]
-    public function get_settings_mform(): ?string {
-        return null;
-    }
+        $mform = $this->_form;
 
-    #[\Override]
-    public function check_and_save_answers($answers): void {
-        // Intentionally left blank.
+        $variants = array_map(fn($variant) => $variant['name'], emoji_surveyitem::get_available_variants());
+        $mform->addElement('select', 'variant', get_string('emoji_variants_label', 'block_coursefeedback'), $variants);
     }
 }

@@ -43,7 +43,7 @@ use core\lang_string;
 class scalequestion extends surveyitemtype {
 
     #[\Override]
-    public function get_settings_mform() {
+    public function get_settings_mform(): ?string {
         return scalequestion_form::class;
     }
 

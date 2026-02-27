@@ -29,6 +29,7 @@ use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\exception\coding_exception;
 use core\lang_string;
+use moodleform;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements..
@@ -48,9 +49,9 @@ abstract class surveyitemtype {
 
     /**
      * Return a class-string of a moodleform class for the settings of this element.
-     * @return string.
+     * @return class-string<moodleform>|null.
      */
-    abstract public function get_settings_mform();
+    abstract public function get_settings_mform(): ?string;
 
     /**
      * Checks and saves a collection of answers to surveyitems of this type.

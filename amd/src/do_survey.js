@@ -21,6 +21,7 @@ import {Text} from "block_coursefeedback/surveyitems/text";
 import {Scale} from "block_coursefeedback/surveyitems/scale";
 import {getStrings} from 'core/str';
 import Ajax from 'core/ajax';
+import {EmojiSurveyItem} from "./surveyitems/emoji";
 
 /**
  * Shows and submits a survey.
@@ -35,6 +36,7 @@ const surveyItemClasses = {
     'singlechoice': SingleChoice,
     'text': Text,
     'scalequestion': Scale,
+    'emoji': EmojiSurveyItem,
 };
 
 /**

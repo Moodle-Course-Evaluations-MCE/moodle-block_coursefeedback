@@ -46,7 +46,7 @@ class text extends surveyitemtype {
     }
 
     #[\Override]
-    public function get_settings_mform() {
+    public function get_settings_mform(): ?string {
         return text_form::class;
     }
 
