@@ -24,10 +24,10 @@
  */
 namespace block_coursefeedback\local\surveyitem\scalequestion;
 
-use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
 use coding_exception;
 use dml_exception;
+use function get_string;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.
@@ -47,17 +47,16 @@ class scalequestion_form extends surveyitem_form {
      */
     #[\Override]
     protected function definition(): void {
-        parent::definition();
-
         global $DB, $PAGE;
         $mform =& $this->_form;
 
-        /** @var surveypart $surveypart */
-        $surveypart = $this->_customdata['surveypart'];
+        // Entering text and then clicking on '- Create new scale -' would lead to the entered text being lost. There may be some
+        // potential to improve that flow, but for now, we show the scale select before the text editors in the hope that users will
+        // select / create a scale before entering the question text.
 
-        $PAGE->requires->js_call_amd('block_coursefeedback/create_new_scale_redirect', 'init', [$surveypart->get('id')]);
+        $PAGE->requires->js_call_amd('block_coursefeedback/create_new_scale_redirect', 'init', [$this->surveypart->get('id')]);
 
-        $scales = $DB->get_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')]);
+        $scales = $DB->get_records('block_coursefeedback_scale', ['surveypartid' => $this->surveypart->get('id')]);
 
         $options = [];
         foreach ($scales as $scale) {
@@ -71,9 +70,17 @@ class scalequestion_form extends surveyitem_form {
 
         $mform->addElement('select', 'scaleid', get_string('scale', 'block_coursefeedback'), $options);
 
-        $mform->addElement('checkbox', 'forceshowscale', get_string('forceshowscale', 'block_coursefeedback'));
-
+        // After creating a scale, users are redirected (back) to us with the new scale id as a query param. If that is the case,
+        // default to the newly created scale.
+        $scaleid = $this->optional_param('scaleid', 0, PARAM_INT);
+        if ($scaleid > 0) {
+            $mform->setDefault('scaleid', $scaleid);
+        }
         $mform->disable_form_change_checker();
+
+        parent::definition();
+
+        $mform->addElement('checkbox', 'forceshowscale', get_string('forceshowscale', 'block_coursefeedback'));
     }
 
     #[\Override]

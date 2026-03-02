@@ -140,7 +140,7 @@ if ($surveyitem) {
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
-} else if (($data = $mform->get_data()) && isset($data->submitbutton)) {
+} else if (($data = $mform->get_data()) && !$mform->no_submit_button_pressed()) {
     if (!$surveyitem) {
         $sortindex = surveyitem::count_records(['surveypartid' => $surveypartid]);
         $surveyitem = new surveyitem();

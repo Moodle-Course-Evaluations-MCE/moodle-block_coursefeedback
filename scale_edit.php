@@ -76,10 +76,10 @@ if ($data = $mform->get_data()) {
         $scale->set('surveypartid', $surveypartid);
     }
 
-
     $scale->set_many(scale::properties_filter($data));
     $scale->save();
 
+    $returnurl->param('scaleid', $scale->get('id'));
     redirect($returnurl);
 }
 
