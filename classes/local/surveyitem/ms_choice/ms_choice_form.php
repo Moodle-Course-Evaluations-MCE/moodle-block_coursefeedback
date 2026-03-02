@@ -94,11 +94,6 @@ class ms_choice_form extends surveyitem_form {
         for ($i = 0; $i < $choicesamount; $i++) {
             $answer_name = "answers[$i]";
 
-            $mform->insertElementBefore(
-                $mform->createElement('html', '<div class="move-open">'),
-                'add_blanks',
-            );
-
             $labels_by_langs = [];
             foreach ($this->surveypart->get_languages() as $language) {
                 $labels_by_langs[$language] = get_string('answer_i_in_lang', 'block_coursefeedback', [
@@ -116,11 +111,6 @@ class ms_choice_form extends surveyitem_form {
 
             // If we don't unset, future iterations will overwrite.
             unset($multilang_input);
-
-            $mform->insertElementBefore(
-                $mform->createElement('html', '</div>'),
-                'add_blanks',
-            );
         }
     }
 }
