@@ -115,14 +115,14 @@ class multilang_input_element extends MoodleQuickForm_group {
 
         $cleaned = array_intersect_key($values_by_language, $this->labels_by_languages);
         $cleaned = array_map(fn($value) => validate_param($value, PARAM_TEXT), $cleaned);
-        $cleaned = array_filter($cleaned, fn($text) => $text && !ctype_space($text));
 
-        if (!$cleaned) {
+        $text = multilang_string::from_array($cleaned);
+        if (!$text) {
             // If no translations or all translations empty, consider this element as not submitted.
             return null;
         }
 
-        return $this->_prepareValue(new multilang_string($cleaned), $assoc);
+        return $this->_prepareValue($text, $assoc);
     }
 
     #[\Override]

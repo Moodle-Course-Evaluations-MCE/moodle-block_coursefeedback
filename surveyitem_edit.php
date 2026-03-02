@@ -41,11 +41,11 @@ global $CFG, $DB, $OUTPUT, $PAGE;
  *
  * @param array<string, object> $editors
  * @param string[] $languages
- * @return array{multilang_string, int} The constructed multilang string and the format.
+ * @return array{multilang_string, int}|null The constructed multilang string and the format.
  * @throws moodle_exception If the editors use different formats.
  * @throws coding_exception If the data is invalid in another way.
  */
-function editors_to_multilang_string(array $editors, array $languages): array {
+function editors_to_multilang_string(array $editors, array $languages): ?array {
     $translations = [];
     $first_format = null;
 
@@ -73,7 +73,8 @@ function editors_to_multilang_string(array $editors, array $languages): array {
         $translations[$language] = $editor['text'];
     }
 
-    return [new multilang_string($translations), $first_format];
+    $text = multilang_string::from_array($translations);
+    return $text ? [$text, $first_format] : null;
 }
 
 require_login();

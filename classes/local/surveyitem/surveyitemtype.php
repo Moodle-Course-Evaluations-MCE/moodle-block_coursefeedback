@@ -80,12 +80,16 @@ abstract class surveyitemtype {
      */
     public function load_settings_mform(surveyitem $surveyitem): object {
         $multilang_text = $surveyitem->get('text');
-        return (object) [
-            'text' => array_map(fn($translation) => [
-                'text' => $translation,
-                'format' => $surveyitem->get('textformat'),
-            ], $multilang_text->translations),
-        ];
+        if ($multilang_text) {
+            return (object) [
+                'text' => array_map(fn($translation) => [
+                    'text' => $translation,
+                    'format' => $surveyitem->get('textformat'),
+                ], $multilang_text->translations),
+            ];
+        }
+
+        return (object) [];
     }
 
     /**

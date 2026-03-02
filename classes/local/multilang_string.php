@@ -34,23 +34,32 @@ use JsonSerializable;
 class multilang_string implements JsonSerializable {
 
     /**
-     * Initialize a multilang string consisting of the given translations.
+     * Private constructor, use {@see from_array()}.
+     *
+     * @param array $translations
+     */
+    private function __construct(
+        public readonly array $translations = []
+    ) {
+    }
+
+    /**
+     * Create a new multilang string from the given array or return null if it is empty or contains only whitespace.
      *
      * @param array $translations An array mapping language codes to translations. Any empty or whitespace-only translations will be
-     *                            silently ignored.
-     * @throws coding_exception If the array is empty.
+     *                            silently ignored. If that leaves nothing, null will be returned.
+     * @return static|null
      */
-    public function __construct(
-        public array $translations = []
-    ) {
-        foreach ($this->translations as $lang => $translation) {
+    public static function from_array(array $translations): ?static {
+        foreach ($translations as $lang => $translation) {
             if ($translation === '' || ctype_space($translation)) {
                 unset($translations[$lang]);
             }
         }
         if (!$translations) {
-            throw new coding_exception('Multi-lang string must have at least one translation.');
+            return null;
         }
+        return new static($translations);
     }
 
     /**
