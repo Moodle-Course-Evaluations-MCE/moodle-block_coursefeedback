@@ -62,7 +62,33 @@ class emoji_surveyitem extends surveyitemtype {
                     ],
                 ],
             ],
-            // 1 through 5: Very good, good, neutral, bad, very bad.
+            // 1 through 4: Very good, somewhat good, somewhat bad, bad.
+            '1_through_4' => [
+                'name' => get_string('emoji_variant_1_through_4', 'block_coursefeedback'),
+                'choices' => [
+                    [
+                        'emoji' => '😀',
+                        'text' => get_string('emoji_choice_1_of_4', 'block_coursefeedback'),
+                        'value' => 1,
+                    ],
+                    [
+                        'emoji' => '🙂',
+                        'text' => get_string('emoji_choice_2_of_4', 'block_coursefeedback'),
+                        'value' => 2,
+                    ],
+                    [
+                        'emoji' => '😕',
+                        'text' => get_string('emoji_choice_3_of_4', 'block_coursefeedback'),
+                        'value' => 3,
+                    ],
+                    [
+                        'emoji' => '😠',
+                        'text' => get_string('emoji_choice_4_of_4', 'block_coursefeedback'),
+                        'value' => 4,
+                    ],
+                ],
+            ],
+            // 1 through 5: Very good, somewhat good, neutral, somewhat bad, bad.
             '1_through_5' => [
                 'name' => get_string('emoji_variant_1_through_5', 'block_coursefeedback'),
                 'choices' => [
