@@ -104,7 +104,7 @@ $context['has_scales'] = (bool) $DB->count_records('block_coursefeedback_scale',
 $context['scale_url'] = $scale_url->out(false);
 $context['sesskey'] = sesskey();
 
-$surveyitems = surveyitem::get_records(['surveypartid' => $surveypart->get('id')]);
+$surveyitems = surveyitem::get_records(['surveypartid' => $surveypart->get('id')], 'sortindex');
 foreach ($surveyitems as $surveyitem) {
     $actionmenu = new \core\output\action_menu();
     $surveyitemtype = $surveyitem->get('surveyitemtype');
