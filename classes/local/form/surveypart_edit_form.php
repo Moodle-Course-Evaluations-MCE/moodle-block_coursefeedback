@@ -24,6 +24,9 @@
  */
 namespace block_coursefeedback\local\form;
 
+use coding_exception;
+use moodle_exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -37,17 +40,48 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class name_only_form extends \moodleform {
+class surveypart_edit_form extends \moodleform {
 
     /**
      * Defines forms elements
+     * @throws moodle_exception
      */
-    public function definition() {
+    public function definition(): void {
+        global $CFG;
         $mform = $this->_form;
 
         $mform->addElement('text', 'name', get_string('name', 'block_coursefeedback'));
         $mform->setType('name', PARAM_TEXT);
+        $mform->addRule('name', null, 'required', 'client');
+
+        $stringman = get_string_manager();
+        $installed_langs = $stringman->get_list_of_translations();
+
+        $mform->addElement(
+            'autocomplete',
+            'languages',
+            get_string('survey_languages', 'block_coursefeedback'),
+            $installed_langs,
+            [ 'multiple' => true ]
+        );
+        $mform->addRule('languages', get_string('survey_no_languages', 'block_coursefeedback'), 'required', 'client');
+        // Default to the user's language and the site language.
+        $mform->setDefault('languages', array_unique([current_language(), $CFG->lang]));
+
+        $site = get_site();
+        $sitename = format_string($site->shortname);
+        $mform->addHelpButton('languages', 'survey_languages', 'block_coursefeedback', a: ['sitename' => $sitename]);
 
         $this->add_action_buttons();
+    }
+
+    #[\Override]
+    public function validation($data, $files) {
+        if (empty($data['languages']) || !is_array($data['languages'])) {
+            // The validation of 'required' rules doesn't seem to work properly on autocomplete elements, so we check it manually.
+            return ['languages' => get_string('survey_no_languages', 'block_coursefeedback')];
+        }
+
+        return [];
     }
 }

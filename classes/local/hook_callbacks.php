@@ -16,7 +16,6 @@
 
 namespace block_coursefeedback\local;
 
-use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
@@ -64,10 +63,7 @@ class hook_callbacks {
                 return;
             }
 
-            $templatedata = surveyitem_manager::get_templatedata_for_surveyparts(
-                [$surveypart],
-                language_manager::get_default_language_for_surveypart($surveypart->get('id'))
-            );
+            $templatedata = surveyitem_manager::get_templatedata_for_surveyparts([$surveypart], current_language());
 
             $surveydata = [
                 [

@@ -24,7 +24,6 @@
  */
 
 use block_coursefeedback\local\manager\breadcrumbs_manager;
-use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
@@ -89,19 +88,16 @@ if (!$mformclass) {
 }
 
 /** @var surveyitem_form $mform */
-$mform = new $mformclass($PAGE->url, [
-    'surveypart' => $surveypart,
-]);
-$language = language_manager::get_default_language_for_surveypart($surveypartid);
+$mform = new $mformclass($PAGE->url, $surveypart);
 
 if ($surveyitem) {
-    $data = $surveyitemtype->load_settings_mform($surveyitem, $language);
+    $data = $surveyitemtype->load_settings_mform($surveyitem);
     $mform->set_data($data);
 }
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
-} else if (($data = $mform->get_data()) && isset($data->submitbutton)) {
+} else if (($data = $mform->get_data()) && !$mform->no_submit_button_pressed()) {
     if (!$surveyitem) {
         $sortindex = surveyitem::count_records(['surveypartid' => $surveypartid]);
         $surveyitem = new surveyitem();
@@ -111,25 +107,13 @@ if ($mform->is_cancelled()) {
     }
 
     if (isset($data->text)) {
-        $textid = $surveyitem->get('textid');
-        if ($textid) {
-            language_manager::update_string(
-                $textid,
-                $data->text['text'],
-                language_manager::get_default_language_for_surveypart($surveypart->get('id'))
-            );
-        } else {
-            $textid = language_manager::create_string(
-                $data->text['text'],
-                language_manager::get_default_language_for_surveypart($surveypart->get('id')),
-                $data->text['format']
-            );
-            $surveyitem->set('textid', $textid);
-        }
+        [$text, $textformat] = surveyitem_form::editors_to_multilang_string($data->text, $surveypart->get_languages());
+        $surveyitem->set('text', $text);
+        $surveyitem->set('textformat', $textformat);
     }
 
     $surveyitem->save();
-    $surveyitemtype->save_settings_mform($surveyitem->get('id'), $data, $language);
+    $surveyitemtype->save_settings_mform($surveyitem, $surveypart, $data);
     redirect($returnurl);
 } // Else display form.
 

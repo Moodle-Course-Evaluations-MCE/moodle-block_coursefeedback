@@ -24,7 +24,15 @@
  */
 namespace block_coursefeedback\local\surveyitem\ms_choice;
 
+use block_coursefeedback\local\form\multilang_header_element;
+use block_coursefeedback\local\form\multilang_input_element;
+use block_coursefeedback\local\multilang_string;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
+use block_coursefeedback\local\lang_utils;
+use core\exception\coding_exception;
+use HTML_QuickForm_element;
+use function array_combine;
+use function array_map;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.
@@ -38,52 +46,71 @@ class ms_choice_form extends surveyitem_form {
 
     /**
      * Definition for the form.
+     * @throws \coding_exception
      */
-    protected function definition() {
+    #[\Override]
+    protected function definition(): void {
+        parent::definition();
+
         $mform =& $this->_form;
 
         $mform->addElement('hidden', 'choices_amount');
         $mform->setType('choices_amount', PARAM_INT);
-        $mform->setDefault('choices_amount', 2);
+        $mform->setDefault('choices_amount', 3);
 
-        $mform->addElement('editor', 'text', get_string('question', 'block_coursefeedback'));
-        $mform->setType('text', PARAM_RAW);
+        $mform->addElement('header', 'answers_section', get_string('answers_section', 'block_coursefeedback'));
+        $mform->setExpanded('answers_section', ignoreuserstate: true);
+        $mform->addHelpButton('answers_section', 'answers_section', 'block_coursefeedback');
+
+        // Ideally, we'd hide the columns according to the current_language radio, but that doesn't seem possible for the headers
+        // since they are raw html elements.
+        $mform->addElement(new multilang_header_element('answers_column_headers', $this->surveypart->get_languages()));
 
         $mform->addElement('submit', 'add_blanks', get_string('add_more_blanks', 'block_coursefeedback'));
-
-        $this->add_action_buttons();
     }
 
     /**
      * Definition after data for the form.
+     * @throws \coding_exception
      */
-    public function definition_after_data() {
+    #[\Override]
+    public function definition_after_data(): void {
         $mform =& $this->_form;
 
         $choicesamountel = $mform->getElement('choices_amount');
 
         $data = $this->get_submitted_data();
-        $choicesamount = $choicesamountel->getValue() ?? 2;
+        $choicesamount = intval($choicesamountel->getValue());
 
+        // Always keep at least 3 answers / blanks.
+        $choicesamount = max($choicesamount, 3);
         if (isset($data->add_blanks)) {
+            // If the "add blanks" button was pressed, add 3 more blanks.
             $choicesamount += 3;
-            $choicesamountel->setValue($choicesamount);
         }
 
-        for ($i = 1; $i <= $choicesamount; $i++) {
-            $mform->insertElementBefore(
-                $mform->createElement('html', '<div class="move-open">'),
-                'add_blanks',
+        $mform->setConstant('choices_amount', $choicesamount);
+
+        for ($i = 0; $i < $choicesamount; $i++) {
+            $answer_name = "answers[$i]";
+
+            $labels_by_langs = [];
+            foreach ($this->surveypart->get_languages() as $language) {
+                $labels_by_langs[$language] = get_string('answer_i_in_lang', 'block_coursefeedback', [
+                    'i' => $i + 1,
+                    'lang' => lang_utils::get_language_label($language),
+                ]);
+            }
+
+            $multilang_input = new multilang_input_element(
+                $answer_name,
+                get_string('answer_i', 'block_coursefeedback', $i + 1),
+                $labels_by_langs
             );
-            $mform->insertElementBefore(
-                $mform->createElement('text', 'answer' . $i, get_string('answer-i', 'block_coursefeedback', $i)),
-                'add_blanks',
-            );
-            $mform->setType('answer' . $i, PARAM_RAW);
-            $mform->insertElementBefore(
-                $mform->createElement('html', '</div>'),
-                'add_blanks',
-            );
+            $mform->insertElementBefore($multilang_input, 'add_blanks');
+
+            // If we don't unset, future iterations will overwrite.
+            unset($multilang_input);
         }
     }
 }

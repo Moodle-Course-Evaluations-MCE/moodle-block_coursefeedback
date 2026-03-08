@@ -24,7 +24,6 @@
  */
 
 use block_coursefeedback\local\manager\breadcrumbs_manager;
-use block_coursefeedback\local\manager\language_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
@@ -61,10 +60,7 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
 }
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
-$templatedata = surveyitem_manager::get_templatedata_for_surveyparts(
-    [$surveypart],
-    language_manager::get_default_language_for_surveypart($surveypart->get('id'))
-);
+$templatedata = surveyitem_manager::get_templatedata_for_surveyparts([$surveypart], current_language());
 $surveydata = [
     [
         'pages' => reset($templatedata),
@@ -108,17 +104,18 @@ $context['has_scales'] = (bool) $DB->count_records('block_coursefeedback_scale',
 $context['scale_url'] = $scale_url->out(false);
 $context['sesskey'] = sesskey();
 
-$records = array_values(surveyitem::get_surveyitem_records_for_surveypart($surveypart->get('id')));
-foreach ($records as $record) {
+$surveyitems = surveyitem::get_records(['surveypartid' => $surveypart->get('id')], 'sortindex');
+foreach ($surveyitems as $surveyitem) {
     $actionmenu = new \core\output\action_menu();
+    $surveyitemtype = $surveyitem->get('surveyitemtype');
 
     // If item is editable.
-    if (surveyitem_manager::get_surveyitemtype($record->surveyitemtype)->get_settings_mform()) {
+    if (surveyitem_manager::get_surveyitemtype($surveyitemtype)->get_settings_mform()) {
         $editstr = get_string('edit');
         $actionmenu->add_secondary_action(new \core\output\action_link(
             new \moodle_url(
                 '/blocks/coursefeedback/surveyitem_edit.php',
-                ['type' => $record->surveyitemtype, 'surveypartid' => $id, 'id' => $record->id]
+                ['type' => $surveyitemtype, 'surveypartid' => $id, 'id' => $surveyitem->get('id')]
             ),
             $editstr,
             null,
@@ -131,7 +128,7 @@ foreach ($records as $record) {
     $actionmenu->add_secondary_action(new \core\output\action_link(
         new \moodle_url(
             $PAGE->url,
-            ['action' => 'delete', 'deleteid' => $record->id, 'sesskey' => sesskey()],
+            ['action' => 'delete', 'deleteid' => $surveyitem->get('id'), 'sesskey' => sesskey()],
         ),
         $deletestr,
         null,
@@ -140,13 +137,16 @@ foreach ($records as $record) {
     ));
 
     $actionmenu->set_kebab_trigger();
-    $record->actionmenu = $actionmenu->export_for_template($OUTPUT);
-    $record->type = $record->surveyitemtype;
-    $record->text = format_text($record->text, $record->format ?? FORMAT_HTML);
-    $record->itemid = $record->id;
-}
 
-$context['surveyitems'] = $records;
+    $item_context = (object) [
+        'actionmenu' => $actionmenu->export_for_template($OUTPUT),
+        'type' => $surveyitem->get('surveyitemtype'),
+        'itemid' => $surveyitem->get('id'),
+        'text' => $surveyitem->maybe_format_text(),
+    ];
+
+    $context['surveyitems'][] = $item_context;
+}
 
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 

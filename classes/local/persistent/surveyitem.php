@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\persistent;
 
+use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
@@ -54,12 +55,51 @@ class surveyitem extends persistent {
             'sortindex' => [
                 'type' => PARAM_INT,
             ],
-            'textid' => [
+            'text' => [
+                'type' => PARAM_RAW_TRIMMED,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
+            'textformat' => [
                 'type' => PARAM_INT,
                 'null' => NULL_ALLOWED,
                 'default' => null,
             ],
         ];
+    }
+
+    /**
+     * Loads and deserializes 'text'.
+     *
+     * @return multilang_string|null
+     */
+    protected function get_text(): ?multilang_string {
+        $raw = $this->raw_get('text');
+        return $raw === null ? null : multilang_string::deserialize($raw);
+    }
+
+    /**
+     * Serializes and sets 'text'.
+     *
+     * @param multilang_string|null $text
+     */
+    protected function set_text(?multilang_string $text): void {
+        $this->raw_set('text', $text?->serialize());
+    }
+
+    /**
+     * If this item has text, translate and format it using the saved `textformat`, or return null otherwise.
+     *
+     * @return string|null
+     */
+    public function maybe_format_text(): ?string {
+        if ($text = $this->get('text')) {
+            return format_text(
+                $text->translate(),
+                $this->get('textformat') ?? FORMAT_PLAIN
+            );
+        }
+        return null;
     }
 
     /**
@@ -70,8 +110,7 @@ class surveyitem extends persistent {
     public static function get_surveyitem_records_for_surveypart(int $surveypartid) {
         global $DB;
         return $DB->get_records_sql(
-            'SELECT si.id, si.surveyitemtype, si.sortindex, tt.text FROM {block_coursefeedback_surveyitem} si ' .
-            'LEFT JOIN {block_coursefeedback_texttranslation} tt ON si.textid = tt.textid ' .
+            'SELECT si.id, si.surveyitemtype, si.sortindex FROM {block_coursefeedback_surveyitem} si ' .
             'WHERE si.surveypartid = :surveypartid ' .
             'ORDER BY si.sortindex ',
             ['surveypartid' => $surveypartid]
@@ -87,10 +126,13 @@ class surveyitem extends persistent {
         $sortindex = $this->get('sortindex');
         $surveypartid = $this->get('surveypartid');
         $this->delete();
-        $DB->execute("UPDATE {" . self::TABLE . "} SET sortindex = sortindex - 1 " .
-            "WHERE sortindex > :thissortindex AND surveypartid = :surveypartid", [
+        $DB->execute(
+            "UPDATE {" . self::TABLE . "} SET sortindex = sortindex - 1 " .
+            "WHERE sortindex > :thissortindex AND surveypartid = :surveypartid",
+            [
                 'thissortindex' => $sortindex,
                 'surveypartid' => $surveypartid,
-        ]);
+            ]
+        );
     }
 }

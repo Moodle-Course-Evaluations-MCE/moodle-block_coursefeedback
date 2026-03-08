@@ -24,6 +24,8 @@
  */
 namespace block_coursefeedback\local\surveyitem\text;
 
+use block_coursefeedback\local\persistent\surveyitem;
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\exception\coding_exception;
 use core\lang_string;
@@ -49,7 +51,7 @@ class text extends surveyitemtype {
     }
 
     #[\Override]
-    public function save_settings_mform(int $surveyitemid, object $formdata, string $language): void {
+    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         // Nothing to do.
     }
 

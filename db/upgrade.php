@@ -637,5 +637,184 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2025112400, 'coursefeedback');
     }
 
+    if ($oldversion < 2026020900) {
+        // Define field isprimary to be dropped from block_coursefeedback_surveypart_language.
+        $table = new xmldb_table('block_coursefeedback_surveypart_language');
+        $field = new xmldb_field('isprimary');
+
+        // Conditionally launch drop field isprimary.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define key fk_textid (foreign) to be dropped form block_coursefeedback_surveyitemansweroption.
+        $table = new xmldb_table('block_coursefeedback_surveyitemansweroption');
+        $key = new xmldb_key('fk_textid', XMLDB_KEY_FOREIGN, ['textid'], 'block_coursefeedback_text', ['id']);
+
+        // Launch drop key fk_textid.
+        $dbman->drop_key($table, $key);
+
+        // Define field textid to be dropped from block_coursefeedback_surveyitemansweroption.
+        $field = new xmldb_field('textid');
+
+        // Conditionally launch drop field textid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field text to be added to block_coursefeedback_surveyitemansweroption.
+        $field = new xmldb_field('text', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'timemodified');
+
+        // Conditionally launch add field text.
+        if (!$dbman->field_exists($table, $field)) {
+            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+        }
+
+        // Define key fk_textid (foreign) to be dropped form block_coursefeedback_surveyitem.
+        $table = new xmldb_table('block_coursefeedback_surveyitem');
+        $key = new xmldb_key('fk_textid', XMLDB_KEY_FOREIGN, ['textid'], 'block_coursefeedback_text', ['id']);
+
+        // Launch drop key fk_textid.
+        $dbman->drop_key($table, $key);
+
+        // Define field textid to be dropped from block_coursefeedback_surveyitem.
+        $field = new xmldb_field('textid');
+
+        // Conditionally launch drop field textid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field text to be added to block_coursefeedback_surveyitem.
+        $field = new xmldb_field('text', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field text.
+        if (!$dbman->field_exists($table, $field)) {
+            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+        }
+
+        // Define field textformat to be added to block_coursefeedback_surveyitem.
+        $field = new xmldb_field('textformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1, 'text');
+
+        // Conditionally launch add field textformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table block_coursefeedback_texttranslation to be dropped.
+        $table = new xmldb_table('block_coursefeedback_texttranslation');
+
+        // Conditionally launch drop table for block_coursefeedback_texttranslation.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Define table block_coursefeedback_text to be dropped.
+        $table = new xmldb_table('block_coursefeedback_text');
+
+        // Conditionally launch drop table for block_coursefeedback_text.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Changing nullability of field text on table block_coursefeedback_surveyitem to nullable.
+        $table = new xmldb_table('block_coursefeedback_surveyitem');
+        $field = new xmldb_field('text', XMLDB_TYPE_TEXT, null, null, false, null, null, 'timemodified');
+
+        // Launch change of nullability for field text.
+        $dbman->change_field_notnull($table, $field);
+
+        // Changing nullability of field textformat on table block_coursefeedback_surveyitem to not null.
+        $field = new xmldb_field('textformat', XMLDB_TYPE_INTEGER, '2', null, false, null, null, 'text');
+
+        // Launch change of nullability for field textformat.
+        $dbman->change_field_notnull($table, $field);
+
+        // Define field minoptiontextid to be dropped from block_coursefeedback_scale.
+        $table = new xmldb_table('block_coursefeedback_scale');
+        $field = new xmldb_field('minoptiontextid');
+
+        // Conditionally launch drop field minoptiontextid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field maxoptiontextid to be dropped from block_coursefeedback_scale.
+        $field = new xmldb_field('maxoptiontextid');
+
+        // Conditionally launch drop field maxoptiontextid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field noansweroptiontextid to be dropped from block_coursefeedback_scale.
+        $field = new xmldb_field('noansweroptiontextid');
+
+        // Conditionally launch drop field noansweroptiontextid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field minoptiontext to be added to block_coursefeedback_scale.
+        $field = new xmldb_field('minoptiontext', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field minoptiontext.
+        if (!$dbman->field_exists($table, $field)) {
+            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+        }
+
+        // Define field maxoptiontext to be added to block_coursefeedback_scale.
+        $field = new xmldb_field('maxoptiontext', XMLDB_TYPE_TEXT, null, null, null, null, null, 'minoptiontext');
+
+        // Conditionally launch add field maxoptiontext.
+        if (!$dbman->field_exists($table, $field)) {
+            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+        }
+
+        // Define field noansweroptiontext to be added to block_coursefeedback_scale.
+        $field = new xmldb_field('noansweroptiontext', XMLDB_TYPE_TEXT, null, null, null, null, null, 'maxoptiontext');
+
+        // Conditionally launch add field noansweroptiontext.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            // Set it on all answers that should have it.
+            $DB->set_field(
+                $table->getName(),
+                'noansweroptiontext',
+                '{"en": "Migration placeholder"}',
+                ['hasnoansweroption' => true]
+            );
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026020900, 'coursefeedback');
+    }
+
     return true;
+}
+
+/**
+ * Adds a new non-null field, setting it to the given default on all existing records. Xmldb can't do this natively.
+ *
+ * @param database_manager $dbman
+ * @param xmldb_table $table
+ * @param xmldb_field $field
+ * @param mixed $default
+ * @return void
+ */
+function add_nonnull_field_with_default(database_manager $dbman, xmldb_table $table, xmldb_field $field, mixed $default): void {
+    global $DB;
+
+    // We can't add a new non-null field without a default, but TEXT fields can't have defaults (for some reason).
+    // So we add as nullable, then set our default and change to non-null.
+
+    $field->setNotNull(false);
+    $dbman->add_field($table, $field);
+    foreach ($DB->get_fieldset($table->getName(), 'id') as $id) {
+        $DB->update_record($table->getName(), ['id' => $id, $field->getName() => $default]);
+    }
+
+    $field->setNotNull(XMLDB_NOTNULL);
+    $dbman->change_field_notnull($table, $field);
 }
