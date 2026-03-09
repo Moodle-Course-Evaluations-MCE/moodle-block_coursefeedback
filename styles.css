@@ -1,3 +1,8 @@
+/* https://alpinejs.dev/directives/cloak */
+[x-cloak] {
+    display: none !important;
+}
+
 .coursefeedback-dnd-item.grabbed {
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
@@ -67,4 +72,81 @@
 
 .block_coursefeedback-btn-check:focus + .btn-outline-primary {
     outline: .2rem solid #000102;
+}
+
+.block_coursefeedback-course-event-slot-table {
+    min-width: var(--bs-breakpoint-lg);
+
+    td {
+        vertical-align: middle;
+    }
+
+    .btn-link {
+        padding: 0;
+
+        .icon {
+            margin: 0;
+        }
+    }
+
+    .action-buttons-column {
+        text-align: center;
+        max-width: max-content;
+    }
+
+    .hidden-preserving-width {
+        display: block;
+        visibility: hidden;
+        height: 0;
+    }
+
+    .editing-in-cell {
+        display: flex;
+        gap: .25rem;
+
+        input[type="text"],
+        select {
+            /* This will make the input occupy the free space in the cell without causing the cell to become bigger. */
+            flex-grow: 1;
+            width: 0;
+
+            &:not(:last-child) {
+                margin-right: .25rem;
+            }
+        }
+    }
+
+    td:has(.inplaceeditable.inplaceeditingon) {
+        vertical-align: initial;
+    }
+
+    .inplaceeditable-wrapper:has(.inplaceeditable.inplaceeditingon) {
+        display: flex;
+
+        > * {
+            /* Prevent the column width from changing when editing. */
+            width: 0;
+            flex-grow: 1;
+            max-width: max-content;
+
+            /* We don't want the row to become massive to accommodate the editor. Instead, we let it overflow. */
+            height: 0;
+        }
+    }
+
+    .inplaceeditable.inplaceeditingon {
+        /* Make the overflowing editor look like a popover. */
+        background: var(--bs-body-bg);
+        padding: .8rem;
+        border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        box-shadow: var(--bs-box-shadow);
+
+        .form-autocomplete-input {
+            margin: 0 !important;
+        }
+        input[type="text"] {
+            width: 100% !important;
+        }
+    }
 }

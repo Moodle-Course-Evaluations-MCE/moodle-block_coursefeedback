@@ -30,7 +30,7 @@ use dml_transaction_exception;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class surveypart extends persistent {
+class surveypart extends persistent_with_bulk_actions {
 
     /** Table name for the persistent. */
     public const TABLE = 'block_coursefeedback_surveypart';
@@ -106,28 +106,15 @@ class surveypart extends persistent {
      * @param string[] $languages
      */
     public function set_languages(array $languages): void {
-        global $DB;
-        $transaction = $DB->start_delegated_transaction();
-
         if (!$this->get('id')) {
             throw new coding_exception("Cannot set languages before inserting surveypart.");
         }
 
-        $existing = surveypart_language::get_records(['surveypartid' => $this->get('id')]);
-
-        $objs_to_remove = array_filter($existing, fn($lang_obj) => !in_array($lang_obj->get('language'), $languages));
-
-        $existing_langs = array_map(fn($lang) => $lang->get('language'), $existing);
-        $langs_to_add = array_filter($languages, fn($lang) => !in_array($lang, $existing_langs));
-        $objs_to_add = array_map(fn($lang) => new surveypart_language(0, (object)[
-            'surveypartid' => $this->get('id'),
-            'language' => $lang,
-        ]), $langs_to_add);
-
-        surveypart_language::bulk_delete($objs_to_remove);
-        surveypart_language::bulk_insert($objs_to_add);
-
-        $transaction->allow_commit();
+        surveypart_language::diff_create_delete(
+            conditions: [ 'surveypartid' => $this->get('id') ],
+            value_field: 'language',
+            values: $languages,
+        );
     }
 
     /**

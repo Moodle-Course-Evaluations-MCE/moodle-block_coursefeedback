@@ -1,0 +1,35 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/course_settings
+
+    Example context (json):
+}}
+
+<div>
+    {{#str}} survey_execution_period, block_coursefeedback {{/str}}:
+    {{# starttime_context }}{{> core/inplace_editable }}{{/starttime_context}}
+    &ndash;
+    {{# endtime_context }}{{> core/inplace_editable }}{{/endtime_context}}
+</div>
+<section class="mt-4">
+    <h3 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h3>
+
+    {{#table_context}}
+        {{>block_coursefeedback/course_event_slot_table}}
+    {{/table_context}}
+</section>

@@ -1,0 +1,138 @@
+/*
+ * This file is part of the QuestionPy Moodle plugin - https://questionpy.org
+ *
+ * Moodle is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Moodle is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import Alpine from './alpinejs';
+import Ajax from 'core/ajax';
+import ModalEvents from 'core/modal_events';
+import ModalDeleteCancel from 'core/modal_delete_cancel';
+import { get_string as getString } from 'core/str';
+
+/**
+ * Initializes AlpineJS for the course event table.
+ */
+export function init() {
+    Alpine.data('table', (courseId) => ({
+        courseId,
+
+        addingNewEvent: false,
+
+        async submitEvent(e) {
+            const form = e.target;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const args = Object.fromEntries(new FormData(form).entries());
+
+            const result = await Ajax.call([{
+                methodname: 'block_coursefeedback_upsert_event',
+                args
+            }])[0];
+
+            this.$refs.courseMappingTable.outerHTML = result.new_table_html;
+        }
+    }));
+
+    Alpine.data('event', (eventId, eventName) => ({
+        eventId,
+        eventName,
+
+        addingNewSlot: false,
+        editingEvent: false,
+
+        async submitSlot(e) {
+            const form = e.target;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const args = Object.fromEntries(new FormData(form).entries());
+            const result = await Ajax.call([{
+                methodname: 'block_coursefeedback_upsert_slot',
+                args
+            }])[0];
+
+            this.$refs.courseMappingTable.outerHTML = result.new_table_html;
+        },
+
+        async deleteEvent() {
+            const modal = await ModalDeleteCancel.create({
+                title: getString('confirm'),
+                body: getString('confirm_event_deletion', 'block_coursefeedback', this.eventName),
+                show: true,
+                removeOnClose: true,
+            });
+
+            modal.getRoot().on(ModalEvents.delete, async () => {
+                const result = await Ajax.call([{
+                    methodname: 'block_coursefeedback_delete_event',
+                    args: {
+                        courseid: this.courseId,
+                        eventid: this.eventId,
+                    }
+                }])[0];
+
+                this.$refs.courseMappingTable.outerHTML = result.new_table_html;
+            });
+        },
+    }));
+
+    Alpine.data('slot', (slotId, slotName) => ({
+        slotId,
+        slotName,
+
+        editingSlot: false,
+        addingUser: false,
+
+        startEditingSlotName() {
+            this.editingSlot = true;
+
+            this.$nextTick(() => {
+                this.$refs.slotNameInput.focus();
+                // Place the cursor at the end of the current input.
+                this.$refs.slotNameInput.selectionStart
+                    = this.$refs.slotNameInput.selectionEnd
+                    = this.$refs.slotNameInput.value.length;
+            });
+        },
+
+        async deleteSlot() {
+            const modal = await ModalDeleteCancel.create({
+                title: getString('confirm'),
+                body: getString('confirm_slot_deletion', 'block_coursefeedback', this.slotName),
+                show: true,
+                removeOnClose: true,
+            });
+
+            modal.getRoot().on(ModalEvents.delete, async () => {
+                const result = await Ajax.call([{
+                    methodname: 'block_coursefeedback_delete_slot',
+                    args: {
+                        courseid: this.courseId,
+                        slotid: slotId,
+                    }
+                }])[0];
+
+                this.$refs.courseMappingTable.outerHTML = result.new_table_html;
+            });
+        },
+    }));
+
+    Alpine.start();
+}

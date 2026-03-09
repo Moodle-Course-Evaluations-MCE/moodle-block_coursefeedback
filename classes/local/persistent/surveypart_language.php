@@ -29,13 +29,13 @@ use dml_exception;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class surveypart_language extends persistent {
+class surveypart_language extends persistent_with_bulk_actions {
 
     /** Table name for the persistent. */
     public const TABLE = 'block_coursefeedback_surveypart_language';
 
     #[\Override]
-    protected static function define_properties() {
+    protected static function define_properties(): array {
         return [
             'language' => [
                 // TODO: PARAM_LANG? That would restrict this to languages installed in the site and might lead to issues when
@@ -46,61 +46,5 @@ class surveypart_language extends persistent {
                 'type' => PARAM_INT,
             ],
         ];
-    }
-
-    /**
-     * Insert multiple instances at once, probably more efficiently than calling insert() multiple times.
-     *
-     * @param self[] $persistents
-     * @return void
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function bulk_insert(array $persistents): void {
-        foreach ($persistents as $persistent) {
-            $persistent->before_create();
-
-            $now = time();
-            $persistent->raw_set('timecreated', $now);
-            $persistent->raw_set('timemodified', $now);
-            global $USER;
-            $persistent->raw_set('usermodified', $USER->id);
-
-            if ($persistent->get('id') >= 1) {
-                throw new coding_exception('Cannot insert persistent that already has an ID.');
-            }
-        }
-
-        global $DB;
-        $DB->insert_records(static::TABLE, array_map(fn($persistent) => $persistent->to_record(), $persistents));
-
-        foreach ($persistents as $persistent) {
-            $persistent->after_create();
-        }
-    }
-
-    /**
-     * Delete multiple instances at once, probably more efficiently than calling insert() multiple times.
-     *
-     * @param self[] $persistents
-     * @return void
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public static function bulk_delete(array $persistents): void {
-        foreach ($persistents as $persistent) {
-            $persistent->before_delete();
-            if ($persistent->get('id') <= 0) {
-                throw new coding_exception('Cannot delete persistent that has no ID.');
-            }
-        }
-
-        global $DB;
-        $DB->delete_records_list(static::TABLE, 'id', array_map(fn($persistent) => $persistent->get('id'), $persistents));
-
-        foreach ($persistents as $persistent) {
-            $persistent->after_delete(true);
-            $persistent->raw_set('id', 0);
-        }
     }
 }

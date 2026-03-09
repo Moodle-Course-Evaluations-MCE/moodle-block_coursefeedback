@@ -247,12 +247,14 @@
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Teaching event (block_coursefeedback_course_eventtype) this SPE belongs to."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="frk_surveyexecutionid" TYPE="foreign" FIELDS="surveyexecutionid" REFTABLE="block_coursefeedback_surveyexecution" REFFIELDS="id"/>
         <KEY NAME="frk_surveypartid" TYPE="foreign" FIELDS="surveypartid" REFTABLE="block_coursefeedback_surveypart" REFFIELDS="id"/>
+        <KEY NAME="fk_eventid" TYPE="foreign" FIELDS="eventid" REFTABLE="block_coursefeedback_course_eventtype" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_coursefeedback_surveyexecution_user" COMMENT="Tracks which users took part in a specific surveyexecution (but with no connection to the users feedback!)">
