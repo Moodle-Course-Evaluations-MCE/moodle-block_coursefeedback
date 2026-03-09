@@ -22,7 +22,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\survey_execution_manager;
+use core\di;
+
 require('../../config.php');
+
+global $DB, $OUTPUT, $PAGE, $SITE;
 
 require_admin();
 
@@ -31,30 +36,17 @@ $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($SITE->fullname);
 
-$surveypartid = 1;
-if ($record = $DB->get_record('block_coursefeedback_surveyexecution', [])) {
-    $surveyexecutionid = $record->id;
-    $DB->update_record('block_coursefeedback_surveyexecution', [
-        'id' => $record->id,
-        'courseid' => 1,
-        'starttime' => 0,
-        'endtime' => time() + 365 * 24 * 60 * 60,
-    ]);
+$se_manager = di::get(survey_execution_manager::class);
+
+$deleteid = optional_param('deleteid', 0, PARAM_INT);
+if ($deleteid) {
+    $se_manager->delete_survey_execution($deleteid);
 } else {
-    $surveyexecutionid = $DB->insert_record('block_coursefeedback_surveyexecution', [
-        'courseid' => 1,
-        'starttime' => 0,
-        'endtime' => time() + 365 * 24 * 60 * 60,
-    ]);
+    $se_manager->create_survey_execution(
+        courseid: 1,
+        surveypartid: 1
+    );
 }
-$surveypartexecutionid = $DB->insert_record('block_coursefeedback_surveypartexecution', [
-    'surveyexecutionid' => $surveyexecutionid,
-    'surveypartid' => $surveypartid,
-]);
-$DB->insert_record('block_coursefeedback_surveypartexecutionoption', [
-    'surveypartexecutionid' => $surveyexecutionid,
-    'name' => 'The only option.',
-]);
 
 echo $OUTPUT->header();
 

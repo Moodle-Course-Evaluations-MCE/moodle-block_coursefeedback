@@ -1,0 +1,357 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/course_event_slot_table
+
+    Example context (json):
+    {
+      "survey_execution": {
+        "id": 1
+      },
+      "course": {
+        "id": 1,
+        "shortname": "ABCEFG"
+      },
+      "events": [
+        {
+          "id": 1,
+          "name": "Vorlesung für Lineare Algebra I",
+          "type": {
+            "name": "Vorlesung"
+          },
+          "available_event_types": [
+            {
+              "id": 1,
+              "name": "Vorlesung",
+              "selected": true
+            },
+            {
+              "id": 2,
+              "name": "Übung",
+              "selected": false
+            }
+          ],
+          "survey_part_execution": {
+            "id": 11,
+            "survey_part": {
+              "id": 1,
+              "name": "Fragebogen Mathematik V"
+            },
+            "rowspan": 2,
+            "first_slot": {
+              "id": 111,
+              "name": "-",
+              "allow_deletion": false,
+              "users_editable_context": {}
+            },
+            "more_slots": []
+          },
+          "available_survey_parts": [
+            {
+              "id": 1,
+              "name": "Fragebogen Mathe VL",
+              "selected": true
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Übung für Lineare Algebra I",
+          "type": {
+            "name": "Übung"
+          },
+          "available_event_types": [
+            {
+              "id": 1,
+              "name": "Vorlesung",
+              "selected": false
+            },
+            {
+              "id": 2,
+              "name": "Übung",
+              "selected": true
+            }
+          ],
+          "survey_part_execution": {
+            "id": 21,
+            "survey_part": {
+              "id": 2,
+              "name": "Fragebogen Mathematik Ü"
+            },
+            "rowspan": 4,
+            "first_slot": {
+              "id": 211,
+              "name": "Mo 12-14 Uhr",
+              "allow_deletion": true,
+              "users_editable_context": {}
+            },
+            "more_slots": [
+              {
+                "id": 212,
+                "name": "Do 14-16 Uhr",
+                "allow_deletion": true,
+                "users_editable_context": {}
+              },
+              {
+                "id": 213,
+                "name": "Fr 10-12 Uhr",
+                "allow_deletion": true,
+                "users_editable_context": {}
+              }
+            ]
+          },
+          "available_survey_parts": [
+            {
+              "id": 1,
+              "name": "Fragebogen Mathe VL",
+              "selected": true
+            }
+          ]
+        }
+      ],
+      "available_event_types": [
+        {
+          "id": 1,
+          "name": "Vorlesung"
+        },
+        {
+          "id": 2,
+          "name": "Übung"
+        }
+      ],
+      "available_survey_parts": [
+        {
+          "id": 1,
+          "name": "Fragebogen Mathe VL"
+        }
+      ]
+    }
+}}
+
+<div class="table-responsive-lg">
+    <table class="table block_coursefeedback-course-event-slot-table"
+           x-data="table({{course.id}})"
+           x-ref="courseMappingTable">
+        <thead>
+        <tr>
+            <th scope="col">{{#str}} teaching_event, block_coursefeedback {{/str}}</th>
+            <th scope="col">{{#str}} event_type, block_coursefeedback {{/str}}</th>
+            <th scope="col">{{#str}} surveypart, block_coursefeedback {{/str}}</th>
+            <th scope="col">{{! Event actions. }}</th>
+            <th scope="col">{{#str}} slot_name, block_coursefeedback {{/str}}</th>
+            <th scope="col">{{#str}} slot_users, block_coursefeedback {{/str}}</th>
+            <th scope="col">{{! Slot delete button. }}</th>
+        </tr>
+        </thead>
+        {{#events}}
+            <tbody x-data='event({{id}}, {{#quote}} {{name}} {{/quote}})'>
+            <tr x-data='slot({{survey_part_execution.first_slot.id}}, {{#quote}} {{survey_part_execution.first_slot.name}} {{/quote}})'>
+                <td rowspan="{{survey_part_execution.rowspan}}">
+                    <div :class='editingEvent && "hidden-preserving-width"'>{{name}}</div>
+                    <form class="editing-in-cell" x-show="editingEvent" x-cloak
+                          id="block_coursefeedback-event-form-{{uniqid}}-{{id}}" action="#"
+                          @submit.prevent="submitEvent($event); editingEvent = false">
+                        <input type="text" name="name" value="{{name}}" required
+                               class="form-control"
+                               title="{{#str}} event_name, block_coursefeedback {{/str}}"
+                               aria-label="{{#str}} event_name, block_coursefeedback {{/str}}"
+                               placeholder="{{#str}} event_name_placeholder, block_coursefeedback {{/str}}">
+
+                        <input type="hidden" name="surveyexecutionid" value="{{survey_execution.id}}">
+                        <input type="hidden" name="eventid" value="{{id}}">
+                    </form>
+                </td>
+                <td rowspan="{{survey_part_execution.rowspan}}">
+                    <div :class='editingEvent && "hidden-preserving-width"'>{{type.name}}</div>
+                    <div class="editing-in-cell" x-show="editingEvent" x-cloak>
+                        <select title="{{#str}} event_type, block_coursefeedback {{/str}}"
+                                aria-label="{{#str}} event_type, block_coursefeedback {{/str}}"
+                                class="form-select"
+                                name="eventtypeid"
+                                form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
+                                required>
+                            {{#available_event_types}}
+                                <option value="{{id}}" {{#selected}} selected {{/selected}}>{{name}}</option>
+                            {{/available_event_types}}
+                        </select>
+                    </div>
+                </td>
+                <td rowspan="{{survey_part_execution.rowspan}}">
+                    <div :class='editingEvent && "hidden-preserving-width"'>{{survey_part_execution.survey_part.name}}</div>
+                    <div class="editing-in-cell" x-show="editingEvent" x-cloak>
+                        <select title="{{#str}} surveypart, block_coursefeedback {{/str}}"
+                                aria-label="{{#str}} surveypart, block_coursefeedback {{/str}}"
+                                class="form-select"
+                                name="surveypartid"
+                                form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
+                                required>
+                            {{#available_survey_parts}}
+                                <option value="{{id}}" {{#selected}} selected {{/selected}}>{{name}}</option>
+                            {{/available_survey_parts}}
+                        </select>
+                    </div>
+                </td>
+                <td rowspan="{{survey_part_execution.rowspan}}" class="action-buttons-column">
+                    <button x-show="!editingEvent"
+                            class="btn btn-link text-body"
+                            aria-label="{{#str}} edit_event, block_coursefeedback {{/str}}"
+                            title="{{#str}} edit_event, block_coursefeedback {{/str}}" @click="editingEvent = true">
+                        {{#pix}}t/edit{{/pix}}
+                    </button>
+                    <button x-show="!editingEvent"
+                            class="btn btn-link text-danger"
+                            aria-label="{{#str}} delete_event, block_coursefeedback {{/str}}"
+                            title="{{#str}} delete_event, block_coursefeedback {{/str}}" @click="deleteEvent">
+                        {{#pix}}t/delete{{/pix}}
+                    </button>
+                    <button x-show="editingEvent" x-cloak
+                            type="submit" class="btn btn-link text-success"
+                            form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
+                            title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
+                        {{#pix}}t/check{{/pix}}
+                    </button>
+                    <button x-show="editingEvent" x-cloak
+                            type="reset" class="btn btn-link text-danger"
+                            form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
+                            title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                            @click="editingEvent = false">
+                        {{#pix}}e/cancel{{/pix}}
+                    </button>
+                </td>
+                {{#survey_part_execution.first_slot}}
+                    {{> block_coursefeedback/course_event_slot_table/slot_cells }}
+                {{/survey_part_execution.first_slot}}
+            </tr>
+            {{#survey_part_execution.more_slots}}
+                <tr x-data='slot({{id}}, {{#quote}} {{name}} {{/quote}})'>
+                    {{> block_coursefeedback/course_event_slot_table/slot_cells }}
+                </tr>
+            {{/survey_part_execution.more_slots}}
+            <tr @click.outside="addingNewSlot = false">
+                <td colspan="2">
+                    <a class="link-primary" role="button"
+                       :class="addingNewSlot && 'hidden-preserving-width'"
+                       @click="addingNewSlot = true; $nextTick(() => $refs.slotNameInput.focus())"
+                    >
+                        {{#pix}}t/add{{/pix}} {{#str}} add_new_slot_to, block_coursefeedback, {{name}} {{/str}}
+                    </a>
+                    <form id="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}" action="#"
+                          @submit.prevent="submitSlot($event); addingNewSlot = false"
+                          class="editing-in-cell"
+                          x-show="addingNewSlot" x-cloak>
+                        <input type="text"
+                               title="{{#str}} slot_name, block_coursefeedback {{/str}}"
+                               aria-label="{{#str}} slot_name, block_coursefeedback {{/str}}"
+                               placeholder="{{#str}} slot_name_placeholder, block_coursefeedback {{/str}}"
+                               class="form-control"
+                               x-ref="slotNameInput"
+                               name="name"
+                               required
+                        />
+
+                        <input type="hidden" name="surveypartexecutionid" value="{{survey_part_execution.id}}">
+                    </form>
+                </td>
+                <td class="action-buttons-column">
+                    <button :class="addingNewSlot || 'invisible'"
+                            type="submit" class="btn btn-link text-success"
+                            form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
+                            title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
+                        {{#pix}}t/check{{/pix}}
+                    </button>
+                    <button :class="addingNewSlot || 'invisible'"
+                            type="reset" class="btn btn-link text-danger"
+                            form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
+                            title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                            @click="addingNewSlot = false">
+                        {{#pix}}e/cancel{{/pix}}
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        {{/events}}
+        <tr x-show="!addingNewEvent">
+            <td colspan="7">
+                <a class="link-primary" role="button"
+                   @click="addingNewEvent = true; $nextTick(() => $refs.newEventNameInput.focus())"
+                >
+                    {{#pix}}t/add{{/pix}} {{#str}} add_new_event_to, block_coursefeedback, {{course.shortname}} {{/str}}
+                </a>
+            </td>
+        </tr>
+        <tr x-show="addingNewEvent" x-cloak @click.outside="addingNewEvent = false">
+            <td>
+                <form id="block_coursefeedback-new-event-form-{{uniqid}}" action="#"
+                      @submit.prevent="submitEvent($event); addingNewEvent = false"
+                      class="editing-in-cell">
+                    <input type="text"
+                           title="{{#str}} event_name, block_coursefeedback {{/str}}"
+                           aria-label="{{#str}} event_name, block_coursefeedback {{/str}}"
+                           placeholder="{{#str}} event_name_placeholder, block_coursefeedback {{/str}}"
+                           class="form-control"
+                           name="name"
+                           required
+                           x-ref="newEventNameInput">
+
+                    <input type="hidden" name="surveyexecutionid" value="{{survey_execution.id}}">
+                </form>
+            </td>
+            <td>
+                <div class="editing-in-cell">
+                    <select title="{{#str}} event_type, block_coursefeedback {{/str}}"
+                            aria-label="{{#str}} event_type, block_coursefeedback {{/str}}"
+                            class="form-select"
+                            form="block_coursefeedback-new-event-form-{{uniqid}}"
+                            name="eventtypeid"
+                            required>
+                        {{#available_event_types}}
+                            <option value="{{id}}">{{name}}</option>
+                        {{/available_event_types}}
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="editing-in-cell">
+                    <select title="{{#str}} surveypart, block_coursefeedback {{/str}}"
+                            aria-label="{{#str}} surveypart, block_coursefeedback {{/str}}"
+                            class="form-select"
+                            form="block_coursefeedback-new-event-form-{{uniqid}}"
+                            name="surveypartid"
+                            required>
+                        {{#available_survey_parts}}
+                            <option value="{{id}}">{{name}}</option>
+                        {{/available_survey_parts}}
+                    </select>
+                </div>
+            </td>
+            <td colspan="1" class="action-buttons-column">
+                <button type="submit" class="btn btn-link text-success"
+                        form="block_coursefeedback-new-event-form-{{uniqid}}"
+                        title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
+                    {{#pix}}t/check{{/pix}}
+                </button>
+                <button type="reset" class="btn btn-link text-danger"
+                        form="block_coursefeedback-new-event-form-{{uniqid}}"
+                        title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                        @click="addingNewEvent = false">
+                    {{#pix}}e/cancel{{/pix}}
+                </button>
+            </td>
+            <td colspan="3"></td>
+        </tr>
+    </table>
+</div>

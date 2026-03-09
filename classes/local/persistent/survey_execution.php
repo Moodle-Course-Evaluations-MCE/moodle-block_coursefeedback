@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of the QuestionPy Moodle plugin - https://questionpy.org
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,21 +16,20 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
- * Teaching event (Lehrveranstaltung) type (lecture, exercise, etc.) persistent class.
+ * Survey execution persistent class.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class eventtype extends persistent {
+class survey_execution extends persistent_with_bulk_actions {
 
     /** Table name for the persistent. */
-    public const TABLE = 'block_coursefeedback_eventtype';
+    public const TABLE = 'block_coursefeedback_surveyexecution';
 
     /**
      * Return the definition of the properties of this model.
@@ -38,19 +37,18 @@ class eventtype extends persistent {
      */
     protected static function define_properties(): array {
         return [
-            'name' => [
-                'type' => PARAM_TEXT,
-            ],
-            'active' => [
-                'type' => PARAM_BOOL,
-            ],
-            'organizationid' => [
+            'courseid' => [
                 'type' => PARAM_INT,
             ],
-            'surveypartid' => [
+            'starttime' => [
                 'type' => PARAM_INT,
-                'null' => NULL_ALLOWED,
-                'default' => null,
+            ],
+            'endtime' => [
+                'type' => PARAM_INT,
+            ],
+            'status' => [
+                'type' => PARAM_INT,
+                'default' => 0,
             ],
         ];
     }

@@ -32,4 +32,28 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'block_coursefeedback_upsert_slot' => [
+        'classname' => 'block_coursefeedback\external\upsert_slot',
+        'description' => 'Creates or updates a response slot',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_coursefeedback_upsert_event' => [
+        'classname' => 'block_coursefeedback\external\upsert_event',
+        'description' => 'Creates or updates a teaching event',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_coursefeedback_delete_event' => [
+        'classname' => 'block_coursefeedback\external\delete_event',
+        'description' => 'Deletes a teaching event',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_coursefeedback_delete_slot' => [
+        'classname' => 'block_coursefeedback\external\delete_slot',
+        'description' => 'Deletes a response slot',
+        'type' => 'write',
+        'ajax' => true,
+    ],
 ];

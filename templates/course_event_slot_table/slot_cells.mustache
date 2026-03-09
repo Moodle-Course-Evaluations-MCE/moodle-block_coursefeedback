@@ -1,0 +1,65 @@
+<td>
+    <div :class='editingSlot && "hidden-preserving-width"'>
+        <span>{{name}}</span>
+        <button class="btn btn-link text-body"
+                aria-label="{{#str}} edit_slot, block_coursefeedback {{/str}}"
+                title="{{#str}} edit_slot, block_coursefeedback {{/str}}"
+                @click="startEditingSlotName">
+            {{#pix}}t/edit{{/pix}}
+        </button>
+    </div>
+
+    <form class="editing-in-cell" x-show="editingSlot" x-cloak
+          id="block_coursefeedback-slot-form-{{uniqid}}-{{id}}" action="#"
+          @submit.prevent="submitSlot($event); editingSlot = false">
+        <input type="text"
+               title="{{#str}} slot_name, block_coursefeedback {{/str}}"
+               aria-label="{{#str}} slot_name, block_coursefeedback {{/str}}"
+               placeholder="{{#str}} slot_name_placeholder, block_coursefeedback {{/str}}"
+               class="form-control"
+               x-ref="slotNameInput"
+               name="name"
+               required
+               value="{{name}}"
+        />
+
+        <button x-show="editingSlot" x-cloak
+                type="submit" class="btn btn-link text-success"
+                title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
+            {{#pix}}t/check{{/pix}}
+        </button>
+        <button x-show="editingSlot" x-cloak
+                type="reset" class="btn btn-link text-danger"
+                title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                @click="editingSlot = false">
+            {{#pix}}e/cancel{{/pix}}
+        </button>
+
+        <input type="hidden" name="slotid" value="{{id}}">
+        <input type="hidden" name="surveypartexecutionid" value="{{survey_part_execution.id}}">
+    </form>
+</td>
+<td>
+    <div class="inplaceeditable-wrapper">
+        <div>
+            {{#users_editable_context}}
+                {{> core/inplace_editable }}
+            {{/users_editable_context}}
+        </div>
+    </div>
+</td>
+<td class="action-buttons-column">
+    <div {{^allow_deletion}}
+    {{! Disabled buttons aren't focusable or hoverable, so we attach the tooltip to a div. }}
+    tabindex="0"
+    title="{{#str}} last_slot_deletion_disabled, block_coursefeedback {{/str}}"
+    {{/allow_deletion}}>
+        <button :class="editingSlot && 'invisible'"
+                class="btn btn-link {{#allow_deletion}} text-danger {{/allow_deletion}}"
+                aria-label="{{#str}} delete_slot, block_coursefeedback {{/str}}"
+                title="{{#str}} delete_slot, block_coursefeedback {{/str}}"
+            {{^allow_deletion}} disabled {{/allow_deletion}}
+                @click="deleteSlot({{id}})"
+        >{{#pix}}t/delete{{/pix}}</button>
+    </div>
+</td>

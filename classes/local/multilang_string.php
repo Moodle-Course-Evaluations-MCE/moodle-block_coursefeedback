@@ -24,7 +24,7 @@ use JsonSerializable;
 // PHPCS is confused by constructor property promotion.
 // phpcs:disable moodle.Commenting.VariableComment.Missing
 /**
- * A representing one or more translations of a string entered by a user.
+ * A class representing one or more translations of a string entered by a user.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin

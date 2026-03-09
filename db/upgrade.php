@@ -910,6 +910,53 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026033101, 'coursefeedback');
     }
 
+    if ($oldversion < 2026041600) {
+        // Define field eventid to be added to block_coursefeedback_surveypartexecution.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecution');
+        $field = new xmldb_field('eventid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'timemodified');
+
+        // Conditionally launch add field eventid.
+        if (!$dbman->field_exists($table, $field)) {
+            $field->setNotNull(false);
+            $dbman->add_field($table, $field);
+
+            // We initialize the eventids to the first event defined for that course.
+            $records = $DB->get_records_sql("
+                SELECT spe.id AS spe_id, c.id AS course_id, MIN(COALESCE(e.id, 2147483647)) AS event_id
+                FROM {block_coursefeedback_surveypartexecution} spe
+                INNER JOIN {block_coursefeedback_surveyexecution} se ON se.id = spe.surveyexecutionid
+                INNER JOIN {course} c ON c.id = se.courseid
+                LEFT JOIN {block_coursefeedback_course_eventtype} e ON e.courseid = c.id
+                GROUP BY spe.id, c.id
+            ");
+            foreach ($records as $spe_id => $record) {
+                if ($record->event_id === 2147483647) {
+                    throw new coding_exception("Can't upgrade to 2026041600: Course '$record->course_id' has a survey part "
+                        . "execution '$spe_id', but no events.");
+                }
+
+                $DB->update_record('block_coursefeedback_surveypartexecution', ['id' => $spe_id, 'eventid' => $record->event_id]);
+            }
+
+            if ($DB->record_exists('block_coursefeedback_surveypartexecution', ['eventid' => null])) {
+                throw new coding_exception("Can't upgrade to 2026041600: There are still survey part executions without eventid.");
+            }
+
+            // Now that every SPE should have an eventid, make it non-null.
+            $field->setNotNull(XMLDB_NOTNULL);
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Define key fk_eventid (foreign) to be added to block_coursefeedback_surveypartexecution.
+        $key = new xmldb_key('fk_eventid', XMLDB_KEY_FOREIGN, ['eventid'], 'block_coursefeedback_course_eventtype', ['id']);
+
+        // Launch add key fk_eventid.
+        $dbman->add_key($table, $key);
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026041600, 'coursefeedback');
+    }
+
     return true;
 }
 
