@@ -26,6 +26,7 @@ namespace block_coursefeedback\local\surveyitem;
 
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\surveyitem\emoji\emoji_surveyitem;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
@@ -55,6 +56,7 @@ class surveyitem_manager {
             'text' => new text(),
             'pagebreak' => new pagebreak(),
             'scalequestion' => new scalequestion(),
+            'emoji' => new emoji_surveyitem(),
             'info' => new info(),
         ];
         return $surveyitemtypes;

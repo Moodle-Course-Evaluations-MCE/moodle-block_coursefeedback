@@ -33,3 +33,38 @@
         /* margin-top: -20px; */
     }
 }
+
+.coursefeedback-surveyitem-emoji {
+    display: flex;
+    gap: .75em;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+
+    .btn {
+        /* Grow all buttons evenly from 0, ensuring they have the same size when possible. */
+        flex-grow: 1;
+        flex-basis: 0;
+        max-width: 200px;
+
+        .coursefeedback-choice-emoji {
+            display: block;
+            font-size: 2em;
+        }
+    }
+}
+
+.block_coursefeedback-btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.block_coursefeedback-btn-check:checked + .btn-outline-primary {
+    color: #fff;
+    background-color: var(--primary, var(--bs-primary));
+    border-color: var(--primary, var(--bs-primary));
+}
+
+.block_coursefeedback-btn-check:focus + .btn-outline-primary {
+    outline: .2rem solid #000102;
+}

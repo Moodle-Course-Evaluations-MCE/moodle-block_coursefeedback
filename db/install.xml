@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/coursefeedback/db" VERSION="20260225" COMMENT="XMLDB file for Moodle blocks/coursefeedback"
+<XMLDB PATH="blocks/coursefeedback/db" VERSION="20260227" COMMENT="XMLDB file for Moodle blocks/coursefeedback"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -327,6 +327,17 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="frk_surveypartexecutionoptionresponseid" TYPE="foreign" FIELDS="surveypartexecutionoptionresponseid" REFTABLE="block_coursefeedback_surveypartexecutionoptionresp" REFFIELDS="id"/>
         <KEY NAME="frk_surveyitemid" TYPE="foreign" FIELDS="surveyitemid" REFTABLE="block_coursefeedback_surveyitem" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_coursefeedback_surveyitememojis" COMMENT="Table for Emoji-scale survey items">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="surveyitemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="variant" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_surveyitemid" TYPE="foreign" FIELDS="surveyitemid" REFTABLE="block_coursefeedback_surveyitem" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

@@ -791,6 +791,28 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026020900, 'coursefeedback');
     }
 
+    if ($oldversion < 2026022700) {
+        // Define table block_coursefeedback_surveyitememojis to be created.
+        $table = new xmldb_table('block_coursefeedback_surveyitememojis');
+
+        // Adding fields to table block_coursefeedback_surveyitememojis.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('surveyitemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('variant', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_coursefeedback_surveyitememojis.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fk_surveyitemid', XMLDB_KEY_FOREIGN, ['surveyitemid'], 'block_coursefeedback_surveyitem', ['id']);
+
+        // Conditionally launch create table for block_coursefeedback_surveyitememojis.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026022700, 'coursefeedback');
+    }
+
     return true;
 }
 

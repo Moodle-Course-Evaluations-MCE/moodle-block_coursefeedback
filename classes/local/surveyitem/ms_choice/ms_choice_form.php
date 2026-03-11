@@ -67,6 +67,7 @@ class ms_choice_form extends surveyitem_form {
         $mform->addElement(new multilang_header_element('answers_column_headers', $this->surveypart->get_languages()));
 
         $mform->addElement('submit', 'add_blanks', get_string('add_more_blanks', 'block_coursefeedback'));
+        $mform->registerNoSubmitButton('add_blanks');
     }
 
     /**
