@@ -52,3 +52,19 @@
         }
     }
 }
+
+.block_coursefeedback-btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.block_coursefeedback-btn-check:checked + .btn-outline-primary {
+    color: #fff;
+    background-color: var(--primary, var(--bs-primary));
+    border-color: var(--primary, var(--bs-primary));
+}
+
+.block_coursefeedback-btn-check:focus + .btn-outline-primary {
+    outline: .2rem solid #000102;
+}
