@@ -91,4 +91,31 @@ class organization_category extends persistent {
             }
         }
     }
+
+    /**
+     * Fetch the organization for the given category. This returns the organization associated with
+     * the nearest parent category, or null, if no parent category is associated with an organization.
+     * @param \core_course_category $category
+     * @return null|int The organization id.
+     */
+    public static function get_organizationid_for_category(\core_course_category $category): ?int {
+        global $DB;
+        $coursecatids = $category->get_parents();
+        $coursecatids[] = $category->id;
+        [$sql, $params] = $DB->get_in_or_equal($coursecatids, SQL_PARAMS_NAMED);
+
+        $organization_categories = $DB->get_records_select(
+            self::TABLE,
+            "coursecatid $sql",
+            $params,
+            fields: 'coursecatid, organizationid',
+        );
+        foreach (array_reverse($coursecatids) as $coursecatid) {
+            if (isset($organization_categories[$coursecatid])) {
+                return $organization_categories[$coursecatid]->organizationid;
+            }
+        }
+
+        return null;
+    }
 }

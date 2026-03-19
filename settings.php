@@ -26,15 +26,32 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
+    $ADMIN->add('blocksettings', new admin_category(
+        'block_coursefeedback_category',
+        new lang_string('settings:general_settings', 'block_coursefeedback'),
+    ));
+
     $settings = new admin_settingpage(
         'block_coursefeedback_settings',
         new lang_string('pluginname', 'block_coursefeedback'),
     );
 
-    $ADMIN->add('blocksettings', new admin_category(
-        'block_coursefeedback_category',
-        new lang_string('pluginname', 'block_coursefeedback')
-    ));
+    if ($ADMIN->fulltree) {
+        $settings->add(
+            new admin_setting_configselect(
+                'block_coursefeedback/course_organization_method',
+                new lang_string('settings:course_organization_method', 'block_coursefeedback'),
+                '',
+                1,
+                [
+                    1 => new lang_string('settings:course_organization_method:coursecat', 'block_coursefeedback'),
+                    2 => new lang_string('settings:course_organization_method:coursefield', 'block_coursefeedback'),
+                ],
+            )
+        );
+    }
+
+    $ADMIN->add('block_coursefeedback_category', $settings);
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_organization',

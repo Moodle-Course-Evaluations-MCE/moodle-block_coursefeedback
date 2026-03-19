@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+
 /**
  * Block coursefeedback is defined here.
  *
@@ -32,24 +34,42 @@ class block_coursefeedback extends block_base {
     }
 
     /**
+     * Generates the actual content of the block.
+     * @return string
+     */
+    private function generate_content(): string {
+        $output = '';
+
+        $mapper = course_organization_mapping::get_instance();
+        $organization = $mapper::get_organization_for_course($this->page->course);
+        if ($organization) {
+            $output .= html_writer::div($organization->get('name'));
+
+            $output .= html_writer::div(
+                html_writer::link(
+                    new moodle_url(
+                        '/blocks/coursefeedback/course_edit.php',
+                        ['id' => $this->page->course->id]
+                    ),
+                    'Evaluationseinstellungen'
+                ),
+                'mt-3'
+            );
+        }
+
+        return $output;
+    }
+
+    /**
      * Returns the block content.
      *
      * @return \stdClass
      */
     public function get_content(): \stdClass {
-        // Return already built content.
-        if ($this->content !== null) {
-            return $this->content;
-        }
 
-        // Initialize content object.
-        $this->content = new \stdClass();
-
-        // Fill text field via if/else.
-        if (!empty($this->config->text)) {
-            $this->content->text = $this->config->text;
-        } else {
-            $this->content->text = '';
+        if ($this->content === null) {
+            $this->content = new \stdClass();
+            $this->content->text = $this->generate_content();
         }
 
         return $this->content;
