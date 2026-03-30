@@ -112,35 +112,41 @@ class survey_execution_manager {
 
         [$lectureid, $exerciseid] = $this->ensure_eventtypes($org);
 
-        $lecture = (new teaching_event())->set_many([
-            'courseid' => $courseid,
-            'eventtypeid' => $lectureid,
-            'name' => 'Vorlesung für Lineare Algebra I',
-        ]);
+        $events = teaching_event::get_records(['courseid' => $courseid]);
+        if (!$events) {
+            $events[] = (new teaching_event())->set_many([
+                'courseid' => $courseid,
+                'eventtypeid' => $lectureid,
+                'name' => 'Vorlesung für Lineare Algebra I',
+            ])->create();
 
-        $exercise = (new teaching_event())->set_many([
-            'courseid' => $courseid,
-            'eventtypeid' => $exerciseid,
-            'name' => 'Übung für Lineare Algebra I',
-        ]);
-
-        teaching_event::bulk_insert([$lecture, $exercise]);
-
-        $spe_data = [
-            'surveyexecutionid' => $execution->get('id'),
-            'surveypartid' => $surveypart->get('id'),
-        ];
-        $spe = survey_part_execution::get_record($spe_data);
-        if (!$spe) {
-            $spe = (new survey_part_execution())->set_many($spe_data)->create();
+            $events[] = (new teaching_event())->set_many([
+                'courseid' => $courseid,
+                'eventtypeid' => $exerciseid,
+                'name' => 'Übung für Lineare Algebra I',
+            ])->create();
         }
 
-        $slot = response_slot::get_record(['surveypartexecutionid' => $spe->get('id')]);
-        if (!$slot) {
-            (new response_slot())->set_many([
-                'surveypartexecutionid' => $spe->get('id'),
-                'name' => '-',
-            ])->create();
+        foreach ($events as $event) {
+            $spe = survey_part_execution::get_record([
+                'surveyexecutionid' => $execution->get('id'),
+                'eventid' => $event->get('id'),
+            ]);
+            if (!$spe) {
+                $spe = (new survey_part_execution())->set_many([
+                    'surveyexecutionid' => $execution->get('id'),
+                    'eventid' => $event->get('id'),
+                    'surveypartid' => $surveypart->get('id'),
+                ])->create();
+
+                $slot = response_slot::get_record(['surveypartexecutionid' => $spe->get('id')], IGNORE_MULTIPLE);
+                if (!$slot) {
+                    (new response_slot())->set_many([
+                        'surveypartexecutionid' => $spe->get('id'),
+                        'name' => '-',
+                    ])->create();
+                }
+            }
         }
 
         $transaction->allow_commit();

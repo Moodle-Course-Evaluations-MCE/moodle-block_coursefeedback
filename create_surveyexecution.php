@@ -42,9 +42,12 @@ $deleteid = optional_param('deleteid', 0, PARAM_INT);
 if ($deleteid) {
     $se_manager->delete_survey_execution($deleteid);
 } else {
+    $courseid = required_param('courseid', PARAM_INT);
+    $surveypartid = required_param('surveypartid', PARAM_INT);
+
     $se_manager->create_survey_execution(
-        courseid: 1,
-        surveypartid: 1
+        courseid: $courseid,
+        surveypartid: $surveypartid
     );
 }
 
