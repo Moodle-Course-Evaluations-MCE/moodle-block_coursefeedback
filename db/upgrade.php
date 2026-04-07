@@ -813,6 +813,98 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026022700, 'coursefeedback');
     }
 
+    if ($oldversion < 2026032200) {
+        // Define field organizationid to be added to block_coursefeedback_eventtype.
+        $table = new xmldb_table('block_coursefeedback_eventtype');
+        $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'active');
+
+        // Conditionally launch add field organizationid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026032200, 'coursefeedback');
+    }
+
+    if ($oldversion < 2026033101) {
+        // Define field organizationid to be added to block_coursefeedback_surveypart.
+        $table = new xmldb_table('block_coursefeedback_surveypart');
+        $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'name');
+
+        // Conditionally launch add field organizationid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key fk_organizationid (foreign) to be added to block_coursefeedback_surveypart.
+        $table = new xmldb_table('block_coursefeedback_surveypart');
+        $key = new xmldb_key(
+            'fk_organizationid',
+            XMLDB_KEY_FOREIGN,
+            ['organizationid'],
+            'block_coursefeedback_organization',
+            ['id']
+        );
+
+        // Launch add key fk_organizationid.
+        $dbman->add_key($table, $key);
+
+        // Define field surveypartid to be added to block_coursefeedback_eventtype.
+        $table = new xmldb_table('block_coursefeedback_eventtype');
+        $field = new xmldb_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'organizationid');
+
+        // Conditionally launch add field surveypartid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key fk_surveypartid (foreign) to be added to block_coursefeedback_eventtype.
+        $table = new xmldb_table('block_coursefeedback_eventtype');
+        $key = new xmldb_key('fk_surveypartid', XMLDB_KEY_FOREIGN, ['surveypartid'], 'block_coursefeedback_surveypart', ['id']);
+
+        // Launch add key fk_surveypartid.
+        $dbman->add_key($table, $key);
+
+        // Define key fk_organizationid (foreign) to be added to block_coursefeedback_eventtype.
+        $table = new xmldb_table('block_coursefeedback_eventtype');
+        $key = new xmldb_key(
+            'fk_organizationid',
+            XMLDB_KEY_FOREIGN,
+            ['organizationid'],
+            'block_coursefeedback_organization',
+            ['id']
+        );
+
+        // Launch add key fk_organizationid.
+        $dbman->add_key($table, $key);
+
+        // Define field default_surveypartid to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field('default_surveypartid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'name');
+
+        // Conditionally launch add field default_surveypartid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key fk_default_surveypartid (foreign) to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $key = new xmldb_key(
+            'fk_default_surveypartid',
+            XMLDB_KEY_FOREIGN,
+            ['default_surveypartid'],
+            'block_coursefeedback_surveypart',
+            ['id']
+        );
+
+        // Launch add key fk_default_surveypartid.
+        $dbman->add_key($table, $key);
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026033101, 'coursefeedback');
+    }
+
     return true;
 }
 

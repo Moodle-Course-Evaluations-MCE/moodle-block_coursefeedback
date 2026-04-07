@@ -44,6 +44,11 @@ class surveypart extends persistent {
             'name' => [
                 'type' => PARAM_TEXT,
             ],
+            'organizationid' => [
+                'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
         ];
     }
 

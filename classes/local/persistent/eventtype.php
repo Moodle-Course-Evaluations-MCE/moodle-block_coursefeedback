@@ -15,29 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Surveypart persistent class.
+ * Event type persistent class
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_coursefeedback\local\persistent;
 
+use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
- * Surveypart persistent class.
+ * Event type persistent class
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organization extends persistent {
+class eventtype extends persistent {
 
     /** Table name for the persistent. */
-    public const TABLE = 'block_coursefeedback_organization';
+    public const TABLE = 'block_coursefeedback_eventtype';
 
     /**
      * Return the definition of the properties of this model.
@@ -48,7 +49,13 @@ class organization extends persistent {
             'name' => [
                 'type' => PARAM_TEXT,
             ],
-            'default_surveypartid' => [
+            'active' => [
+                'type' => PARAM_BOOL,
+            ],
+            'organizationid' => [
+                'type' => PARAM_INT,
+            ],
+            'surveypartid' => [
                 'type' => PARAM_INT,
                 'null' => NULL_ALLOWED,
                 'default' => null,
