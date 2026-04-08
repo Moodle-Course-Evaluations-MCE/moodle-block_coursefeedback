@@ -1,5 +1,6 @@
 /* https://alpinejs.dev/directives/cloak */
 [x-cloak] {
+    /* stylelint-disable-next-line declaration-no-important */
     display: none !important;
 }
 
@@ -142,11 +143,14 @@
         border-radius: var(--bs-border-radius);
         box-shadow: var(--bs-box-shadow);
 
+        /* The autocomplete input uses some important styles (through Bootstrap utility classes) we need to override. */
+        /* stylelint-disable declaration-no-important */
         .form-autocomplete-input {
             margin: 0 !important;
         }
         input[type="text"] {
             width: 100% !important;
         }
+        /* stylelint-enable */
     }
 }
