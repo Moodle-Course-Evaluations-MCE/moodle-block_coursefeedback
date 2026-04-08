@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // packages/alpinejs/src/scheduler.js
 var flushPending = false;
 var flushing = false;
