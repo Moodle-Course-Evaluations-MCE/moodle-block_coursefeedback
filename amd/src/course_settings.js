@@ -21,10 +21,7 @@ import ModalEvents from 'core/modal_events';
 import ModalDeleteCancel from 'core/modal_delete_cancel';
 import { get_string as getString } from 'core/str';
 
-/**
- * Initializes AlpineJS for the course event table.
- */
-export function init() {
+document.addEventListener('alpine:init', () => {
     Alpine.data('table', (courseId) => ({
         courseId,
 
@@ -133,6 +130,4 @@ export function init() {
             });
         },
     }));
-
-    Alpine.start();
-}
+});

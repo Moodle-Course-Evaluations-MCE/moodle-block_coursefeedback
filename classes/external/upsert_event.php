@@ -16,14 +16,13 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\course_event_slot_table;
 use block_coursefeedback\local\course_feedback_data;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\renderables\course_event_slot_table;
 use coding_exception;
 use context_course;
 use core_external\external_api;
