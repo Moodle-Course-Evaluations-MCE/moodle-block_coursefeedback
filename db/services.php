@@ -56,4 +56,10 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'block_coursefeedback_update_survey_execution' => [
+        'classname' => 'block_coursefeedback\external\update_survey_execution',
+        'description' => 'Updates a survey execution',
+        'type' => 'write',
+        'ajax' => true,
+    ],
 ];

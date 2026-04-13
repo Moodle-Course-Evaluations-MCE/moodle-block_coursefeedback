@@ -75,19 +75,22 @@
     outline: .2rem solid #000102;
 }
 
+#page-blocks-coursefeedback-course {
+    .btn-link {
+        padding: .1em;
+        border-width: 0;
+    }
+
+    .icon {
+        margin: 0;
+    }
+}
+
 .block_coursefeedback-course-event-slot-table {
     min-width: var(--bs-breakpoint-lg, 992px);
 
     td {
         vertical-align: middle;
-    }
-
-    .btn-link {
-        padding: 0;
-
-        .icon {
-            margin: 0;
-        }
     }
 
     .action-buttons-column {
@@ -145,12 +148,30 @@
 
         /* The autocomplete input uses some important styles (through Bootstrap utility classes) we need to override. */
         /* stylelint-disable declaration-no-important */
+
         .form-autocomplete-input {
             margin: 0 !important;
         }
+
         input[type="text"] {
             width: 100% !important;
         }
+
         /* stylelint-enable */
+    }
+}
+
+.block_coursefeedback-survey-execution-period {
+    > a {
+        /* Don't make the link blue. */
+        color: inherit;
+    }
+
+    .form-text .icon {
+        margin: 0;
+    }
+
+    .input-group {
+        width: fit-content;
     }
 }

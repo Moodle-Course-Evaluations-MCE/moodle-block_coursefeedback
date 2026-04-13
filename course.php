@@ -23,13 +23,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\course_event_slot_table;
 use block_coursefeedback\local\course_feedback_data;
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\local\survey_execution_period_editable;
+use block_coursefeedback\local\renderables\course_event_slot_table;
+use block_coursefeedback\local\renderables\survey_execution_period;
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $OUTPUT, $PAGE;
+global $CFG, $PAGE;
 
 require_login();
 $id = required_param('id', PARAM_INT);
@@ -55,21 +55,26 @@ if (count($survey_executions) > 1) {
 
 $survey_execution = reset($survey_executions);
 
-$starttime_editable = new survey_execution_period_editable($survey_execution, 'starttime');
-$endtime_editable = new survey_execution_period_editable($survey_execution, 'endtime');
-
 $model = course_feedback_data::load_from_course($course);
 
 $table = new course_event_slot_table($model);
+$survey_execution_period = new survey_execution_period(
+    $survey_execution,
+    editable: has_capability('block/coursefeedback:changecoursesurveyperiod', $context)
+);
 
-$PAGE->requires->js_call_amd('block_coursefeedback/course_settings', 'init');
+global $OUTPUT;
+/** @var block_coursefeedback_renderer $renderer */
+$renderer = $PAGE->get_renderer('block_coursefeedback');
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render_from_template('block_coursefeedback/course_settings', [
-    'starttime_context' => $starttime_editable->export_for_template($OUTPUT),
-    'endtime_context' => $endtime_editable->export_for_template($OUTPUT),
-    'table_context' => $table->export_for_template($OUTPUT),
+echo $renderer->render_from_template('block_coursefeedback/course_settings', [
+    'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
+    'table_context' => $table->export_for_template($renderer),
 ]);
+
+// Make sure AlpineJS is initialized after all other scripts have been loaded.
+$renderer->init_alpine_js();
 
 echo $OUTPUT->footer();

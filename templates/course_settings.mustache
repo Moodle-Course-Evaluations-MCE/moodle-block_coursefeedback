@@ -19,40 +19,26 @@
 
     Example context (json):
     {
-      "starttime_context": {
-        "component": "block_coursefeedback",
-        "itemtype": "survey_execution_starttime",
-        "itemid": 15,
-        "displayvalue": "<time datetime=\"1970-01-01T01:00:00+01:00\">1\/01\/70, 01:00<\/time>",
-        "value": "1970-01-01T01:00:00+01:00",
-        "edithint": "",
-        "editlabel": "",
-        "editicon": {
-          "key": "t\/editstring",
-          "component": "moodle",
-          "title": ""
+      "survey_execution_period_context": {
+        "survey_execution_id": 6,
+        "starttime": {
+          "iso": "2026-06-01T12:00",
+          "user": "<time datetime=\"2026-06-01T12:00:00+01:00\">1 June 2026, 12:00 PM<\/time>"
         },
-        "type": "text",
-        "options": "",
-        "linkeverything": 1
-      },
-      "endtime_context": {
-        "component": "block_coursefeedback",
-        "itemtype": "survey_execution_endtime",
-        "itemid": 15,
-        "displayvalue": "<time datetime=\"2027-04-01T14:04:53+01:00\">1\/04\/27, 14:04<\/time>",
-        "value": "2027-04-01T14:04:53+01:00",
-        "edithint": "",
-        "editlabel": "",
-        "editicon": {
-          "key": "t\/editstring",
-          "component": "moodle",
-          "title": ""
+        "endtime": {
+          "iso": "2026-06-20T23:59",
+          "user": "<time datetime=\"2026-06-20T23:59:00+01:00\">20 June 2026, 11:59 PM<\/time>"
         },
-        "type": "text",
-        "options": "",
-        "linkeverything": 1
-      },
+        "default_starttime": {
+          "iso": "2026-06-01T12:00",
+          "user": "<time datetime=\"2026-06-01T12:00:00+01:00\">1 June 2026, 12:00 PM<\/time>"
+        },
+        "default_endtime": {
+          "iso": "2026-06-20T23:59",
+          "user": "<time datetime=\"2026-06-20T23:59:00+01:00\">20 June 2026, 11:59 PM<\/time>"
+        },
+        "json_context": "The rest of the context as JSON."
+      }
       "table_context": {
         "survey_execution": {
           "id": 1
@@ -178,16 +164,20 @@
     }
 }}
 
-<div>
-    {{#str}} survey_execution_period, block_coursefeedback {{/str}}:
-    {{# starttime_context }}{{> core/inplace_editable }}{{/starttime_context}}
-    &ndash;
-    {{# endtime_context }}{{> core/inplace_editable }}{{/endtime_context}}
-</div>
-<section class="mt-4">
-    <h3 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h3>
+<div class="container">
+    <section class="mb-3">
+        <h5>{{#str}} survey_execution_period, block_coursefeedback {{/str}}</h5>
 
-    {{#table_context}}
-        {{>block_coursefeedback/course_event_slot_table}}
-    {{/table_context}}
-</section>
+        {{#survey_execution_period_context}}
+            {{> block_coursefeedback/survey_execution_period }}
+        {{/survey_execution_period_context}}
+    </section>
+    <section class="mt-4">
+        <h4 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h4>
+
+        {{#table_context}}
+            {{> block_coursefeedback/course_event_slot_table }}
+        {{/table_context}}
+    </section>
+</div>
+{{#register_alpine_js_module}} block_coursefeedback/course_settings {{/register_alpine_js_module}}

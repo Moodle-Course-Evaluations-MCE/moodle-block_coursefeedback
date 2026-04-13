@@ -1,0 +1,118 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/survey_execution_period
+
+    Template purpose and description.
+
+    Example context (json):
+    {
+      "editable": true,
+      "survey_execution_id": 6,
+      "starttime": {
+        "iso": "2026-06-01T12:00",
+        "user": "<time datetime=\"2026-06-01T12:00:00+01:00\">1 June 2026, 12:00 PM<\/time>"
+      },
+      "endtime": {
+        "iso": "2026-06-20T23:59",
+        "user": "<time datetime=\"2026-06-20T23:59:00+01:00\">20 June 2026, 11:59 PM<\/time>"
+      },
+      "default_starttime": {
+        "iso": "2026-06-01T12:00",
+        "user": "<time datetime=\"2026-06-01T12:00:00+01:00\">1 June 2026, 12:00 PM<\/time>"
+      },
+      "default_endtime": {
+        "iso": "2026-06-20T23:59",
+        "user": "<time datetime=\"2026-06-20T23:59:00+01:00\">20 June 2026, 11:59 PM<\/time>"
+      },
+      "json_context": "The rest of the context as JSON."
+    }
+}}
+
+<div class="block_coursefeedback-survey-execution-period"
+     x-data='surveyExecutionPeriod({{json_context}})'>
+    {{#editable}}
+    <a href="#" x-show="!editing"
+       @click.prevent="editing = true"
+       title="{{#str}} survey_execution_period_click_to_edit, block_coursefeedback {{/str}}">
+    {{/editable}}
+    {{^editable}}
+    <span>
+    {{/editable}}
+    {{< block_coursefeedback/datetime_from_to}}
+        {{$from}}{{{starttime.user}}}{{/from}}
+        {{$to}}{{{endtime.user}}}{{/to}}
+    {{/block_coursefeedback/datetime_from_to}}
+    {{#editable}}
+        <span class="icon-size-3">{{#pix}} t/editstring {{/pix}}</span>
+    </a>
+    {{/editable}}
+    {{^editable}}
+        </span>
+    {{/editable}}
+    {{#editable}}
+        <div class="input-group" x-show="editing" x-cloak>
+            <input type="datetime-local"
+                   class="form-control"
+                   x-model="starttime"
+                   @keyup.enter="save"
+                   aria-label="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}"
+                   title="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}">
+            <span class="input-group-text">{{#pix}} t/right {{/pix}}</span>
+            <input id="block_coursefeedback-endtime-{{itemid}}-{{uniqid}}"
+                   type="datetime-local"
+                   class="form-control"
+                   x-model="endtime"
+                   @keyup.enter="save"
+                   aria-label="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}"
+                   title="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}">
+
+            <button type="button"
+                    class="btn btn-outline-secondary text-success"
+                    title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}"
+                    x-ref="submitButton"
+                    @click="save">
+                {{#pix}}t/check{{/pix}}
+            </button>
+            <button type="button"
+                    class="btn btn-outline-secondary text-danger"
+                    title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                    @click="cancel">
+                {{#pix}}e/cancel{{/pix}}
+            </button>
+        </div>
+    {{/editable}}
+    <div class="form-text" x-cloak x-show="isDefault">
+        {{#str}} survey_execution_period_is_default, block_coursefeedback {{/str}}
+    </div>
+    <div class="form-text" x-cloak x-show="!isDefault">
+        {{#str}} survey_execution_period_default_is, block_coursefeedback,
+            {{< block_coursefeedback/datetime_from_to}}
+                {{$from}}{{{default_starttime.user}}}{{/from}}
+                {{$to}}{{{default_endtime.user}}}{{/to}}
+            {{/block_coursefeedback/datetime_from_to}}
+        {{/str}}
+        {{#editable}}
+            <a class="link-primary" role="button" x-cloak
+               @click="resetToDefault">
+                {{#pix}}t/reset{{/pix}} {{#str}} survey_execution_period_reset_to_default, block_coursefeedback {{/str}}
+            </a>
+        {{/editable}}
+    </div>
+    <div class="form-text text-danger" x-show="error" x-cloak x-text="error"></div>
+</div>
+{{#register_alpine_js_module}} block_coursefeedback/survey_execution_period {{/register_alpine_js_module}}

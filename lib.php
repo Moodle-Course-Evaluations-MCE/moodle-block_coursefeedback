@@ -23,8 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\slot_users_editable;
-use block_coursefeedback\local\survey_execution_period_editable;
+use block_coursefeedback\local\renderables\slot_users_editable;
 use core\output\inplace_editable;
 
 /**
@@ -36,9 +35,7 @@ use core\output\inplace_editable;
  * @return inplace_editable|null
  */
 function block_coursefeedback_inplace_editable(string $itemtype, string $itemid, string $newvalue): ?inplace_editable {
-    if ($itemtype === 'survey_execution_starttime' || $itemtype === 'survey_execution_endtime') {
-        return survey_execution_period_editable::update($itemtype, $itemid, $newvalue);
-    } else if ($itemtype === 'slot_users') {
+    if ($itemtype === 'slot_users') {
         return slot_users_editable::update($itemid, $newvalue);
     }
 
