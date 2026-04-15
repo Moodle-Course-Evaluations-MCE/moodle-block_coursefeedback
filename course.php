@@ -40,6 +40,7 @@ require_capability('block/coursefeedback:viewcoursesettings', $context);
 
 $PAGE->set_url('/blocks/coursefeedback/course.php', ['id' => $id]);
 $PAGE->set_context($context);
+$PAGE->set_course($course);
 $title = get_string('course_settings', 'block_coursefeedback', $course);
 $PAGE->set_heading($title);
 $PAGE->set_title($title);

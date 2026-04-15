@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\renderables\slot_users_editable;
 use core\output\inplace_editable;
 
@@ -41,4 +42,27 @@ function block_coursefeedback_inplace_editable(string $itemtype, string $itemid,
 
     debugging("Unrecognised itemtype for block_coursefeedback_inplace_editable: '$itemtype'");
     return null;
+}
+
+/**
+ * Called when building a course's navbar. We add a link to the course's survey settings if the course has a survey execution.
+ *
+ * @param navigation_node $parentnode
+ * @param stdClass $course
+ * @param context $context
+ * @return void
+ */
+function block_coursefeedback_extend_navigation_course(
+    navigation_node $parentnode,
+    stdClass $course,
+    context $context,
+): void {
+    global $DB;
+    if (
+        has_capability('block/coursefeedback:viewcoursesettings', $context)
+        && $DB->record_exists(survey_execution::TABLE, ['courseid' => $course->id])
+    ) {
+        $url = new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]);
+        $parentnode->add(get_string("course_settings_node", "block_coursefeedback"), $url, key: "coursefeedback");
+    }
 }
