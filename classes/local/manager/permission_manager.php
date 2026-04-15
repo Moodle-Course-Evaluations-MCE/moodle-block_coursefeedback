@@ -24,7 +24,10 @@
  */
 namespace block_coursefeedback\local\manager;
 
+use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\organization_user;
 use block_coursefeedback\local\persistent\surveypart;
+use core\exception\coding_exception;
 
 /**
  * Permission manager.
@@ -53,5 +56,34 @@ class permission_manager {
             ['block/coursefeedback:managesurveysglobally', 'block/coursefeedback:manageorganizations'],
             \context_system::instance()
         );
+    }
+
+    /**
+     * Whether the current user is an organization manager for the given organization.
+     * @param ?organization $organization
+     * @return bool
+     */
+    public static function can_manage_organization(?organization $organization): bool {
+        global $USER;
+        $context = \context_system::instance();
+        if (!$organization) {
+            return has_capability('block/coursefeedback:managesurveysglobally', $context);
+        }
+        if (has_capability('block/coursefeedback:manageorganizations', $context)) {
+            return true;
+        }
+        $record = organization_user::get_record(['organizationid' => $organization->get('id'), 'userid' => $USER->id]);
+        return (bool) $record;
+    }
+
+    /**
+     * Throws an error if the current user is not an organization manager for the given organization.
+     * @param ?organization $organization
+     * @return void
+     */
+    public static function require_manage_organization(?organization $organization) {
+        if (!self::can_manage_organization($organization)) {
+            throw new coding_exception('You do not have permission to do this.');
+        }
     }
 }

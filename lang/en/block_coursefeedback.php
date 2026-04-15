@@ -24,6 +24,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['add_eventtype'] = 'Add new event type';
 $string['add_more_blanks'] = 'Add more blanks';
 $string['add_new_event_to'] = 'Add a new event to course <q>{$a}</q>';
 $string['add_new_slot_to'] = 'Add a new slot to event <q>{$a}</q>';
@@ -48,6 +49,8 @@ $string['coursefeedback:managesurveysglobally'] = 'Administrate surveys globally
 $string['coursefeedback:viewcoursesettings'] = 'View the survey settings for a course.';
 $string['create_new_scale'] = '- Create new scale -';
 $string['datetime_from_to'] = '{$a->from} - {$a->to}';
+$string['default_surveypart_for_courses_without_eventtype'] = 'Default questionnaire for courses with no event type';
+$string['define_default_surveyparts'] = 'Define event types and default questionnaires';
 $string['delete_event'] = 'Delete this event';
 $string['delete_slot'] = 'Delete this slot';
 $string['edit_event'] = 'Edit this event';
@@ -86,6 +89,7 @@ $string['evaluationadministration'] = 'Evaluation administration';
 $string['event_name'] = 'Event name';
 $string['event_name_placeholder'] = 'My teaching event';
 $string['event_type'] = 'Event type';
+$string['eventtype'] = 'Event type';
 $string['finish'] = 'Finish';
 $string['forceshowscale'] = 'Show scale even if it is immediately preceded by a question with the same scale.';
 $string['has_no_answer'] = 'Should the item have an "n/a" option?';
@@ -129,8 +133,8 @@ $string['survey_languages_help'] = 'Select the languages in which the survey sho
 $string['survey_no_languages'] = 'Please select at least one language.';
 $string['surveyitem'] = 'Survey item';
 $string['surveyitems'] = 'Survey items';
-$string['surveypart'] = 'Survey';
-$string['surveyparts'] = 'Surveys';
+$string['surveypart'] = 'Questionnaire';
+$string['surveyparts'] = 'Questionnaires';
 $string['surveys'] = 'Surveys';
 $string['teaching_event'] = 'Teaching event';
 $string['text'] = 'Text';
