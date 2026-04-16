@@ -63,6 +63,6 @@ function block_coursefeedback_extend_navigation_course(
         && $DB->record_exists(survey_execution::TABLE, ['courseid' => $course->id])
     ) {
         $url = new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]);
-        $parentnode->add(get_string("course_settings_node", "block_coursefeedback"), $url, key: "coursefeedback");
+        $parentnode->add(get_string("course_settings", "block_coursefeedback"), $url, key: "coursefeedback");
     }
 }
