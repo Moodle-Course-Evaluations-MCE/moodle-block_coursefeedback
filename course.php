@@ -41,13 +41,10 @@ require_capability('block/coursefeedback:viewcoursesettings', $context);
 $PAGE->set_url('/blocks/coursefeedback/course.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_course($course);
-$title = get_string('course_settings', 'block_coursefeedback', $course);
-$PAGE->set_heading($title);
-$PAGE->set_title($title);
 
 $survey_executions = survey_execution::get_records(['courseid' => $course->id]);
 if (!$survey_executions) {
-    throw new \core\exception\moodle_exception('no_survey_execution', 'block_coursefeedback', debuginfo: "Course ID: $course->id");
+    throw new moodle_exception('no_survey_execution', 'block_coursefeedback', debuginfo: "Course ID: $course->id");
 }
 if (count($survey_executions) > 1) {
     // TODO: Do we need to support this in any way?
@@ -68,7 +65,13 @@ global $OUTPUT;
 /** @var block_coursefeedback_renderer $renderer */
 $renderer = $PAGE->get_renderer('block_coursefeedback');
 
+$PAGE->set_pagelayout('admin');
+$PAGE->set_heading($course->fullname);
+$PAGE->set_title(get_string('course_settings_of', 'block_coursefeedback', $course));
+$PAGE->add_body_class('container');
+
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
