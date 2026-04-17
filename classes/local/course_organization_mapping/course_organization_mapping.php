@@ -34,6 +34,11 @@ use moodle_url;
  */
 abstract class course_organization_mapping {
 
+    /** @var string Map course to organizations by course category. */
+    public const MAP_BY_COURSECAT = 'coursecat';
+    /** @var string Map course to organizations by custom course field. */
+    public const MAP_BY_CUSTOMFIELD = 'customfield';
+
     /**
      * Should return the organization for the given course or id.
      * @param int|object $courseorid course object or id.
@@ -48,8 +53,8 @@ abstract class course_organization_mapping {
     public static function get_instance() {
         $method = get_config('block_coursefeedback', 'course_organization_method');
         static $instances = [
-            1 => coursecat_course_organization_mapping::class,
-            2 => null,
+            self::MAP_BY_COURSECAT => coursecat_course_organization_mapping::class,
+            self::MAP_BY_CUSTOMFIELD => null,
         ];
         return $instances[$method];
     }
