@@ -818,9 +818,14 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         $table = new xmldb_table('block_coursefeedback_eventtype');
         $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'active');
 
+        $org_ids = $DB->get_fieldset('block_coursefeedback_organization', 'id');
+        if (!$org_ids) {
+            throw new coding_exception("Can't upgrade to 2026032200: No organization exists. Create one and try again.");
+        }
+
         // Conditionally launch add field organizationid.
         if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+            add_nonnull_field_with_default($dbman, $table, $field, reset($org_ids));
         }
 
         // Coursefeedback savepoint reached.
