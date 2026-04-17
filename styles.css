@@ -76,7 +76,7 @@
 }
 
 .block_coursefeedback-course-event-slot-table {
-    min-width: var(--bs-breakpoint-lg);
+    min-width: var(--bs-breakpoint-lg, 992px);
 
     td {
         vertical-align: middle;
@@ -137,11 +137,11 @@
 
     .inplaceeditable.inplaceeditingon {
         /* Make the overflowing editor look like a popover. */
-        background: var(--bs-body-bg);
+        background: var(--bs-body-bg, #fff);
         padding: .8rem;
-        border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-        border-radius: var(--bs-border-radius);
-        box-shadow: var(--bs-box-shadow);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #dee2e6);
+        border-radius: var(--bs-border-radius, 0.5rem);
+        box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
 
         /* The autocomplete input uses some important styles (through Bootstrap utility classes) we need to override. */
         /* stylelint-disable declaration-no-important */
