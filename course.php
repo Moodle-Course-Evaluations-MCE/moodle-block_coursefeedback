@@ -44,7 +44,7 @@ $PAGE->set_course($course);
 
 $survey_executions = survey_execution::get_records(['courseid' => $course->id]);
 if (!$survey_executions) {
-    throw new moodle_exception('no_survey_execution', 'block_coursefeedback', debuginfo: "Course ID: $course->id");
+    throw new moodle_exception('no_survey_execution', 'block_coursefeedback', a: $course, debuginfo: "courseid: $course->id");
 }
 if (count($survey_executions) > 1) {
     // TODO: Do we need to support this in any way?

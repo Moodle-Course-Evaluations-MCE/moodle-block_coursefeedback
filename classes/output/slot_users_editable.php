@@ -22,6 +22,7 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use coding_exception;
 use context_course;
 use core\output\inplace_editable;
+use core\param;
 use core\user;
 use html_writer;
 
@@ -88,10 +89,7 @@ class slot_users_editable extends inplace_editable {
         global $PAGE, $DB;
         require_login();
 
-        if (!is_number($itemid)) {
-            throw new coding_exception("Invalid itemid: '$itemid'");
-        }
-        $slotid = intval($itemid);
+        $slotid = param::INT->clean($itemid);
 
         $userids = json_decode($newvalue, depth: 2, flags: JSON_THROW_ON_ERROR);
 
