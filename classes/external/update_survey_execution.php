@@ -17,7 +17,7 @@
 namespace block_coursefeedback\external;
 
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\local\renderables\survey_execution_period;
+use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
 use context_course;
 use core_date;

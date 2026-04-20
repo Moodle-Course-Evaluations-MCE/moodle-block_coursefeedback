@@ -24,7 +24,7 @@
  */
 
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\local\renderables\slot_users_editable;
+use block_coursefeedback\output\slot_users_editable;
 use core\output\inplace_editable;
 
 /**

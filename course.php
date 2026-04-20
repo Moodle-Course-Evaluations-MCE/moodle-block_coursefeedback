@@ -25,8 +25,8 @@
 
 use block_coursefeedback\local\course_feedback_data;
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\local\renderables\course_event_slot_table;
-use block_coursefeedback\local\renderables\survey_execution_period;
+use block_coursefeedback\output\course_event_slot_table;
+use block_coursefeedback\output\survey_execution_period;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $PAGE;
