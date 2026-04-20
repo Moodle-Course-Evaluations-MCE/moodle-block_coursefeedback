@@ -16,10 +16,11 @@
  */
 
 import Alpine from './alpinejs';
-import Ajax from 'core/ajax';
 import ModalEvents from 'core/modal_events';
 import ModalDeleteCancel from 'core/modal_delete_cancel';
 import { get_string as getString } from 'core/str';
+import { ajaxAndHandleError } from "./util";
+
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('table', (courseId) => ({
@@ -36,11 +37,10 @@ document.addEventListener('alpine:init', () => {
 
             const args = Object.fromEntries(new FormData(form).entries());
 
-            const result = await Ajax.call([{
+            const result = await ajaxAndHandleError({
                 methodname: 'block_coursefeedback_upsert_event',
                 args
-            }])[0];
-
+            });
             this.$refs.courseMappingTable.outerHTML = result.new_table_html;
         }
     }));
@@ -60,11 +60,11 @@ document.addEventListener('alpine:init', () => {
             }
 
             const args = Object.fromEntries(new FormData(form).entries());
-            const result = await Ajax.call([{
+
+            const result = await ajaxAndHandleError({
                 methodname: 'block_coursefeedback_upsert_slot',
                 args
-            }])[0];
-
+            });
             this.$refs.courseMappingTable.outerHTML = result.new_table_html;
         },
 
@@ -77,14 +77,13 @@ document.addEventListener('alpine:init', () => {
             });
 
             modal.getRoot().on(ModalEvents.delete, async () => {
-                const result = await Ajax.call([{
+                const result = await ajaxAndHandleError({
                     methodname: 'block_coursefeedback_delete_event',
                     args: {
                         courseid: this.courseId,
                         eventid: this.eventId,
                     }
-                }])[0];
-
+                });
                 this.$refs.courseMappingTable.outerHTML = result.new_table_html;
             });
         },
@@ -118,14 +117,13 @@ document.addEventListener('alpine:init', () => {
             });
 
             modal.getRoot().on(ModalEvents.delete, async () => {
-                const result = await Ajax.call([{
+                const result = await ajaxAndHandleError({
                     methodname: 'block_coursefeedback_delete_slot',
                     args: {
                         courseid: this.courseId,
                         slotid: slotId,
                     }
-                }])[0];
-
+                });
                 this.$refs.courseMappingTable.outerHTML = result.new_table_html;
             });
         },
