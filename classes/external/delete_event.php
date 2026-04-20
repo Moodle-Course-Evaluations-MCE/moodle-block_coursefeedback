@@ -21,7 +21,7 @@ use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
-use block_coursefeedback\local\renderables\course_event_slot_table;
+use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
 use core_external\external_api;
