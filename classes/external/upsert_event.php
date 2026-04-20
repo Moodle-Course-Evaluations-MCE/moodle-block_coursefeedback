@@ -22,6 +22,7 @@ use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
@@ -51,7 +52,6 @@ class upsert_event extends external_api {
             'surveyexecutionid' => new external_value(PARAM_INT, 'id of the survey execution to which the slot belongs'),
             'name' => new external_value(PARAM_TEXT, 'name of the (new) event'),
             'eventtypeid' => new external_value(PARAM_INT, 'id of the event type'),
-            'surveypartid' => new external_value(PARAM_INT, 'id of the survey part to use'),
         ]);
     }
 
@@ -75,13 +75,11 @@ class upsert_event extends external_api {
      * @param int $surveypartid
      * @return array
      */
-    public static function execute(int $eventid, int $surveyexecutionid, string $name, int $eventtypeid, int $surveypartid): array {
+    public static function execute(int $eventid, int $surveyexecutionid, string $name, int $eventtypeid): array {
         [
             'eventid' => $eventid, 'surveyexecutionid' => $surveyexecutionid, 'name' => $name, 'eventtypeid' => $eventtypeid,
-            'surveypartid' => $surveypartid
         ] = self::validate_parameters(self::execute_parameters(), [
             'eventid' => $eventid, 'surveyexecutionid' => $surveyexecutionid, 'name' => $name, 'eventtypeid' => $eventtypeid,
-            'surveypartid' => $surveypartid,
         ]);
 
         $survey_execution = survey_execution::get_record(['id' => $surveyexecutionid], MUST_EXIST);
@@ -108,13 +106,7 @@ class upsert_event extends external_api {
             $isnew = true;
         }
 
-        if (
-            $eventtypeid === 0
-            || $eventtypeid !== $event->get('eventtypeid')
-            && !eventtype::record_exists($eventtypeid)
-        ) {
-            throw new coding_exception("Event type '$eventtypeid' does not exist");
-        }
+        $eventtype = eventtype::get_record(['id' => $eventtypeid], MUST_EXIST);
 
         $event->set('name', $name);
         $event->set('eventtypeid', $eventtypeid);
@@ -131,7 +123,12 @@ class upsert_event extends external_api {
             ]);
         }
 
-        if ($surveypartid === 0 || $surveypartid !== $spe->get('surveypartid') && !surveypart::record_exists($surveypartid)) {
+        $surveypartid = $eventtype->get('surveypartid');
+        if (!$surveypartid) {
+            // TODO: Support this, probably.
+            throw new coding_exception("Event type '$eventtypeid' does not have a survey part");
+        }
+        if (!surveypart::record_exists($surveypartid)) {
             throw new coding_exception("Survey part '$surveypartid' does not exist");
         }
 
