@@ -48,10 +48,10 @@ class block_coursefeedback extends block_base {
             $output .= html_writer::div(
                 html_writer::link(
                     new moodle_url(
-                        '/blocks/coursefeedback/course_edit.php',
+                        '/blocks/coursefeedback/course.php',
                         ['id' => $this->page->course->id]
                     ),
-                    'Evaluationseinstellungen'
+                    get_string('evaluation_settings', 'block_coursefeedback'),
                 ),
                 'mt-3'
             );
