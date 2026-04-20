@@ -47,10 +47,6 @@
           ],
           "survey_part_execution": {
             "id": 11,
-            "survey_part": {
-              "id": 1,
-              "name": "Fragebogen Mathematik V"
-            },
             "rowspan": 2,
             "first_slot": {
               "id": 111,
@@ -59,14 +55,7 @@
               "users_editable_context": {}
             },
             "more_slots": []
-          },
-          "available_survey_parts": [
-            {
-              "id": 1,
-              "name": "Fragebogen Mathe VL",
-              "selected": true
-            }
-          ]
+          }
         },
         {
           "id": 2,
@@ -88,10 +77,6 @@
           ],
           "survey_part_execution": {
             "id": 21,
-            "survey_part": {
-              "id": 2,
-              "name": "Fragebogen Mathematik Ü"
-            },
             "rowspan": 4,
             "first_slot": {
               "id": 211,
@@ -113,14 +98,7 @@
                 "users_editable_context": {}
               }
             ]
-          },
-          "available_survey_parts": [
-            {
-              "id": 1,
-              "name": "Fragebogen Mathe VL",
-              "selected": true
-            }
-          ]
+          }
         }
       ],
       "available_event_types": [
@@ -131,12 +109,6 @@
         {
           "id": 2,
           "name": "Übung"
-        }
-      ],
-      "available_survey_parts": [
-        {
-          "id": 1,
-          "name": "Fragebogen Mathe VL"
         }
       ]
     }
@@ -150,7 +122,6 @@
         <tr>
             <th scope="col">{{#str}} teaching_event, block_coursefeedback {{/str}}</th>
             <th scope="col">{{#str}} event_type, block_coursefeedback {{/str}}</th>
-            <th scope="col">{{#str}} surveypart, block_coursefeedback {{/str}}</th>
             <th scope="col">{{! Event actions. }}</th>
             <th scope="col">{{#str}} slot_name, block_coursefeedback {{/str}}</th>
             <th scope="col">{{#str}} slot_users, block_coursefeedback {{/str}}</th>
@@ -187,21 +158,6 @@
                             {{#available_event_types}}
                                 <option value="{{id}}" {{#selected}} selected {{/selected}}>{{name}}</option>
                             {{/available_event_types}}
-                        </select>
-                    </div>
-                </td>
-                <td rowspan="{{survey_part_execution.rowspan}}">
-                    <div :class='editingEvent && "hidden-preserving-width"'>{{survey_part_execution.survey_part.name}}</div>
-                    <div class="editing-in-cell" x-show="editingEvent" x-cloak>
-                        <select title="{{#str}} surveypart, block_coursefeedback {{/str}}"
-                                aria-label="{{#str}} surveypart, block_coursefeedback {{/str}}"
-                                class="form-control form-select"
-                                name="surveypartid"
-                                form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
-                                required>
-                            {{#available_survey_parts}}
-                                <option value="{{id}}" {{#selected}} selected {{/selected}}>{{name}}</option>
-                            {{/available_survey_parts}}
                         </select>
                     </div>
                 </td>
@@ -285,7 +241,7 @@
             </tbody>
         {{/events}}
         <tr x-show="!addingNewEvent">
-            <td colspan="7">
+            <td colspan="6">
                 <a class="link-primary" role="button"
                    @click="addingNewEvent = true; $nextTick(() => $refs.newEventNameInput.focus())"
                 >
@@ -321,20 +277,6 @@
                         {{#available_event_types}}
                             <option value="{{id}}">{{name}}</option>
                         {{/available_event_types}}
-                    </select>
-                </div>
-            </td>
-            <td>
-                <div class="editing-in-cell">
-                    <select title="{{#str}} surveypart, block_coursefeedback {{/str}}"
-                            aria-label="{{#str}} surveypart, block_coursefeedback {{/str}}"
-                            class="form-control form-select"
-                            form="block_coursefeedback-new-event-form-{{uniqid}}"
-                            name="surveypartid"
-                            required>
-                        {{#available_survey_parts}}
-                            <option value="{{id}}">{{name}}</option>
-                        {{/available_survey_parts}}
                     </select>
                 </div>
             </td>
