@@ -141,7 +141,7 @@ abstract class ms_choice extends surveyitemtype {
                     'optiontext' => $option->text->translate(),
                     'optionid' => $option->id,
                 ],
-                $additionaldata[$surveyitem->get('id')]
+                $additionaldata[$surveyitem->get('id')] ?? []
             ));
         }
         return $template_data;
