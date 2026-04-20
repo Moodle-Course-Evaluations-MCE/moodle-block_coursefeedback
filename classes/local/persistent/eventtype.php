@@ -54,4 +54,13 @@ class eventtype extends persistent {
             ],
         ];
     }
+
+    /**
+     * Returns all eventtypes available in the organization.
+     * @param int $organizationid
+     * @return eventtype[]
+     */
+    public static function get_eventtypes_for_organization(int $organizationid): array {
+        return self::get_records(['organizationid' => $organizationid], 'id');
+    }
 }

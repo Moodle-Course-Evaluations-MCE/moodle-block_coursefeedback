@@ -157,4 +157,17 @@ class surveypart extends persistent_with_bulk_actions {
         $data->languages = $this->get_languages();
         return $data;
     }
+
+    /**
+     * Returns the surveypart available in the given organization.
+     * @param int $organizationid
+     * @return surveypart[]
+     */
+    public static function get_surveyparts_available_for_organization(int $organizationid) {
+        return self::get_records_select(
+            'organizationid IS NULL or organizationid = :organizationid',
+            ['organizationid' => $organizationid],
+            'name ASC'
+        );
+    }
 }

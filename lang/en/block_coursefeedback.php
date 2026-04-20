@@ -24,6 +24,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['add_eventtype'] = 'Add new event type';
 $string['add_more_blanks'] = 'Add more blanks';
 $string['add_new_event_to'] = 'Add a new event to course <q>{$a}</q>';
 $string['add_new_slot_to'] = 'Add a new slot to event <q>{$a}</q>';
@@ -48,6 +49,8 @@ $string['coursefeedback:managesurveysglobally'] = 'Administrate surveys globally
 $string['coursefeedback:viewcoursesettings'] = 'View the survey settings for a course.';
 $string['create_new_scale'] = '- Create new scale -';
 $string['datetime_from_to'] = '{$a->from} - {$a->to}';
+$string['default_surveypart_for_courses_without_eventtype'] = 'Default questionnaire for courses with no event type';
+$string['define_default_surveyparts'] = 'Define event types and default questionnaires';
 $string['delete_event'] = 'Delete this event';
 $string['delete_slot'] = 'Delete this slot';
 $string['edit_event'] = 'Edit this event';
@@ -56,7 +59,6 @@ $string['edit_scale'] = 'Edit scale';
 $string['edit_slot'] = 'Edit this response slot';
 $string['edit_surveyitem'] = 'Edit surveyitem';
 $string['edit_surveypart'] = 'Edit surveypart';
-// phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder -- This is better than alphabetic ordering.
 $string['emoji_choice_1_of_3'] = 'good';
 $string['emoji_choice_1_of_4'] = 'very good';
 $string['emoji_choice_1_of_5'] = 'very good';
@@ -75,17 +77,18 @@ $string['emoji_choice_4_of_6'] = 'sufficient';
 $string['emoji_choice_5_of_5'] = 'very bad';
 $string['emoji_choice_5_of_6'] = 'poor';
 $string['emoji_choice_6_of_6'] = 'insufficient';
-// phpcs:enable
 $string['emoji_surveyitem'] = 'Emojis (😀 to 😠)';
 $string['emoji_variant_1_through_3'] = '1 through 3 (😀😐☹️)';
 $string['emoji_variant_1_through_4'] = '1 through 4 (😀😐😕😠)';
 $string['emoji_variant_1_through_5'] = '1 through 5 (😀🙂😐😕😠)';
 $string['emoji_variant_grades_1_through_6'] = 'Grades 1 through 6 (😀😊🙂😐😕😠)';
 $string['emoji_variants_label'] = 'Variant';
+$string['evaluation_settings'] = 'Evaluation settings';
 $string['evaluationadministration'] = 'Evaluation administration';
 $string['event_name'] = 'Event name';
 $string['event_name_placeholder'] = 'My teaching event';
 $string['event_type'] = 'Event type';
+$string['eventtype'] = 'Event type';
 $string['finish'] = 'Finish';
 $string['forceshowscale'] = 'Show scale even if it is immediately preceded by a question with the same scale.';
 $string['has_no_answer'] = 'Should the item have an "n/a" option?';
@@ -113,6 +116,10 @@ $string['question_in_lang'] = 'Question ({$a})';
 $string['scale'] = 'Scale';
 $string['scalequestion'] = 'Scale question';
 $string['scales'] = 'Scales';
+$string['settings:course_organization_method'] = 'How should organization association be derived for courses?';
+$string['settings:course_organization_method:coursecat'] = 'By course category';
+$string['settings:course_organization_method:coursefield'] = 'By custom course field';
+$string['settings:general_settings'] = 'General settings';
 $string['show_all_languages'] = 'Show all languages';
 $string['singlechoice'] = 'Single choice';
 $string['slot_name'] = 'Slot name';
@@ -125,8 +132,8 @@ $string['survey_languages_help'] = 'Select the languages in which the survey sho
 $string['survey_no_languages'] = 'Please select at least one language.';
 $string['surveyitem'] = 'Survey item';
 $string['surveyitems'] = 'Survey items';
-$string['surveypart'] = 'Survey';
-$string['surveyparts'] = 'Surveys';
+$string['surveypart'] = 'Questionnaire';
+$string['surveyparts'] = 'Questionnaires';
 $string['surveys'] = 'Surveys';
 $string['teaching_event'] = 'Teaching event';
 $string['text'] = 'Text';

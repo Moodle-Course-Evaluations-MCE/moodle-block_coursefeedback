@@ -1,2 +1,3 @@
 course_settings.mustache
 course_event_slot_table.mustache
+organization_default_surveypart_row.mustache
