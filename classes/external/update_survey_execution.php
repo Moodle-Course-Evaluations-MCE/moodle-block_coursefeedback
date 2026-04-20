@@ -20,6 +20,7 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
 use context_course;
+use core\exception\moodle_exception;
 use core_date;
 use core_external\external_api;
 use core_external\external_description;
@@ -103,15 +104,30 @@ class update_survey_execution extends external_api {
 
         // Some sanity checks.
         if ($endtime <= $starttime) {
-            throw new coding_exception("End time ($endtime) must be greater than start time ($starttime).");
+            throw new moodle_exception(
+                "end_must_be_after_start",
+                "block_coursefeedback",
+                debuginfo: "$endtime (end) <= $starttime (start)"
+            );
         }
-        if ($endtime - $starttime > 365 * 24 * 60 * 60) {
-            throw new coding_exception("End time must be no more than 1 year after start time.");
+        $duration = $endtime - $starttime;
+        $one_year = 365 * 24 * 60 * 60;
+        if ($duration > $one_year) {
+            throw new moodle_exception(
+                "end_must_be_within_1_year",
+                "block_coursefeedback",
+                debuginfo: "$duration (duration) > $one_year (1y)"
+            );
         }
-        $min = time() - 10 * 365 * 24 * 60 * 60;
-        $max = time() + 10 * 365 * 24 * 60 * 60;
+
+        $min = time() - 10 * $one_year;
+        $max = time() + 10 * $one_year;
         if ($starttime < $min || $endtime >= $max) {
-            throw new coding_exception("Start and end time must be no longer than 10 years from now.");
+            throw new moodle_exception(
+                "end_must_be_within_10_years",
+                "block_coursefeedback",
+                debuginfo: $starttime < $min ? "$starttime (start) < $min" : "$endtime (end) >= $max"
+            );
         }
 
         global $DB;

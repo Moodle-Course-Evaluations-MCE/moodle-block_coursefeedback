@@ -24,6 +24,7 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use core\exception\coding_exception;
+use core\exception\moodle_exception;
 use core_user\fields;
 
 /**
@@ -106,7 +107,12 @@ class course_feedback_data {
 
         try {
             if (!$recordset || !$recordset->valid()) {
-                throw new coding_exception("Course '$course->id' has no survey execution");
+                throw new moodle_exception(
+                    'no_survey_execution',
+                    'block_coursefeedback',
+                    a: $course,
+                    debuginfo: "courseid: $course->id"
+                );
             }
 
             $row = $recordset->current();
