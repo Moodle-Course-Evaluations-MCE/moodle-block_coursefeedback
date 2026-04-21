@@ -18,6 +18,9 @@
     @template block_coursefeedback/datetime_from_to
 
     Formats the blocks 'from' and 'to' using the string datetime_from_to.
+
+    Example context (json):
+    {}
 }}
 
 {{#str}} datetime_from_to, block_coursefeedback, { "from" : {{#quote}}{{$from}}{{/from}}{{/quote}}, "to" : {{#quote}}{{$to}}{{/to}}{{/quote}} } {{/str}}
