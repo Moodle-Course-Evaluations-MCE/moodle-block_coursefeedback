@@ -78,7 +78,7 @@ if ($hassiteconfig) {
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_survey',
-        get_string('surveys', 'block_coursefeedback'),
+        get_string('questionnaires', 'block_coursefeedback'),
         new moodle_url('/blocks/coursefeedback/surveyparts.php'),
         'block/coursefeedback:managesurveysglobally',
     ));

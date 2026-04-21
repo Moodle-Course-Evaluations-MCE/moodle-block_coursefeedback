@@ -24,8 +24,10 @@
  */
 namespace block_coursefeedback\local\manager;
 
+use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use context_system;
 use moodle_url;
 
 /**
@@ -39,15 +41,147 @@ use moodle_url;
 class breadcrumbs_manager {
 
     /**
-     * Sets up the root 'Surveys' navigation node.
+     * Create two navigation_nodes, because the first two navigation nodes are never shown?
      * @return \navigation_node
      */
-    public static function setup_surveys(): \navigation_node {
+    public static function create_root() {
         global $PAGE;
-        $PAGE->navbar->includesettingsbase = true;
-        $node = $PAGE->navigation->add(
-            get_string('surveys', 'block_coursefeedback'),
-            new moodle_url('/blocks/coursefeedback/surveyparts.php'),
+        return $PAGE->navigation->add('1')->add('2');
+    }
+
+    /**
+     * Setup evaluation administration overview.
+     * @return \navigation_node
+     */
+    public static function setup_evaluation_admin_overview(): \navigation_node {
+        $node = self::create_root()->add(
+            get_string('evaluationadministration', 'block_coursefeedback'),
+            new moodle_url('/blocks/coursefeedback/overview.php'),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Setup list of organizations breadcrumbs.
+     * @return \navigation_node
+     */
+    public static function setup_organizations(): \navigation_node {
+        global $CFG, $PAGE;
+        if (has_capability('moodle/site:config', context_system::instance())) {
+            require_once($CFG->libdir . '/adminlib.php');
+            admin_externalpage_setup('block_coursefeedback_category_organization');
+            return $PAGE->settingsnav->find_active_node();
+        } else {
+            if (permission_manager::can_do_any_evaluation_administration()) {
+                $parent = self::setup_evaluation_admin_overview();
+            } else {
+                $parent = self::create_root();
+            }
+            $node = $parent->add(
+                get_string('organizations', 'block_coursefeedback'),
+                new moodle_url('/blocks/coursefeedback/organizations.php'),
+            );
+            $node->make_active();
+            return $node;
+        }
+    }
+
+    /**
+     * Setup organization breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization(organization $organization): \navigation_node {
+        $parent = self::setup_organizations();
+        $node = $parent->add(
+            $organization->get('name'),
+            new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $organization->get('id')]),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Setup edit organization breadcrumbs.
+     * @param organization|null $organization
+     * @return \navigation_node
+     */
+    public static function setup_edit_organization(?organization $organization): \navigation_node {
+        $parent = self::setup_organizations();
+        $params = [];
+        if ($organization) {
+            $params['id'] = $organization->get('id');
+        }
+        $node = $parent->add(
+            get_string($organization ? 'edit_organization' : 'new_organization', 'block_coursefeedback'),
+            new moodle_url('/blocks/coursefeedback/organization_edit.php', $params),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Setup organization courses without evaluation breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization_courses_without_evaluation(organization $organization): \navigation_node {
+        $parent = self::setup_organization($organization);
+        $node = $parent->add(
+            get_string('list_of_courses_without_evaluation', 'block_coursefeedback'),
+            new moodle_url(
+                '/blocks/coursefeedback/organization_courses_without_evaluation.php',
+                ['id' => $organization->get('id')]
+            ),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Setup organization default surveypart breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization_default_surveypart(organization $organization): \navigation_node {
+        $parent = self::setup_organization($organization);
+        $node = $parent->add(
+            get_string('define_default_surveyparts', 'block_coursefeedback'),
+            new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $organization->get('id')]),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Sets up the root 'Surveys' navigation node.
+     * @param ?organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_surveys(?organization $organization = null): \navigation_node {
+        global $CFG, $PAGE;
+        if ($organization) {
+            $parent = self::setup_organization($organization);
+            $params = ['organizationid' => $organization->get('id')];
+        } else {
+            if (has_capability('moodle/site:config', context_system::instance())) {
+                require_once($CFG->libdir . '/adminlib.php');
+                admin_externalpage_setup('block_coursefeedback_category_survey');
+                return $PAGE->settingsnav->find_active_node();
+            } else {
+                if (permission_manager::can_do_any_evaluation_administration()) {
+                    $parent = self::setup_evaluation_admin_overview();
+                } else {
+                    $parent = self::create_root();
+                }
+            }
+            $params = [];
+        }
+
+        $node = $parent->add(
+            get_string('questionnaires', 'block_coursefeedback'),
+            new moodle_url('/blocks/coursefeedback/surveyparts.php', $params),
         );
         $node->make_active();
         return $node;

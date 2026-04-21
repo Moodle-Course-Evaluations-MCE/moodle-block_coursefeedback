@@ -17,6 +17,7 @@
 namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\permission_manager;
+use block_coursefeedback\local\manager\user_organization_cache_manager;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use core\hook\navigation\primary_extend;
@@ -86,13 +87,18 @@ class hook_callbacks {
      * @param primary_extend $hook
      */
     public static function primary_extend(primary_extend $hook) {
-        if (
-            permission_manager::can_do_any_evaluation_administration() &&
-            !has_capability('moodle/site:config', \context_system::instance())
-        ) {
+        if (has_capability('moodle/site:config', \context_system::instance())) {
+            return;
+        }
+        if (permission_manager::can_do_any_evaluation_administration()) {
             $hook->primaryview->add(
                 get_string('evaluationadministration', 'block_coursefeedback'),
                 new moodle_url('/blocks/coursefeedback/overview.php'),
+            );
+        } else if (user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator()) {
+            $hook->primaryview->add(
+                get_string('evaluationadministration', 'block_coursefeedback'),
+                new moodle_url('/blocks/coursefeedback/organizations.php'),
             );
         }
     }

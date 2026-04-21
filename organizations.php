@@ -24,28 +24,41 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $OUTPUT, $PAGE;
+global $CFG, $OUTPUT, $PAGE, $USER;
 
 require_login();
 $context = context_system::instance();
 
-// TODO unterscheiden zwischen manageorganizations und "organization zugeordnet?
-require_capability('block/coursefeedback:manageorganizations', $context);
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_organizations();
+
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organizations.php'));
 $PAGE->set_heading(get_string('organizations', 'block_coursefeedback'));
 
-$table = new \block_coursefeedback\local\table\organizations_table();
+if (!has_capability('block/coursefeedback:manageorganizations', $context)) {
+    $records = \block_coursefeedback\local\persistent\organization_user::get_records(['userid' => $USER->id], limit: 2);
+    if (count($records) == 0) {
+        throw new \core\exception\coding_exception('You are not allowed to access this page.');
+    } else if (count($records) == 1) {
+        redirect(new moodle_url('/blocks/coursefeedback/organization.php', ['id' => array_pop($records)->get('organizationid')]));
+    }
+}
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render(new single_button(
-    new moodle_url('/blocks/coursefeedback/organization_edit.php'),
-    get_string('new_organization', 'block_coursefeedback'),
-    'post',
-    single_button::BUTTON_PRIMARY
-));
+if (has_capability('block/coursefeedback:manageorganizations', $context)) {
+    $table = new \block_coursefeedback\local\table\organizations_table();
+    echo $OUTPUT->render(new single_button(
+        new moodle_url('/blocks/coursefeedback/organization_edit.php'),
+        get_string('new_organization', 'block_coursefeedback'),
+        'post',
+        single_button::BUTTON_PRIMARY
+    ));
 
-$table->out(48, false);
+    $table->out(48, false);
+} else {
+    $table = new \block_coursefeedback\local\table\my_organizations_table();
+    $table->out(48, false);
+}
 
 echo $OUTPUT->footer();

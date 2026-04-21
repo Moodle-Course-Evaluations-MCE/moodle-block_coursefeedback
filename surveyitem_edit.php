@@ -56,6 +56,8 @@ if ($id) {
     }
 }
 
+breadcrumbs_manager::setup_edit_surveyitem($surveypart, $surveyitem);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveyitem_edit.php', $params));
 if ($id) {
     $title = get_string('edit_surveyitem', 'block_coursefeedback');
@@ -66,7 +68,6 @@ if ($id) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-breadcrumbs_manager::setup_edit_surveyitem($surveypart, $surveyitem);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $surveypartid]);
 

@@ -47,6 +47,9 @@ if ($id) {
     }
     $params['id'] = $id;
 }
+
+breadcrumbs_manager::setup_edit_survey_scale($surveypart, $id);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/scale_edit.php', $params));
 $PAGE->set_context(context_system::instance());
 if ($scale) {
@@ -56,7 +59,6 @@ if ($scale) {
 }
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-breadcrumbs_manager::setup_edit_survey_scale($surveypart, $id);
 
 $returnurl = new moodle_url(
     '/blocks/coursefeedback/surveyitem_edit.php',

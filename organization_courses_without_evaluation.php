@@ -37,9 +37,12 @@ require_login();
 $context = context_system::instance();
 $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
+
+permission_manager::require_manage_organization($organization);
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_organization_courses_without_evaluation($organization);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]));
 $PAGE->set_context($context);
-permission_manager::require_manage_organization($organization);
 
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 if ($action) {
