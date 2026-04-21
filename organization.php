@@ -44,7 +44,10 @@ $PAGE->set_title($title);
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('block_coursefeedback/organization', [
-    'default_surveypart_url' => (new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id])),
+    'courses_without_evaluation_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]),
+    'default_surveypart_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id]),
 ]);
 
 echo $OUTPUT->footer();

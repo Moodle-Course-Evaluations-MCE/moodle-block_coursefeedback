@@ -153,6 +153,21 @@ class survey_execution_manager {
     }
 
     /**
+     * Creates an empty survey execution.
+     * @param organization $organization
+     * @param int $courseid
+     * @return void
+     */
+    public function create_empty_survey_execution(int $courseid): void {
+        // TODO use either correct starttime and endtime, or null.
+        (new survey_execution(0, (object)[
+            'courseid' => $courseid,
+            'starttime' => 0,
+            'endtime' => 0,
+        ]))->create();
+    }
+
+    /**
      * Deletes a survey execution and all sub-resources.
      *
      * @param int $surveyexecutionid

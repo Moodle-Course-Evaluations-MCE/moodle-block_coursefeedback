@@ -21,6 +21,7 @@ use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\organization_category;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use core\dml\sql_join;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
 use moodle_url;
@@ -33,7 +34,7 @@ use moodle_url;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class coursecat_course_organization_mapping extends course_organization_mapping {
+class course_organization_mapping_by_coursecategory extends course_organization_mapping {
 
     #[\Override]
     public static function get_organization_for_course(int|object $courseorid): ?organization {
@@ -56,6 +57,14 @@ class coursecat_course_organization_mapping extends course_organization_mapping 
     }
 
     #[\Override]
-    public static function get_sql_organization_for_course_mapping() {
+    public static function get_filter_sql_for_organization(organization $organization, string $alias_course_table = 'c'): sql_join {
+        global $DB;
+        $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
+        [$sql, $params] = $DB->get_in_or_equal($coursecatids, SQL_PARAMS_NAMED, 'organization_');
+        return new sql_join(
+            "",
+            "$alias_course_table.category $sql",
+            $params
+        );
     }
 }

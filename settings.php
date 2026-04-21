@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -48,7 +49,19 @@ if ($hassiteconfig) {
                 [
                     course_organization_mapping::MAP_BY_COURSECAT =>
                         new lang_string('settings:course_organization_method:coursecat', 'block_coursefeedback'),
-                    course_organization_mapping::MAP_BY_CUSTOMFIELD => null,
+                ],
+            )
+        );
+
+        $settings->add(
+            new admin_setting_configselect(
+                'block_coursefeedback/course_semester_method',
+                new lang_string('settings:course_semester_method', 'block_coursefeedback'),
+                '',
+                course_semester_mapping::MAP_BY_CUSTOMFIELD,
+                [
+                    course_semester_mapping::MAP_BY_CUSTOMFIELD =>
+                        new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
                 ],
             )
         );
