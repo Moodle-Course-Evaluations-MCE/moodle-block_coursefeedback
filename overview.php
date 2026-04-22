@@ -23,14 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\manager\permission_manager;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
 
 require_login();
-if (!\block_coursefeedback\local\manager\permission_manager::can_do_any_evaluation_administration()) {
-    throw new \core\exception\moodle_exception('You are not permitted to do that.');
+if (!permission_manager::can_do_any_evaluation_administration()) {
+    throw new \core\exception\coding_exception('You are not permitted to do that.');
 }
 $context = context_system::instance();
 require_capability('block/coursefeedback:manageorganizations', $context);
@@ -54,7 +54,7 @@ if (has_capability('block/coursefeedback:manageorganizations', $context)) {
 if (has_capability('block/coursefeedback:managesurveysglobally', $context)) {
     echo \core\output\html_writer::link(
         new moodle_url('/blocks/coursefeedback/surveyparts.php'),
-        get_string('surveys', 'block_coursefeedback'),
+        get_string('questionnaires', 'block_coursefeedback'),
         ['class' => 'd-block my-1'],
     );
 }

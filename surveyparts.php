@@ -34,7 +34,7 @@ require_capability('block/coursefeedback:managesurveysglobally', \context_system
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveyparts.php'));
-$title = get_string('surveyparts', 'block_coursefeedback');
+$title = get_string('questionnaires', 'block_coursefeedback');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
 

@@ -44,6 +44,8 @@ if ($id) {
     $organization = organization::get_record(['id' => $id], MUST_EXIST);
 }
 
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_edit_organization($organization);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_edit.php', $params));
 if ($id) {
     $title = get_string('edit_organization', 'block_coursefeedback');
@@ -54,7 +56,6 @@ if ($id) {
 $PAGE->set_context($context);
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-$PAGE->navbar->add($title, new moodle_url($PAGE->url));
 
 $returnurl = new moodle_url('/blocks/coursefeedback/organizations.php');
 
@@ -79,6 +80,7 @@ if ($mform->is_cancelled()) {
     }
     organization_user::set_organization_userids($organization->get('id'), $data->userids);
     organization_category::set_organization_coursecatids($organization->get('id'), $data->coursecatids);
+    \block_coursefeedback\local\manager\user_organization_cache_manager::get_instance()->purge();
     redirect($returnurl);
 } // Else display form.
 

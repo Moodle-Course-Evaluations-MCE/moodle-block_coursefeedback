@@ -20,6 +20,7 @@ use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use core\dml\sql_join;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
 use moodle_url;
@@ -47,13 +48,24 @@ abstract class course_organization_mapping {
     abstract public static function get_organization_for_course(int|object $courseorid): ?organization;
 
     /**
+     * Return sql to filter courses by this organization.
+     * @param organization $organization
+     * @param string $alias_course_table What the course table is called.
+     * @return sql_join
+     */
+    abstract public static function get_filter_sql_for_organization(
+        organization $organization,
+        string $alias_course_table = 'c'
+    ): sql_join;
+
+    /**
      * Returns the correct course_organization_mapping function based on the setting.
      * @return class-string<course_organization_mapping>
      */
     public static function get_instance() {
         $method = get_config('block_coursefeedback', 'course_organization_method');
         static $instances = [
-            self::MAP_BY_COURSECAT => coursecat_course_organization_mapping::class,
+            self::MAP_BY_COURSECAT => course_organization_mapping_by_coursecategory::class,
             self::MAP_BY_CUSTOMFIELD => null,
         ];
         return $instances[$method];

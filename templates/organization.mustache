@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_coursefeedback/edit_survey
+    @template block_coursefeedback/organization
 
-    This template renders the editing of a survey.
+    This template renders the organization overview page.
 
     Example context (json):
     {
@@ -25,4 +25,13 @@
 
 }}
 
-<h4><a href="{{{default_surveypart_url}}}">{{#str}}define_default_surveyparts, block_coursefeedback{{/str}}</a></h4>
+<h4>
+    <a href="{{{default_surveypart_url}}}">
+        {{#str}}define_default_surveyparts, block_coursefeedback{{/str}}
+    </a>
+</h4>
+<h4>
+    <a href="{{{courses_without_evaluation_url}}}">
+        {{#str}}list_of_courses_without_evaluation, block_coursefeedback{{/str}}
+    </a>
+</h4>

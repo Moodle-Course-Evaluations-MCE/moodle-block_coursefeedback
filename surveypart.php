@@ -35,14 +35,15 @@ global $CFG, $DB, $OUTPUT, $PAGE;
 require_login();
 $id = required_param('id', PARAM_INT);
 $surveypart = surveypart::get_record(['id' => $id], MUST_EXIST);
+
+permission_manager::require_permission_for_editing_surveypart($surveypart);
+breadcrumbs_manager::setup_survey($surveypart);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $id]));
 $PAGE->set_context(context_system::instance());
-permission_manager::require_permission_for_editing_surveypart($surveypart);
-
 $title = $surveypart->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-breadcrumbs_manager::setup_survey($surveypart);
 
 if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     require_sesskey();

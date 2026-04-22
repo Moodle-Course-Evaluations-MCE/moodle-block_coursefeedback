@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -48,7 +49,21 @@ if ($hassiteconfig) {
                 [
                     course_organization_mapping::MAP_BY_COURSECAT =>
                         new lang_string('settings:course_organization_method:coursecat', 'block_coursefeedback'),
-                    course_organization_mapping::MAP_BY_CUSTOMFIELD => null,
+                ],
+            )
+        );
+
+        $settings->add(
+            new admin_setting_configselect(
+                'block_coursefeedback/course_semester_method',
+                new lang_string('settings:course_semester_method', 'block_coursefeedback'),
+                '',
+                course_semester_mapping::MAP_BY_CUSTOMFIELD,
+                [
+                    course_semester_mapping::MAP_BY_CUSTOMFIELD =>
+                        new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
+                    course_semester_mapping::MAP_MATCH_ALL =>
+                        new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
                 ],
             )
         );
@@ -65,7 +80,7 @@ if ($hassiteconfig) {
 
     $ADMIN->add('block_coursefeedback_category', new admin_externalpage(
         'block_coursefeedback_category_survey',
-        get_string('surveys', 'block_coursefeedback'),
+        get_string('questionnaires', 'block_coursefeedback'),
         new moodle_url('/blocks/coursefeedback/surveyparts.php'),
         'block/coursefeedback:managesurveysglobally',
     ));

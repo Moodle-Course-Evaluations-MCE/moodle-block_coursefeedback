@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
 
@@ -33,9 +34,10 @@ require_login();
 $context = context_system::instance();
 $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
-$PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]));
 $PAGE->set_context($context);
 permission_manager::require_manage_organization($organization);
+breadcrumbs_manager::setup_organization($organization);
+$PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]));
 
 $title = $organization->get('name');
 $PAGE->set_heading($title);
@@ -44,7 +46,10 @@ $PAGE->set_title($title);
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('block_coursefeedback/organization', [
-    'default_surveypart_url' => (new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id])),
+    'courses_without_evaluation_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]),
+    'default_surveypart_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id]),
 ]);
 
 echo $OUTPUT->footer();

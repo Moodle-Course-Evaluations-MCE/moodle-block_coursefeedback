@@ -41,6 +41,8 @@ if ($id) {
     $surveypart = surveypart::get_record(['id' => $id], MUST_EXIST);
 }
 
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_edit_survey($surveypart);
+
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveypart_edit.php', $params));
 if ($id) {
     $title = get_string('edit_surveypart', 'block_coursefeedback');
@@ -51,8 +53,6 @@ if ($id) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
-
-\block_coursefeedback\local\manager\breadcrumbs_manager::setup_edit_survey($surveypart);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveyparts.php');
 

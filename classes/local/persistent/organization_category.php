@@ -93,6 +93,21 @@ class organization_category extends persistent {
     }
 
     /**
+     * Returns all coursecatids which belong to this organization.
+     * @param int $organizationid
+     * @return array
+     */
+    public static function get_all_recursive_coursecatids(int $organizationid): array {
+        $allids = [];
+        $coursecatids = self::get_organization_coursecatids($organizationid);
+        foreach ($coursecatids as $coursecatid) {
+            $allids[] = $coursecatid;
+            $allids = array_merge($allids, \core_course_category::get($coursecatid)->get_all_children_ids());
+        }
+        return $allids;
+    }
+
+    /**
      * Fetch the organization for the given category. This returns the organization associated with
      * the nearest parent category, or null, if no parent category is associated with an organization.
      * @param \core_course_category $category
