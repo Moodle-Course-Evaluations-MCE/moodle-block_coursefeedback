@@ -60,6 +60,9 @@ class course_organization_mapping_by_coursecategory extends course_organization_
     public static function get_filter_sql_for_organization(organization $organization, string $alias_course_table = 'c'): sql_join {
         global $DB;
         $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
+        if (!$coursecatids) {
+            return new sql_join(wheres: "1=0", cannotmatchanyrows: true);
+        }
         [$sql, $params] = $DB->get_in_or_equal($coursecatids, SQL_PARAMS_NAMED, 'organization_');
         return new sql_join(
             "",

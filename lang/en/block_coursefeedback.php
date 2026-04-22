@@ -126,6 +126,7 @@ $string['settings:course_organization_method:coursecat'] = 'By course category';
 $string['settings:course_organization_method:customfield'] = 'By course custom field';
 $string['settings:course_semester_method'] = 'How should semester association be derived for courses?';
 $string['settings:course_semester_method:customfield'] = 'By semester course custom field';
+$string['settings:course_semester_method:match_all'] = 'Do not filter by semester';
 $string['settings:general_settings'] = 'General settings';
 $string['show_all_languages'] = 'Show all languages';
 $string['singlechoice'] = 'Single choice';

@@ -62,6 +62,8 @@ if ($hassiteconfig) {
                 [
                     course_semester_mapping::MAP_BY_CUSTOMFIELD =>
                         new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
+                    course_semester_mapping::MAP_MATCH_ALL =>
+                        new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
                 ],
             )
         );

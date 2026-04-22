@@ -30,7 +30,7 @@ global $CFG, $OUTPUT, $PAGE;
 
 require_login();
 if (!permission_manager::can_do_any_evaluation_administration()) {
-    throw new \core\exception\moodle_exception('You are not permitted to do that.');
+    throw new \core\exception\coding_exception('You are not permitted to do that.');
 }
 $context = context_system::instance();
 require_capability('block/coursefeedback:manageorganizations', $context);

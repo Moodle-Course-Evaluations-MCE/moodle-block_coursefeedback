@@ -32,6 +32,9 @@ abstract class course_semester_mapping {
     /** @var string Map course to semesters by course custom field. */
     public const MAP_BY_CUSTOMFIELD = 'customfield';
 
+    /** @var string Map course to semesters matching all courses to all semesters. */
+    public const MAP_MATCH_ALL = 'match-all';
+
 
     /** @var int The currently selected semester. Which is of course always SoSe 2026. */
     public const SELECTED_SEMESTER = 20260;
@@ -48,10 +51,11 @@ abstract class course_semester_mapping {
      * Returns the correct course_semester_mapping function based on the setting.
      * @return class-string<course_semester_mapping>
      */
-    public static function get_instance() {
+    public static function get_instance(): string {
         $method = get_config('block_coursefeedback', 'course_semester_method');
         static $instances = [
             self::MAP_BY_CUSTOMFIELD => course_semester_mapping_by_customfield::class,
+            self::MAP_MATCH_ALL => course_semester_mapping_match_all::class,
         ];
         return $instances[$method];
     }
