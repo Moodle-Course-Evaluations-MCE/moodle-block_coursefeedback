@@ -27,8 +27,11 @@ namespace block_coursefeedback\local\surveyitem\text;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\exception\coding_exception;
 use core\lang_string;
+use moodle_url;
+use moodleform;
 
 /**
  * Survey item type definition for a text question.
@@ -38,7 +41,7 @@ use core\lang_string;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class text extends surveyitemtype {
+class text extends surveyitemtype_with_settings {
 
     #[\Override]
     public function get_name(): lang_string {
@@ -46,12 +49,7 @@ class text extends surveyitemtype {
     }
 
     #[\Override]
-    public function get_settings_mform(): ?string {
-        return text_form::class;
-    }
-
-    #[\Override]
-    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
+    public function save_settings_form_data(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         // Nothing to do.
     }
 

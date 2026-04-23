@@ -34,7 +34,7 @@ class surveyitemtype_answerdata {
      * @param int $response_set_id The response set id.
      * @param int $surveyitem_id The surveyitem id.
      * @param mixed $value The actual answer value
-     * @param mixed $additionaldata Additionaldata, as given by {@see surveyitemtype::load_questiondata_for()}
+     * @param mixed $additionaldata Additionaldata, as given by {@see surveyitemtype::load_additional_data_for()}
      */
     public function __construct(
         public readonly int $response_set_id,

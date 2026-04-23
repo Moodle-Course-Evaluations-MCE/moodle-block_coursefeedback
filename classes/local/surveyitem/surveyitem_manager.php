@@ -152,7 +152,7 @@ class surveyitem_manager {
 
         foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
             $additionaldata = self::get_surveyitemtype($surveyitemtype)
-                ->load_questiondata_for($surveyitemsoftype);
+                ->load_additional_data_for($surveyitemsoftype);
 
             $alladditionaldata[$surveyitemtype] = $additionaldata;
         }
@@ -160,7 +160,7 @@ class surveyitem_manager {
         $template_data_by_item_id = [];
         foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
             $template_data_by_item_id += self::get_surveyitemtype($surveyitemtype)
-                ->create_question_structure($surveyitemsoftype, $alladditionaldata[$surveyitemtype]);
+                ->export_for_template($surveyitemsoftype, $alladditionaldata[$surveyitemtype]);
         }
 
         $pages_by_partid = [];
@@ -185,7 +185,7 @@ class surveyitem_manager {
 
         foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
             $additionaldata = self::get_surveyitemtype($surveyitemtype)
-                ->load_questiondata_for($surveyitemsoftype);
+                ->load_additional_data_for($surveyitemsoftype);
             $alladditionaldata[$surveyitemtype] = $additionaldata;
         }
 

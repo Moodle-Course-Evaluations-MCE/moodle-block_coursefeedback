@@ -24,7 +24,6 @@
  */
 namespace block_coursefeedback\local\surveyitem\pagebreak;
 
-use block_coursefeedback\local\surveyitem\info\multiplechoice_form;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use core\lang_string;
 
@@ -41,11 +40,6 @@ class pagebreak extends surveyitemtype {
     #[\Override]
     public function get_name(): lang_string {
         return new lang_string('pagebreak', 'block_coursefeedback');
-    }
-
-    #[\Override]
-    public function get_settings_mform(): ?string {
-        return null;
     }
 
     #[\Override]

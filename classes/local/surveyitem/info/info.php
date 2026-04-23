@@ -27,7 +27,10 @@ namespace block_coursefeedback\local\surveyitem\info;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\lang_string;
+use moodle_url;
+use moodleform;
 
 /**
  * Survey item type definition for info elements.
@@ -37,7 +40,7 @@ use core\lang_string;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class info extends surveyitemtype {
+class info extends surveyitemtype_with_settings {
 
     #[\Override]
     public function get_name(): lang_string {
@@ -45,12 +48,7 @@ class info extends surveyitemtype {
     }
 
     #[\Override]
-    public function get_settings_mform(): ?string {
-        return info_form::class;
-    }
-
-    #[\Override]
-    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
+    public function save_settings_form_data(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         // Nothing to do.
     }
 
