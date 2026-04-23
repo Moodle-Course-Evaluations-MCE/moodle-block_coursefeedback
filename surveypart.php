@@ -28,6 +28,7 @@ use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -111,7 +112,7 @@ foreach ($surveyitems as $surveyitem) {
     $surveyitemtype = $surveyitem->get('surveyitemtype');
 
     // If item is editable.
-    if (surveyitem_manager::get_surveyitemtype($surveyitemtype)->get_settings_mform()) {
+    if (surveyitem_manager::get_surveyitemtype($surveyitemtype) instanceof surveyitemtype_with_settings) {
         $editstr = get_string('edit');
         $actionmenu->add_secondary_action(new \core\output\action_link(
             new \moodle_url(

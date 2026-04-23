@@ -28,9 +28,12 @@ use block_coursefeedback\local\multilang_string;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use coding_exception;
 use dml_exception;
 use JsonException;
+use moodle_url;
+use moodleform;
 
 /**
  * Survey item type definition parent class for multiple and single choice questions.
@@ -40,15 +43,15 @@ use JsonException;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class ms_choice extends surveyitemtype {
+abstract class ms_choice extends surveyitemtype_with_settings {
 
     #[\Override]
-    public function get_settings_mform(): ?string {
-        return ms_choice_form::class;
+    public function get_settings_form(moodle_url $action, surveypart $surveypart): moodleform {
+        return new ms_choice_form($action, $surveypart);
     }
 
     #[\Override]
-    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
+    public function save_settings_form_data(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         global $DB;
         $transaction = $DB->start_delegated_transaction();
 
@@ -95,9 +98,9 @@ abstract class ms_choice extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_settings_mform(surveyitem $surveyitem): object {
+    public function load_settings_form_data(surveyitem $surveyitem): object {
         global $DB;
-        $data = parent::load_settings_mform($surveyitem);
+        $data = parent::load_settings_form_data($surveyitem);
 
         $option_records = $DB->get_records(
             'block_coursefeedback_surveyitemansweroption',
@@ -112,9 +115,9 @@ abstract class ms_choice extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_questiondata_for(array $surveyitems): array {
+    public function load_additional_data_for(array $surveyitems): array {
         global $DB;
-        $additionaldata = parent::load_questiondata_for($surveyitems);
+        $additionaldata = parent::load_additional_data_for($surveyitems);
 
         $surveyitemids = array_map(fn($surveyitem) => $surveyitem->get('id'), $surveyitems);
         $records = $DB->get_records_list(
@@ -133,15 +136,15 @@ abstract class ms_choice extends surveyitemtype {
     }
 
     #[\Override]
-    public function create_question_structure(array $surveyitems, array $additionaldata): array {
-        $template_data = parent::create_question_structure($surveyitems, $additionaldata);
+    public function export_for_template(array $surveyitems, array $additional_data): array {
+        $template_data = parent::export_for_template($surveyitems, $additional_data);
         foreach ($surveyitems as $surveyitem) {
             $template_data[$surveyitem->get('id')]['options'] = array_values(array_map(
                 fn($option) => [
                     'optiontext' => $option->text->translate(),
                     'optionid' => $option->id,
                 ],
-                $additionaldata[$surveyitem->get('id')] ?? []
+                $additional_data[$surveyitem->get('id')] ?? []
             ));
         }
         return $template_data;

@@ -28,7 +28,7 @@ namespace block_coursefeedback\local\surveyitem\scalequestion;
 use block_coursefeedback\local\persistent\scale;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitemtype;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\exception\coding_exception;
 use core\lang_string;
 
@@ -40,15 +40,15 @@ use core\lang_string;
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class scalequestion extends surveyitemtype {
+class scalequestion extends surveyitemtype_with_settings {
 
     #[\Override]
-    public function get_settings_mform(): ?string {
-        return scalequestion_form::class;
+    public function get_name(): lang_string {
+        return new lang_string('scalequestion', 'block_coursefeedback');
     }
 
     #[\Override]
-    public function save_settings_mform(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
+    public function save_settings_form_data(surveyitem $surveyitem, surveypart $surveypart, object $formdata): void {
         global $DB;
         $formdata->forceshowscale ??= false;
         $formdata->surveyitemid = $surveyitem->get('id');
@@ -64,9 +64,9 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function load_settings_mform(surveyitem $surveyitem): object {
+    public function load_settings_form_data(surveyitem $surveyitem): object {
         global $DB;
-        $data = parent::load_settings_mform($surveyitem);
+        $data = parent::load_settings_form_data($surveyitem);
         $record = $DB->get_record('block_coursefeedback_surveyitemscalequestion', ['surveyitemid' => $surveyitem->get('id')]);
         if ($record) {
             $data->scaleid = $record->scaleid;
@@ -76,14 +76,9 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function get_name(): lang_string {
-        return new lang_string('scalequestion', 'block_coursefeedback');
-    }
-
-    #[\Override]
-    public function load_questiondata_for(array $surveyitems): array {
+    public function load_additional_data_for(array $surveyitems): array {
         global $DB;
-        $additionaldata = parent::load_questiondata_for($surveyitems);
+        $additionaldata = parent::load_additional_data_for($surveyitems);
 
         $surveyitemids = array_map(fn($surveyitem) => $surveyitem->get('id'), $surveyitems);
         $scale_fields = scale::get_sql_fields('s', 's_');
@@ -104,18 +99,18 @@ class scalequestion extends surveyitemtype {
     }
 
     #[\Override]
-    public function create_question_structure(array $surveyitems, array $additionaldata): array {
-        $structure = parent::create_question_structure($surveyitems, $additionaldata);
+    public function export_for_template(array $surveyitems, array $additional_data): array {
+        $structure = parent::export_for_template($surveyitems, $additional_data);
 
         $lastsurveyitem = null;
 
         foreach ($surveyitems as $surveyitem) {
-            $record = $additionaldata[$surveyitem->get('id')];
+            $record = $additional_data[$surveyitem->get('id')];
             $hasnaoption = (bool) $record->scale->get('hasnoansweroption');
             $optionamount = $record->scale->get('optionamount');
             $show_scale = $record->forceshowscale ||
                     !$lastsurveyitem ||
-                    $additionaldata[$lastsurveyitem->get('id')]->scaleid != $record->scaleid ||
+                    $additional_data[$lastsurveyitem->get('id')]->scaleid != $record->scaleid ||
                     $lastsurveyitem->get('sortindex') !== $surveyitem->get('sortindex') - 1;
 
             $structure[$surveyitem->get('id')] += [

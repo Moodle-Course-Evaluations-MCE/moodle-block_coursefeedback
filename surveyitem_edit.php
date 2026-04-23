@@ -29,6 +29,7 @@ use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -71,9 +72,9 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $surveypartid]);
 
-$mformclass = $surveyitemtype->get_settings_mform();
-
-if (!$mformclass) {
+if ($surveyitemtype instanceof surveyitemtype_with_settings) {
+    $mform = $surveyitemtype->get_settings_form($PAGE->url, $surveypart);
+} else {
     if ($id) {
         throw new coding_exception('Cannot edit item of type ' . $type);
     }
@@ -88,11 +89,8 @@ if (!$mformclass) {
     redirect($returnurl);
 }
 
-/** @var surveyitem_form $mform */
-$mform = new $mformclass($PAGE->url, $surveypart);
-
 if ($surveyitem) {
-    $data = $surveyitemtype->load_settings_mform($surveyitem);
+    $data = $surveyitemtype->load_settings_form_data($surveyitem);
     $mform->set_data($data);
 }
 
@@ -114,7 +112,7 @@ if ($mform->is_cancelled()) {
     }
 
     $surveyitem->save();
-    $surveyitemtype->save_settings_mform($surveyitem, $surveypart, $data);
+    $surveyitemtype->save_settings_form_data($surveyitem, $surveypart, $data);
     redirect($returnurl);
 } // Else display form.
 
