@@ -44,6 +44,9 @@ permission_manager::require_permission_for_editing_surveypart($surveypart);
 
 $type = required_param('type', PARAM_ALPHANUMEXT);
 $surveyitemtype = surveyitem_manager::get_surveyitemtype($type);
+if (!$surveyitemtype->can_be_added()) {
+    throw new coding_exception("Cannot manually add or edit survey items of type '$type'.");
+}
 
 $params = ['surveypartid' => $surveypartid, 'type' => $type];
 

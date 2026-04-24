@@ -148,7 +148,7 @@ class delete_event extends external_api {
 
         $transaction->allow_commit();
 
-        $model = course_feedback_data::load_from_course($courseid);
+        $model = course_feedback_data::load_from_course_required($courseid);
 
         return [
             'new_table_html' => $OUTPUT->render(new course_event_slot_table($model)),

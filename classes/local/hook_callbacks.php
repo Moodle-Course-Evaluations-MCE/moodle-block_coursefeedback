@@ -18,8 +18,8 @@ namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
-use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\output\survey;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
 use moodle_url;
@@ -41,46 +41,30 @@ class hook_callbacks {
      */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
         global $DB, $PAGE;
-        if ($PAGE->context->contextlevel === CONTEXT_COURSE) {
-            // TODO lookup whether to use a survey, and if so, which one.
-            $records = $DB->get_records_sql(
-                'SELECT speo.id as surveypartexecutionoptionid, se.id as surveyexecutionid, ' .
-                'spe.id as surveypartexecutionid, spe.surveypartid ' .
-                'FROM {block_coursefeedback_surveyexecution} se ' .
-                'JOIN {block_coursefeedback_surveypartexecution} spe ON se.id = spe.surveyexecutionid ' .
-                'JOIN {block_coursefeedback_surveypartexecutionoption} speo ON spe.id = speo.surveypartexecutionid ' .
-                'WHERE se.courseid = :courseid ',
-                ['courseid' => $PAGE->course->id]
-            );
-
-            if (!$records) {
-                return;
-            }
-
-            $record = array_pop($records);
-
-            $surveypart = surveypart::get_record(['id' => $record->surveypartid]);
-            if (!$surveypart) {
-                return;
-            }
-
-            $templatedata = surveyitem_manager::get_templatedata_for_surveyparts([$surveypart], current_language());
-
-            $surveydata = [
-                [
-                    'surveypartexecutionoptionid' => $record->surveypartexecutionoptionid,
-                    'pages' => reset($templatedata),
-                ],
-            ];
-
-            $PAGE->requires->js_call_amd(
-                'block_coursefeedback/do_survey',
-                'doSurvey',
-                [$surveydata, $PAGE->course->id, 'user-notifications', true]
-            );
+        if ($PAGE->context->contextlevel !== CONTEXT_COURSE) {
+            return;
         }
-    }
 
+        // TODO: Probably cache the result of this rather large query.
+        $course_data = course_feedback_data::load_from_course($PAGE->course);
+        if (!$course_data) {
+            return;
+        }
+
+        $now = time();
+        $is_active = $course_data->survey_execution->get('starttime') <= $now
+            && $now < $course_data->survey_execution->get('endtime');
+        if (!$is_active) {
+            return;
+        }
+
+        $survey = survey::for_course($course_data);
+
+        $renderer = $PAGE->get_renderer('block_coursefeedback');
+
+        // We add the survey HTML to the end of the page, it'll move itself to the notification area.
+        $hook->add_html($renderer->render($survey));
+    }
 
     /**
      * Adds the evaluation administration overview page to evaluation admins primary navigation.

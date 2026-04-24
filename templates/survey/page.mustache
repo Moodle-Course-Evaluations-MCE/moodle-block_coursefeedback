@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_coursefeedback/survey_questions
+    @template block_coursefeedback/survey/page
 
     Render a collection of questions.
 
@@ -95,7 +95,7 @@
 
 }}
 
-{{# questions }}
+{{# items }}
     <div class="mb-5" data-surveyitemid="{{surveyitemid}}">
         {{# type_info }}
             {{{ questiontext }}}
@@ -115,5 +115,8 @@
         {{# type_emoji }}
             {{> block_coursefeedback/surveyitems/emoji }}
         {{/ type_emoji }}
+        {{# type_slot_choice }}
+            {{> block_coursefeedback/surveyitems/slot_choice }}
+        {{/ type_slot_choice}}
     </div>
-{{/ questions }}
+{{/ items }}

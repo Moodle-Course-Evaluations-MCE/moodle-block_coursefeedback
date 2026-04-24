@@ -60,7 +60,7 @@ if (count($survey_executions) > 1) {
 
 $survey_execution = reset($survey_executions);
 
-$model = course_feedback_data::load_from_course($course);
+$model = course_feedback_data::load_from_course_required($course);
 
 $table = new course_event_slot_table($model);
 $survey_execution_period = new survey_execution_period(
@@ -85,8 +85,5 @@ echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
 ]);
-
-// Make sure AlpineJS is initialized after all other scripts have been loaded.
-$renderer->init_alpine_js();
 
 echo $OUTPUT->footer();

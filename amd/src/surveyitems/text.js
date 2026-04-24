@@ -25,9 +25,7 @@ import {SurveyItem} from "block_coursefeedback/surveyitem";
 
 export class Text extends SurveyItem {
 
-    initialize() {
-        this.textarea = this.surveyItemRootElement.querySelector('textarea');
-    }
+    textarea = this.surveyItemRootElement.querySelector('textarea');
 
     getValue() {
         return this.textarea.value;

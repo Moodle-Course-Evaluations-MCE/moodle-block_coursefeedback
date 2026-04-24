@@ -27,36 +27,53 @@ use core\output\plugin_renderer_base;
 class block_coursefeedback_renderer extends plugin_renderer_base {
 
     /** @var array $alpinejsdependencies */
-    private array $alpinejsdependencies = [];
+    private static array $alpinejsdependencies = [];
+
+    /** @var bool $shutdownhookadded */
+    private static bool $shutdownhookadded = false;
 
     /**
      * Add JavaScript code to initialize Alpine.js, if the `register_alpine_js_module` has been called.
      */
-    public function init_alpine_js(): void {
-        if (!$this->alpinejsdependencies) {
+    private static function init_alpine_js(): void {
+        if (!self::$alpinejsdependencies) {
             return;
         }
 
-        $deps_json = json_encode(['block_coursefeedback/alpinejs', ...$this->alpinejsdependencies], JSON_THROW_ON_ERROR);
+        $deps_json = json_encode(
+            ['block_coursefeedback/alpinejs', ...self::$alpinejsdependencies],
+            JSON_THROW_ON_ERROR
+        );
 
-        $this->page->requires->js_init_code("
-        require($deps_json, function(Alpine) {
-            window.Alpine = Alpine;
-            Alpine.start();
-        })
+        echo html_writer::script("
+            require($deps_json, function(Alpine) {
+                window.Alpine = Alpine;
+                Alpine.start();
+                console.debug('Alpine.js initialized');
+            })
         ");
     }
 
+    /**
+     * Register a JavaScript module to be loaded before Alpine.js is initialized.
+     *
+     * @param string $module
+     * @return void
+     */
+    private function register_alpine_js_module(string $module): void {
+        $this->page->requires->js_call_amd($module);
+        self::$alpinejsdependencies[] = $module;
+
+        if (!self::$shutdownhookadded) {
+            core_shutdown_manager::register_function(self::init_alpine_js(...));
+            self::$shutdownhookadded = true;
+        }
+    }
+
     #[\Override]
-    protected function get_mustache() {
+    protected function get_mustache(): Mustache_Engine {
         $mustache = parent::get_mustache();
-        // The helper and init_alpine_js ensure that Alpine.js is initialized only once and after all modules are loaded.
-        $mustache->addHelper('register_alpine_js_module', function (string $content): string {
-            $module = trim($content);
-            $this->page->requires->js_call_amd($module);
-            $this->alpinejsdependencies[] = $module;
-            return '';
-        });
+        $mustache->addHelper('register_alpine_js_module', fn($content) => $this->register_alpine_js_module(trim($content)) || "");
         return $mustache;
     }
 }

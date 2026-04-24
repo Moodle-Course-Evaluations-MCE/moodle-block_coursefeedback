@@ -4,5 +4,6 @@
     <exclude name="moodle.NamingConventions.ValidVariableName.VariableNameUnderscore" />
     <exclude name="PSR12.Classes.OpeningBraceSpace.Found" />
     <exclude name="moodle.Commenting.TodoComment.MissingInfoInline" />
+    <exclude name="moodle.Commenting.InlineComment.DocBlock" />
   </rule>
 </ruleset>

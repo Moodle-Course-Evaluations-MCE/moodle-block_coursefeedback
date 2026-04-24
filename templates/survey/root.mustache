@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_coursefeedback/show_survey
+    @template block_coursefeedback/survey/root
 
     This template renders the notification message to show a survey.
 
@@ -95,23 +95,36 @@
 }
 
 }}
-<div class="alert alert-info p-4 block_coursefeedback-survey" id="block_coursefeedback-survey-root"
-     style='--current-page: 1; --current-page-text: "1"; --amount-pages: {{amount_pages}}'>
-    <div id="block_coursefeedback-survey-content">
-        {{> block_coursefeedback/survey_questions }}
+<div x-data="surveyRoot({{json_data}})" x-cloak
+    {{#append_to_selector}} x-init="document.querySelector('{{.}}').appendChild($el)" {{/append_to_selector}}
+     class="alert alert-info p-4 block_coursefeedback-survey">
+    <div id="block_coursefeedback-survey-content" x-ref="pageContainer">
+        {{#first_page}}
+            {{> block_coursefeedback/survey/page }}
+        {{/first_page}}
     </div>
     <div class="d-flex mb-3 justify-content-between">
-        <button class="btn btn-secondary button-back" disabled>
+        <button class="btn btn-secondary button-back" disabled :disabled="currentPage0 === 0"
+                @click="prevPage">
             {{#str}}back{{/str}}
         </button>
-        <button class="btn btn-primary button-next">
+        <button class="btn btn-primary button-next"
+                x-show="currentPage0 < {{amount_pages}} - 1"
+                @click="nextPage">
             {{#str}}next{{/str}}
+        </button>
+        <button class="btn btn-primary button-next"
+                x-show="currentPage0 >= {{amount_pages}} - 1" x-cloak
+                :disabled="!canFinish"
+                @click="submit">
+            {{#str}}finish, block_coursefeedback{{/str}}
         </button>
     </div>
     <div class="progress mb-3" role="progressbar" aria-hidden="true">
-        <div class="progress-bar" style="width: calc(100% * (var(--current-page) - 1) / var(--amount-pages))"></div>
+        <div class="progress-bar" :style="`width: calc(100% * ${currentPage0} / {{amount_pages}})`"></div>
     </div>
     <div class="d-flex justify-content-around">
-        <span>{{#str}} page {{/str}} <span class="current-page"></span> / {{amount_pages}}</span>
+        <span>{{#str}} page {{/str}} <span x-text="currentPage0 + 1"></span> / {{amount_pages}}</span>
     </div>
 </div>
+{{#register_alpine_js_module}} block_coursefeedback/survey_root {{/register_alpine_js_module}}
