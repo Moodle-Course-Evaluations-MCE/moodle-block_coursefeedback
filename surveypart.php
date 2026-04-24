@@ -28,7 +28,11 @@ use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
+use block_coursefeedback\output\survey;
+use core\output\local\collapsable_section;
+use core\output\notification;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -62,18 +66,6 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
 }
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
-$templatedata = surveyitem_manager::get_templatedata_for_surveyparts([$surveypart], current_language());
-$surveydata = [
-    [
-        'pages' => reset($templatedata),
-    ],
-];
-$PAGE->requires->js_call_amd(
-    'block_coursefeedback/do_survey',
-    'doSurvey',
-    // FIXME: Moodle limits this to 1024 characters, which we reach in just a few survey items.
-    [$surveydata, $PAGE->course->id, 'block_coursefeedback-surveyanchor', false]
-);
 
 echo $OUTPUT->header();
 
@@ -86,7 +78,14 @@ $actionmenu->set_menu_trigger(
 );
 $actionmenu->set_menu_left();
 
+/**
+ * @var string $type
+ * @var surveyitemtype $class
+ */
 foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
+    if (!$class->can_be_added()) {
+        continue;
+    }
     $actionmenu->add_secondary_action(
         new \core\output\action_link(
             new \moodle_url(
@@ -152,6 +151,26 @@ foreach ($surveyitems as $surveyitem) {
 
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
-echo html_writer::div('', 'mt-5', ['id' => 'block_coursefeedback-surveyanchor']);
+$renderer = $PAGE->get_renderer('block_coursefeedback');
+try {
+    $survey = survey::for_testing_surveypart($surveypart);
+    $preview_content = $renderer->render($survey);
+} catch (moodle_exception $e) {
+    // Show message and stacktrace instead.
+    $preview_content = $renderer->render(new notification(
+        message: html_writer::tag("pre", strval($e), ['class' => 'mb-0']),
+        messagetype: notification::NOTIFY_ERROR,
+        closebutton: false,
+        title: get_string('surveypart_preview_error', 'block_coursefeedback', $e->getMessage()),
+    ));
+}
+
+echo html_writer::empty_tag("hr");
+echo $renderer->render(new collapsable_section(
+    titlecontent: get_string('surveypart_preview', 'block_coursefeedback'),
+    sectioncontent: $preview_content,
+    classes: "block_coursefeedback-surveypart-preview",
+    open: true,
+));
 
 echo $OUTPUT->footer();

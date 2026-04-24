@@ -14,19 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace block_coursefeedback\local\surveyitem;
+
 /**
- * Plugin version and other meta-data are defined here.
+ * The template context and JS data for one page of a survey.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'block_coursefeedback';
-$plugin->release = '4.0.0 (Build: 2026043000)';
-$plugin->version = 2026043000;
-$plugin->requires = 2022042208;
-$plugin->maturity = MATURITY_ALPHA;
+class survey_page {
+    /**
+     * Constructor.
+     *
+     * @param array[] $items
+     * @param int $spe_id
+     */
+    public function __construct(
+        /** @var array[] */
+        public readonly array $items,
+        /** @var int */
+        public readonly int $spe_id
+    ) {
+    }
+}

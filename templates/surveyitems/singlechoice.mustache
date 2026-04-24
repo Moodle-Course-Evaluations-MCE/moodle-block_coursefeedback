@@ -25,6 +25,7 @@
       "type": "singlechoice",
       "surveyitemid": 2,
       "questiontext": "<p>In welchem Fachsemester studieren Sie?<\/p>",
+      "required": false,
       "options": [
         {
           "optiontext": "1",
@@ -75,15 +76,20 @@
 }}
 
 {{{ questiontext }}}
+{{#required}}
+    <span class="text-danger" title="{{#str}}required{{/str}}" aria-hidden="true">{{#pix}}req{{/pix}}</span>
+{{/required}}
 <div class="mt-2 ms-3">
     <form id="singlechoice-form-{{surveyitemid}}">
-    {{# options }}
-        <div class="form-check mt-1">
-            <input class="form-check-input" type="radio" name="surveyitem-{{surveyitemid}}" id="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}" value="{{optionid}}">
-            <label class="form-check-label" for="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}">
-                {{{optiontext}}}
-            </label>
-        </div>
-    {{/ options }}
+        {{# options }}
+            <div class="form-check mt-1">
+                <input class="form-check-input" type="radio" name="surveyitem-{{surveyitemid}}"
+                       id="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}" value="{{optionid}}"
+                       {{#required}}required{{/required}}>
+                <label class="form-check-label" for="block_coursefeedback-surveyitem-{{surveyitemid}}-{{optionid}}">
+                    {{{optiontext}}}
+                </label>
+            </div>
+        {{/ options }}
     </form>
 </div>

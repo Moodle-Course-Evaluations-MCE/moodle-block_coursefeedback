@@ -38,7 +38,7 @@ use core_user\fields;
 class course_feedback_data {
 
     /**
-     * Private constructor, use {@see load_from_course()}.
+     * Private constructor, use {@see load_from_course()} or {@see load_from_course_required()}.
      *
      * @param object $course
      * @param survey_execution $survey_execution
@@ -69,13 +69,7 @@ class course_feedback_data {
     ) {
     }
 
-    /**
-     * Loads the course feedback data for the given course.
-     *
-     * @param object|int $course_or_id
-     * @return self
-     */
-    public static function load_from_course(object|int $course_or_id): self {
+    public static function load_from_course(object|int $course_or_id): ?self {
         global $DB;
 
         $course = is_int($course_or_id) ? get_course($course_or_id) : $course_or_id;
@@ -107,12 +101,7 @@ class course_feedback_data {
 
         try {
             if (!$recordset || !$recordset->valid()) {
-                throw new moodle_exception(
-                    'no_survey_execution',
-                    'block_coursefeedback',
-                    a: $course,
-                    debuginfo: "courseid: $course->id"
-                );
+                return null;
             }
 
             $row = $recordset->current();
@@ -180,5 +169,26 @@ class course_feedback_data {
         } finally {
             $recordset?->close();
         }
+    }
+
+    /**
+     * Loads the course feedback data for the given course.
+     *
+     * @param object|int $course_or_id
+     * @return self
+     */
+    public static function load_from_course_required(object|int $course_or_id): self {
+        $course = is_int($course_or_id) ? get_course($course_or_id) : $course_or_id;
+
+        $result = self::load_from_course($course_or_id);
+        if (!$result) {
+            throw new moodle_exception(
+                'no_survey_execution',
+                'block_coursefeedback',
+                a: $course,
+                debuginfo: "courseid: $course->id"
+            );
+        }
+        return $result;
     }
 }

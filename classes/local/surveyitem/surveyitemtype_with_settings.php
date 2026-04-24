@@ -8,6 +8,14 @@ use core\exception\coding_exception;
 use moodle_url;
 use moodleform;
 
+/**
+ * An abstract survey item type that has settings.
+ *
+ * @package     block_coursefeedback
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class surveyitemtype_with_settings extends surveyitemtype {
 
     /**

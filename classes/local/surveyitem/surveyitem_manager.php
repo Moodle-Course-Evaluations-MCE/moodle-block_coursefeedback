@@ -22,18 +22,25 @@
  * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace block_coursefeedback\local\surveyitem;
 
+use block_coursefeedback\local\persistent\response_slot;
+use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\surveyitem\emoji\emoji_surveyitem;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
 use block_coursefeedback\local\surveyitem\scalequestion\scalequestion;
 use block_coursefeedback\local\surveyitem\singlechoice\singlechoice;
+use block_coursefeedback\local\surveyitem\slot_choice\slot_choice;
 use block_coursefeedback\local\surveyitem\text\text;
+use core\di;
 use core\exception\coding_exception;
+use html_writer;
 
 /**
  * Surveyitem manager.
@@ -47,6 +54,7 @@ class surveyitem_manager {
 
     /**
      * Returns an associative array of all surveyitemtypes.
+     *
      * @return array
      */
     public static function get_all_surveyitemtypes(): array {
@@ -58,28 +66,31 @@ class surveyitem_manager {
             'scalequestion' => new scalequestion(),
             'emoji' => new emoji_surveyitem(),
             'info' => new info(),
+            'slot_choice' => new slot_choice(),
         ];
         return $surveyitemtypes;
     }
 
     /**
      * Returns one surveyitemtype for a identifier.
+     *
      * @param string $type
      * @return surveyitemtype
      */
     public static function get_surveyitemtype(string $type): surveyitemtype {
         if (!isset(self::get_all_surveyitemtypes()[$type])) {
-            throw new coding_exception('Survey element type ' .  $type . ' not found.');
+            throw new coding_exception('Survey element type ' . $type . ' not found.');
         }
         return self::get_all_surveyitemtypes()[$type];
     }
 
     /**
      * Fetches the surveyitems for the surveyparts.
+     *
      * @param surveypart[] $surveyparts
      * @return array [int $surveypartid => [surveyitem $surveyitem]]
      */
-    public static function get_surveyitems_for_surveyparts(array $surveyparts): array {
+    private static function get_surveyitems_for_surveyparts(array $surveyparts): array {
         // TODO improve performance.
         $surveyitems = [];
         foreach ($surveyparts as $surveypart) {
@@ -90,10 +101,11 @@ class surveyitem_manager {
 
     /**
      * Groups the sets of surveyitems by surveyitemtype.
+     *
      * @param surveyitem[][] $surveyitemsets
-     * @return array [string $surveyitemtype => [surveyitem $surveyitem]]
+     * @return array<string, surveyitem[]> [string $surveyitemtype => [surveyitem $surveyitem]]
      */
-    public static function group_surveyitems_by_type(array $surveyitemsets): array {
+    private static function group_surveyitems_by_type(array $surveyitemsets): array {
         $surveyitems_by_type = [];
         foreach ($surveyitemsets as $surveyitemset) {
             foreach ($surveyitemset as $surveyitem) {
@@ -107,73 +119,109 @@ class surveyitem_manager {
         return $surveyitems_by_type;
     }
 
-
     /**
      * Gets the pages for a specific surveypart.
      *
+     * @param survey_part_execution $spe
+     * @param response_slot[] $slots
      * @param surveyitem[] $surveyitems
      * @param array<int, array> $template_data_by_item_id
-     * @return array[][]
-     * @throws \coding_exception
+     * @param teaching_event|null $event
+     * @return survey_page[]
      */
-    private static function get_pages_for_surveypart(array $surveyitems, array $template_data_by_item_id): array {
+    private static function get_pages_for_surveypart(
+        survey_part_execution $spe,
+        array $slots,
+        array $surveyitems,
+        array $template_data_by_item_id,
+        ?teaching_event $event = null,
+    ): array {
+        /** @var survey_page[] $pages */
         $pages = [];
-        $current_page = [];
+        $current_page_items = [];
+
+        $advance_page = function () use (&$pages, &$current_page_items, $spe, $event): void {
+            if ($current_page_items) {
+                $pages[] = new survey_page(
+                    items: $current_page_items,
+                    spe_id: $spe->get('id'),
+                );
+            }
+            $current_page_items = $event ? [
+                di::get(info::class)->export_auto_created(
+                    html_writer::tag('h6', get_string('event_intro', 'block_coursefeedback', s($event->get('name'))))
+                ),
+            ] : [];
+        };
+
+        $advance_page();
+
+        // If the SPE has more than one slot but the questionnaire no slot choice item, auto-create one.
+        $slot_choice_items = array_filter($surveyitems, fn($item) => $item->get('surveyitemtype') === 'slot_choice');
+        if (!$slot_choice_items && count($slots) > 1) {
+            $current_page_items[] = di::get(slot_choice::class)->export_auto_created($spe, $slots);
+            $advance_page();
+        }
 
         foreach ($surveyitems as $surveyitem) {
             $surveyitemtype = $surveyitem->get('surveyitemtype');
             if ($surveyitemtype === 'pagebreak') {
-                $pages[] = $current_page;
-                $current_page = [];
-                continue;
+                $advance_page();
+            } else {
+                $current_page_items[] = $template_data_by_item_id[$surveyitem->get('id')];
             }
-
-            $current_page[] = $template_data_by_item_id[$surveyitem->get('id')];
         }
-        $pages[] = $current_page;
+
+        $advance_page();
         return $pages;
     }
 
     /**
-     * Constructs the template data for a specific surveypart.
+     * Constructs the template data for an entire survey consisting of one or more SPEs.
      *
      * TODO: Show a survey in a different language without having to mutate the session.
      *
-     * @param array $surveyparts
-     * @param string $language
-     * @return array template data
-     * @throws coding_exception
+     * @param surveypart[] $surveyparts
+     * @param survey_part_execution[] $spes
+     * @param array<int, teaching_event> $events_by_spe_id
+     * @param array<int, response_slot[]> $slots_by_spe_id
+     * @return survey_page[] template data: array of pages
      */
-    public static function get_templatedata_for_surveyparts(array $surveyparts, string $language): array {
+    public static function export_pages_for_survey(
+        array $surveyparts,
+        array $spes,
+        array $events_by_spe_id,
+        array $slots_by_spe_id
+    ): array {
         $surveyitems_by_partid = self::get_surveyitems_for_surveyparts($surveyparts);
         $surveyitems_by_type = self::group_surveyitems_by_type($surveyitems_by_partid);
 
-        $alladditionaldata = [];
-
-        foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
-            $additionaldata = self::get_surveyitemtype($surveyitemtype)
-                ->load_additional_data_for($surveyitemsoftype);
-
-            $alladditionaldata[$surveyitemtype] = $additionaldata;
-        }
-
         $template_data_by_item_id = [];
         foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
-            $template_data_by_item_id += self::get_surveyitemtype($surveyitemtype)
-                ->export_for_template($surveyitemsoftype, $alladditionaldata[$surveyitemtype]);
+            $surveyitemtype = self::get_surveyitemtype($surveyitemtype);
+
+            $additionaldata = $surveyitemtype->load_additional_data_for($surveyitemsoftype);
+
+            $template_data_by_item_id += $surveyitemtype->export_for_template($surveyitemsoftype, $additionaldata);
         }
 
-        $pages_by_partid = [];
-        foreach ($surveyparts as $surveypart) {
-            $surveyitems = $surveyitems_by_partid[$surveypart->get('id')];
-            $pages_by_partid[$surveypart->get('id')] = static::get_pages_for_surveypart($surveyitems, $template_data_by_item_id);
+        $pages = [];
+        foreach ($spes as $spe) {
+            $surveyitems = $surveyitems_by_partid[$spe->get('surveypartid')] ?? [];
+            $slots = $slots_by_spe_id[$spe->get('id')];
+            $event = $events_by_spe_id[$spe->get('id')] ?? null;
+            $pages = array_merge(
+                $pages,
+                static::get_pages_for_surveypart($spe, $slots, $surveyitems, $template_data_by_item_id, $event)
+            );
         }
 
-        return $pages_by_partid;
+        return $pages;
     }
 
     /**
      * Gets the questiondata ('additionaldata') for all surveyitems in the given surveyparts.
+     *
      * @param surveypart[] $surveyparts
      * @return array [string $surveyitemtype => [int $surveyitemid => mixed $data]]
      * @throws coding_exception

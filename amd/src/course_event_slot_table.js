@@ -21,7 +21,6 @@ import ModalDeleteCancel from 'core/modal_delete_cancel';
 import { get_string as getString } from 'core/str';
 import { ajaxAndHandleError } from "./util";
 
-
 document.addEventListener('alpine:init', () => {
     Alpine.data('table', (courseId) => ({
         courseId,

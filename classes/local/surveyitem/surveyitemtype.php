@@ -35,11 +35,13 @@ use moodle_url;
 use moodleform;
 
 /**
- * Abstract surveyitem class, to be extended by all survey elements..
+ * Abstract surveyitem class, to be extended by all survey elements.
+ *
+ * Survey item types that have settings must extend {@see surveyitemtype_with_settings}.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class surveyitemtype {
@@ -49,6 +51,14 @@ abstract class surveyitemtype {
      * @return lang_string
      */
     abstract public function get_name(): lang_string;
+
+    /**
+     * Overridden to be false for item types that shouldn't be manually addable by the user.
+     * @return bool
+     */
+    public function can_be_added(): bool {
+        return true;
+    }
 
     /**
      * Checks and saves a collection of answers to surveyitems of this type.
@@ -65,8 +75,8 @@ abstract class surveyitemtype {
      * Load more data for the surveyitems, works in tandem with {@see self::export_for_template}.
      *
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
-     * @return array An associative array with surveyitemids as keys, and arbitrary data as value, which will get passed onto
-     *               create_question_structure.
+     * @return array<int, mixed> An associative array with surveyitemids as keys, and arbitrary data as value, which will get
+     *                           passed onto create_question_structure.
      */
     public function load_additional_data_for(array $surveyitems): array {
         return [];

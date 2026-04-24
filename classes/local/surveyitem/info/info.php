@@ -26,11 +26,8 @@ namespace block_coursefeedback\local\surveyitem\info;
 
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\lang_string;
-use moodle_url;
-use moodleform;
 
 /**
  * Survey item type definition for info elements.
@@ -55,5 +52,23 @@ class info extends surveyitemtype_with_settings {
     #[\Override]
     public function check_and_save_answers($answers): void {
         // Intentionally left blank.
+    }
+
+    /**
+     * Exports template data for an auto-created info item.
+     *
+     * @param string $text May contain HTML.
+     * @return array
+     */
+    public function export_auto_created(string $text): array {
+        static $id = PHP_INT_MIN;
+        return [
+            'type_slot_choice' => true,
+            'type' => 'info',
+            // Client-side code currently expects every item to have an ID. We use successive negative numbers.
+            // TODO: Do better.
+            'surveyitemid' => $id++,
+            'questiontext' => $text,
+        ];
     }
 }
