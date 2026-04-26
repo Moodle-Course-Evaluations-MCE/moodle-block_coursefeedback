@@ -122,6 +122,24 @@ class breadcrumbs_manager {
     }
 
     /**
+     * Setup edit default survey period for organization breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization_default_survey_period(organization $organization): \navigation_node {
+        $parent = self::setup_organization($organization);
+        $node = $parent->add(
+            get_string('edit_default_survey_period', 'block_coursefeedback'),
+            new moodle_url(
+                '/blocks/coursefeedback/organization_edit_default_survey_period.php',
+                ['id' => $organization->get('id')],
+            ),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
      * Setup organization courses without evaluation breadcrumbs.
      * @param organization $organization
      * @return \navigation_node

@@ -50,6 +50,14 @@ echo $OUTPUT->render_from_template('block_coursefeedback/organization', [
         new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]),
     'default_surveypart_url' =>
         new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id]),
+    'edit_default_survey_period_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_edit_default_survey_period.php', ['id' => $id]),
+    'has_default_survey_period' =>
+        $organization->get('default_evaluation_starttime') && $organization->get('default_evaluation_endtime'),
+    'default_evaluation_starttime' =>
+        $organization->get('default_evaluation_starttime'),
+    'default_evaluation_endtime' =>
+        $organization->get('default_evaluation_endtime'),
 ]);
 
 echo $OUTPUT->footer();

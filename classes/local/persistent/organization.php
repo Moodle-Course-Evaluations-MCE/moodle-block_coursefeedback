@@ -53,6 +53,16 @@ class organization extends persistent {
                 'null' => NULL_ALLOWED,
                 'default' => null,
             ],
+            'default_evaluation_starttime' => [
+                'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
+            'default_evaluation_endtime' => [
+                'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
         ];
     }
 }

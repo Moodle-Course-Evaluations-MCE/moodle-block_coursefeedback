@@ -957,6 +957,47 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026041600, 'coursefeedback');
     }
 
+    if ($oldversion < 2026042600) {
+        // Define field default_evaluation_starttime to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'default_evaluation_starttime',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'default_surveypartid'
+        );
+
+        // Conditionally launch add field default_evaluation_starttime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field default_evaluation_endtime to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'default_evaluation_endtime',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'default_evaluation_starttime'
+        );
+
+        // Conditionally launch add field default_evaluation_endtime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026042600, 'coursefeedback');
+    }
+
     return true;
 }
 

@@ -72,7 +72,7 @@ if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $mform->get_data()) {
     if ($id) {
-        $organization = new organization($id, $data);
+        $organization->set_many(organization::properties_filter($data));
         $organization->update();
     } else {
         $organization = new organization(0, $data);
