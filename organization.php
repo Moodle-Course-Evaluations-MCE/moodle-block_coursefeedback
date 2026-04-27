@@ -48,6 +48,8 @@ echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('block_coursefeedback/organization', [
     'courses_without_evaluation_url' =>
         new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]),
+    'evaluations_url' =>
+        new moodle_url('/blocks/coursefeedback/organization_evaluations.php', ['id' => $id]),
     'default_surveypart_url' =>
         new moodle_url('/blocks/coursefeedback/organization_default_surveypart.php', ['id' => $id]),
     'edit_default_survey_period_url' =>

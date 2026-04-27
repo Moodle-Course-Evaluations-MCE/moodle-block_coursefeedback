@@ -150,7 +150,25 @@ class breadcrumbs_manager {
             get_string('list_of_courses_without_evaluation', 'block_coursefeedback'),
             new moodle_url(
                 '/blocks/coursefeedback/organization_courses_without_evaluation.php',
-                ['id' => $organization->get('id')]
+                ['id' => $organization->get('id')],
+            ),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
+     * Setup organization evaluations breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization_evaluations(organization $organization): \navigation_node {
+        $parent = self::setup_organization($organization);
+        $node = $parent->add(
+            get_string('list_of_evaluations', 'block_coursefeedback'),
+            new moodle_url(
+                '/blocks/coursefeedback/organization_evaluations.php',
+                ['id' => $organization->get('id')],
             ),
         );
         $node->make_active();
