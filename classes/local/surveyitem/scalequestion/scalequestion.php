@@ -153,9 +153,9 @@ class scalequestion extends surveyitemtype {
             $metadata = $answer->additionaldata;
             if (
                 !is_number($answer->value) ||
-                $answer->value == 0 && !$metadata->hasnoansweroption ||
+                $answer->value == 0 && !$metadata->scale->get('hasnoansweroption') ||
                 $answer->value < 0 ||
-                $answer->value > $metadata->optionamount
+                $answer->value > $metadata->scale->get('optionamount')
             ) {
                 throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a valid one');
             }
