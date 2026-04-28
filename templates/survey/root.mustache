@@ -21,79 +21,38 @@
 
     Example context (json):
     {
-  "questions": [
-    {
-      "type_singlechoice": true,
-      "type": "singlechoice",
-      "surveyitemid": 1,
-      "questiontext": "<p>Im Rahmen welches Studiengangs besuchen Sie die Lehrveranstaltung?<\/p>",
-      "options": [
-        {
-          "optiontext": "Bachelor",
-          "optionid": "1"
-        },
-        {
-          "optiontext": "Master",
-          "optionid": "2"
-        }
-      ]
-    },
-    {
-      "type_singlechoice": true,
-      "type": "singlechoice",
-      "surveyitemid": 2,
-      "questiontext": "<p>In welchem Fachsemester studieren Sie?<\/p>",
-      "options": [
-        {
-          "optiontext": "1",
-          "optionid": "3"
-        },
-        {
-          "optiontext": "2",
-          "optionid": "4"
-        },
-        {
-          "optiontext": "3",
-          "optionid": "5"
-        },
-        {
-          "optiontext": "4",
-          "optionid": "6"
-        },
-        {
-          "optiontext": "5",
-          "optionid": "7"
-        },
-        {
-          "optiontext": "6",
-          "optionid": "8"
-        },
-        {
-          "optiontext": "7",
-          "optionid": "9"
-        },
-        {
-          "optiontext": "8",
-          "optionid": "10"
-        },
-        {
-          "optiontext": "9",
-          "optionid": "11"
-        },
-        {
-          "optiontext": "10",
-          "optionid": "12"
-        },
-        {
-          "optiontext": "&gt;10",
-          "optionid": "13"
-        }
-      ]
+      "first_page": {
+        "items": [
+          {
+            "type_slot_choice": true,
+            "type": "info",
+            "surveyitemid": -9223372036854775808,
+            "questiontext": "<h6>Please rate the event <q><strong>Vorlesung f\u00fcr Lineare Algebra I<\/strong><\/q>.<\/h6>"
+          },
+          {
+            "type_slot_choice": true,
+            "type": "slot_choice",
+            "surveyitemid": -3,
+            "questiontext": "Which slot did you visit?",
+            "required": true,
+            "options": [
+              {
+                "optiontext": "-",
+                "optionid": 3
+              },
+              {
+                "optiontext": "2",
+                "optionid": 5
+              }
+            ]
+          }
+        ],
+        "spe_id": 3
+      },
+      "amount_pages": 3,
+      "json_data": "{\"pages\":[{\"items\":[{\"type_slot_choice\":true,\"type\":\"info\",\"surveyitemid\":-9223372036854775808,\"questiontext\":\"<h6>Please rate the event <q><strong>Vorlesung f\\u00fcr Lineare Algebra I<\\\/strong><\\\/q>.<\\\/h6>\"},{\"type_slot_choice\":true,\"type\":\"slot_choice\",\"surveyitemid\":-3,\"questiontext\":\"Which slot did you visit?\",\"required\":true,\"options\":[{\"optiontext\":\"-\",\"optionid\":3},{\"optiontext\":\"2\",\"optionid\":5}]}],\"spe_id\":3},{\"items\":[{\"type_slot_choice\":true,\"type\":\"info\",\"surveyitemid\":-9223372036854775807,\"questiontext\":\"<h6>Please rate the event <q><strong>Vorlesung f\\u00fcr Lineare Algebra I<\\\/strong><\\\/q>.<\\\/h6>\"},{\"type_singlechoice\":true,\"type\":\"singlechoice\",\"surveyitemid\":1,\"questiontext\":\"<p>Single Choice?<\\\/p>\",\"options\":[{\"optiontext\":\"Yes\",\"optionid\":\"1\"},{\"optiontext\":\"No\",\"optionid\":\"2\"},{\"optiontext\":\"Maybe\",\"optionid\":\"3\"}]},{\"type_scalequestion\":true,\"type\":\"scalequestion\",\"surveyitemid\":2,\"questiontext\":\"<p>Wie gut war's?<\\\/p>\",\"max_pole\":\"Sehr gut\",\"min_pole\":\"Sehr schlecht\",\"has_na_option\":true,\"na_option\":\"I forgor\",\"optionamount\":5,\"options\":[{\"id\":1,\"text\":\"Sehr schlecht\"},{\"id\":2,\"text\":null},{\"id\":3,\"text\":null},{\"id\":4,\"text\":null},{\"id\":5,\"text\":\"Sehr gut\"}],\"show_scale\":true},{\"type_text\":true,\"type\":\"text\",\"surveyitemid\":3,\"questiontext\":\"<p>M\\u00f6chtest du uns noch etwas mitteilen?<\\\/p>\"}],\"spe_id\":3},{\"items\":[{\"type_slot_choice\":true,\"type\":\"info\",\"surveyitemid\":-9223372036854775805,\"questiontext\":\"<h6>Please rate the event <q><strong>\\u00dcbung f\\u00fcr Lineare Algebra I<\\\/strong><\\\/q>.<\\\/h6>\"},{\"type_singlechoice\":true,\"type\":\"singlechoice\",\"surveyitemid\":1,\"questiontext\":\"<p>Single Choice?<\\\/p>\",\"options\":[{\"optiontext\":\"Yes\",\"optionid\":\"1\"},{\"optiontext\":\"No\",\"optionid\":\"2\"},{\"optiontext\":\"Maybe\",\"optionid\":\"3\"}]},{\"type_scalequestion\":true,\"type\":\"scalequestion\",\"surveyitemid\":2,\"questiontext\":\"<p>Wie gut war's?<\\\/p>\",\"max_pole\":\"Sehr gut\",\"min_pole\":\"Sehr schlecht\",\"has_na_option\":true,\"na_option\":\"I forgor\",\"optionamount\":5,\"options\":[{\"id\":1,\"text\":\"Sehr schlecht\"},{\"id\":2,\"text\":null},{\"id\":3,\"text\":null},{\"id\":4,\"text\":null},{\"id\":5,\"text\":\"Sehr gut\"}],\"show_scale\":true},{\"type_text\":true,\"type\":\"text\",\"surveyitemid\":3,\"questiontext\":\"<p>M\\u00f6chtest du uns noch etwas mitteilen?<\\\/p>\"}],\"spe_id\":4}],\"default_slots\":{\"4\":4},\"courseid\":2}",
+      "append_to_selector": "#user-notifications"
     }
-  ],
-  "amount_pages": 4
-}
-
 }}
 <div x-data="surveyRoot({{json_data}})" x-cloak
     {{#append_to_selector}} x-init="document.querySelector('{{.}}').appendChild($el)" {{/append_to_selector}}
