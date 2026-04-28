@@ -47,6 +47,12 @@ const surveyItemClasses = {
  */
 
 /**
+ * The current (as of the last ` collectValuesFromCurrentPage ` call) values by SPE id and survey item id.
+ * @typedef SavedSpes
+ * @type {Object.<number, Object<number, any>>}
+ */
+
+/**
  * @param {Object} data
  * @param {?number} data.courseid
  * @param {PageData[]} data.pages
@@ -65,7 +71,7 @@ const surveyRoot = (
 
     /** @type {Object.<int, int>} Currently selected slots by survey part execution id. */
     selectedSlots: structuredClone(default_slots),
-    /** @type {Object.<int, string>} Currently filled values by survey item id. */
+    /** @type {SavedSpes} Currently filled values by survey item id. */
     values: {},
 
     /** @type {Object.<int, SurveyItem>} */
@@ -81,7 +87,8 @@ const surveyRoot = (
     },
 
     collectValuesFromCurrentPage() {
-        for (const surveyItem of pages[this.currentPage0].items) {
+        const page = pages[this.currentPage0];
+        for (const surveyItem of page.items) {
             /** @type {SurveyItem} */
             const handler = this.surveyItemHandlers[surveyItem.surveyitemid];
             if (!handler) {
@@ -90,9 +97,12 @@ const surveyRoot = (
 
             const value = handler.getValue();
             if (value !== null) {
-                this.values[surveyItem.surveyitemid] = value;
-            } else {
-                delete this.values[surveyItem.surveyitemid];
+                if (!(page.spe_id in this.values)) {
+                    this.values[page.spe_id] = {};
+                }
+                this.values[page.spe_id][surveyItem.surveyitemid] = value;
+            } else if (page.spe_id in this.values) {
+                delete this.values[page.spe_id][surveyItem.surveyitemid];
             }
         }
     },
@@ -122,8 +132,8 @@ const surveyRoot = (
         });
 
         handler.initialize();
-        if (itemId in this.values) {
-            handler.setValue(this.values[surveyItem.surveyitemid]);
+        if (page.spe_id in this.values && itemId in this.values[page.spe_id]) {
+            handler.setValue(this.values[page.spe_id][surveyItem.surveyitemid]);
         }
     },
 
@@ -175,22 +185,25 @@ const surveyRoot = (
         this.collectValuesFromCurrentPage();
 
         // Bring the values and selected slots into the format expected by the api.
-        const speValues = Object.fromEntries(Object.entries(this.selectedSlots)
-            .map(([speId, slotId]) => [speId, {surveypartexecutionoptionid: slotId, answers: []}]));
-        for (const page of pages) {
-            const spe = speValues[page.spe_id];
-            if (!spe) {
-                window.console.warn("No slot was selected for SPE ", page.spe_id);
+        const apiValues = [];
+        for (const [speId, speValues] of Object.entries(this.values)) {
+            const slotId = this.selectedSlots[speId] ?? null;
+            if (!slotId) {
+                window.console.warn("No slot was selected for SPE ", speId);
                 continue;
             }
 
-            for (const item of page.items) {
-                if (item.surveyitemid in this.values) {
-                    spe.answers.push({
-                        surveyitemid: item.surveyitemid,
-                        value: JSON.stringify(this.values[item.surveyitemid]),
-                    });
-                }
+            let apiSpeValues = apiValues.find(value => value.surveypartexecutionoptionid === slotId);
+            if (!apiSpeValues) {
+                apiSpeValues = {surveypartexecutionoptionid: slotId, answers: []};
+                apiValues.push(apiSpeValues);
+            }
+
+            for (const [surveyItemId, value] of Object.entries(speValues)) {
+                apiSpeValues.answers.push({
+                    surveyitemid: parseInt(surveyItemId),
+                    value: JSON.stringify(value),
+                });
             }
         }
 
@@ -198,7 +211,7 @@ const surveyRoot = (
             methodname: 'block_coursefeedback_save_survey_answers',
             args: {
                 courseid,
-                surveyparts: Object.values(speValues)
+                surveyparts: apiValues
             }
         });
 
