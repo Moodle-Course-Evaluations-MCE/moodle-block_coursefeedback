@@ -27,8 +27,12 @@ export class SlotChoiceSurveyItem extends SurveyItem {
     /** @type HTMLFormElement */
     form = this.surveyItemRootElement.querySelector('form');
 
+    inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
+
     initialize() {
-        this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value = this.surveyContext.slotId;
+        if (this.inputName in this.form.elements) {
+            this.form.elements[this.inputName].value = this.surveyContext.slotId;
+        }
 
         this.form.addEventListener('change', (e) => {
             this.surveyContext.slotId = parseInt(e.target.value);

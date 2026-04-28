@@ -28,18 +28,16 @@ export class MultipleChoice extends SurveyItem {
     /** @type HTMLFormElement */
     form = this.surveyItemRootElement.querySelector('form');
 
+    inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
+
     getValue() {
-        const value = [];
-        for (let input of this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`]) {
-            if (input.checked) {
-                value.push(input.value);
-            }
-        }
-        return value;
+        return (this.form.elements[this.inputName] ?? [])
+            .filter(input => input.checked)
+            .map(input => input.value);
     }
 
     setValue(value) {
-        for (let input of this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`]) {
+        for (let input of this.form.elements[this.inputName] ?? []) {
             if (value.includes(input.value)) {
                 input.checked = true;
             }

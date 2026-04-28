@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import {SurveyItem} from "block_coursefeedback/surveyitem";
+import { SurveyItem } from "block_coursefeedback/surveyitem";
 
 /**
  * Implement SurveyItem for Scalequestion
@@ -27,12 +27,16 @@ export class Scale extends SurveyItem {
 
     form = this.surveyItemRootElement.querySelector('form');
 
+    inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
+
     getValue() {
-        return this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value || null;
+        return this.form.elements[this.inputName]?.value || null;
     }
 
     setValue(value) {
-        this.form.elements[`surveyitem-${this.surveyItemData.surveyitemid}`].value = value;
+        if (this.inputName in this.form.elements) {
+            this.form.elements[this.inputName].value = value;
+        }
     }
 
 }
