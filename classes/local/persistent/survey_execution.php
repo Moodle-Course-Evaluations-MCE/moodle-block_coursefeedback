@@ -16,8 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use core\persistent;
-
 /**
  * Survey execution persistent class.
  *
@@ -42,9 +40,13 @@ class survey_execution extends persistent_with_bulk_actions {
             ],
             'starttime' => [
                 'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
             'endtime' => [
                 'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
             'status' => [
                 'type' => PARAM_INT,

@@ -42,7 +42,7 @@ class response_slot extends persistent_with_bulk_actions {
                 'type' => PARAM_TEXT,
             ],
             'externalid' => [
-                'type' => PARAM_INT,
+                'type' => PARAM_TEXT,
                 'null' => NULL_ALLOWED,
                 'default' => null,
             ],

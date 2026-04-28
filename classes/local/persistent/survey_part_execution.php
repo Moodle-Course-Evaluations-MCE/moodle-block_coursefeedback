@@ -39,6 +39,8 @@ class survey_part_execution extends persistent_with_bulk_actions {
             ],
             'surveypartid' => [
                 'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
             'eventid' => [
                 'type' => PARAM_INT,

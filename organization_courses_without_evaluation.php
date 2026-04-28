@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
+use block_coursefeedback\local\default_survey_creation_method\default_survey_creation_method;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\survey_execution_manager;
 use block_coursefeedback\local\persistent\organization;
@@ -50,14 +51,18 @@ if ($action) {
     switch ($action) {
         case 'create-default':
             $courseids = required_param_array('selected', PARAM_INT);
+            $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
             foreach ($courseids as $courseid) {
                 $course = get_course($courseid);
-                $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
                 if (!in_array($course->category, $coursecatids)) {
                     throw new \core\exception\coding_exception('Try to create survey for course not in category');
                 }
-                (new survey_execution_manager())->create_empty_survey_execution($courseid);
             }
+            default_survey_creation_method::get_instance()::create_survey_execution(
+                $courseids,
+                $organization,
+                course_semester_mapping::SELECTED_SEMESTER,
+            );
             redirect($PAGE->url);
     }
 }

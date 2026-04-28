@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\output;
 
+use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
 use core\output\inplace_editable;
 use core\output\named_templatable;
@@ -40,11 +41,14 @@ class survey_execution_period implements named_templatable, renderable {
      * Constructor.
      *
      * @param survey_execution $survey_execution
+     * @param organization $organization
      * @param bool $editable
      */
     public function __construct(
         /** @var survey_execution $survey_execution */
         private readonly survey_execution $survey_execution,
+        /** @var organization $organization */
+        private readonly organization $organization,
         /** @var bool $editable */
         private readonly bool $editable
     ) {
@@ -76,11 +80,13 @@ class survey_execution_period implements named_templatable, renderable {
         $context = [
             'editable' => $this->editable,
             'survey_execution_id' => $this->survey_execution->get('id'),
-            'starttime' => $this->timestamp_to_iso_and_user($this->survey_execution->get('starttime')),
-            'endtime' => $this->timestamp_to_iso_and_user($this->survey_execution->get('endtime')),
+            'starttime' => $this->timestamp_to_iso_and_user($this->survey_execution->get('starttime') ??
+                $this->organization->get('default_evaluation_starttime')),
+            'endtime' => $this->timestamp_to_iso_and_user($this->survey_execution->get('endtime') ??
+                $this->organization->get('default_evaluation_endtime')),
             // TODO: Replace hardcoded defaults.
-            'default_starttime' => $this->timestamp_to_iso_and_user(make_timestamp(2026, 6, 1, 12)),
-            'default_endtime' => $this->timestamp_to_iso_and_user(make_timestamp(2026, 6, 20, 23, 59)),
+            'default_starttime' => $this->timestamp_to_iso_and_user($this->organization->get('default_evaluation_starttime')),
+            'default_endtime' => $this->timestamp_to_iso_and_user($this->organization->get('default_evaluation_endtime')),
         ];
         $context['json_context'] = json_encode($context);
         return $context;
