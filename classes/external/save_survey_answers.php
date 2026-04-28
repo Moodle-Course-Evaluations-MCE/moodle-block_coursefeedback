@@ -99,6 +99,8 @@ class save_survey_answers extends external_api {
 
         foreach ($submittedsurveyparts as ['surveypartexecutionoptionid' => $slotid, 'answers' => $answers]) {
             if (!$answers) {
+                // TODO: When a students "clicks through" the survey without answering any questions, should we save the response?
+                // Right now, we don't, which has the effect of asking the student again the next time they reload.
                 continue;
             }
 

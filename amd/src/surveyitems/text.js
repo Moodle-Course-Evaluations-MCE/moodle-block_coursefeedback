@@ -28,7 +28,7 @@ export class Text extends SurveyItem {
     textarea = this.surveyItemRootElement.querySelector('textarea');
 
     getValue() {
-        return this.textarea.value;
+        return this.textarea.value || null;
     }
 
     setValue(value) {
