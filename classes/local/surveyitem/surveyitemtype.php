@@ -79,7 +79,8 @@ abstract class surveyitemtype {
      *                           passed onto create_question_structure.
      */
     public function load_additional_data_for(array $surveyitems): array {
-        return [];
+        // Return an empty array for all surveyitems.
+        return array_fill_keys(array_map(fn($surveyitem) => $surveyitem->get('id'), $surveyitems), []);
     }
 
     /**
