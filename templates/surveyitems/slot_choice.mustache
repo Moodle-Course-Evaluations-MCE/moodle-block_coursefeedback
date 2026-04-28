@@ -17,10 +17,25 @@
 {{!
     @template block_coursefeedback/surveyitems/slot_choice
 
-    Template purpose and description.
+    Slot choice. Delegates to singlechoice.
 
     Example context (json):
     {
+      "type_slot_choice": true,
+      "type": "slot_choice",
+      "surveyitemid": -2,
+      "questiontext": "Which slot did you visit?",
+      "required": true,
+      "options": [
+        {
+          "optiontext": "Mo 12-14 Uhr",
+          "optionid": "1"
+        },
+        {
+          "optiontext": "Di 16-18 Uhr",
+          "optionid": "2"
+        }
+      ]
     }
 }}
 
