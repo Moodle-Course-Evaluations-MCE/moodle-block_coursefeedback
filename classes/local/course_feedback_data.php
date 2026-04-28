@@ -47,6 +47,7 @@ class course_feedback_data {
      * @param array<int, survey_part_execution> $spes_by_event_id
      * @param array<int, surveypart> $survey_parts_by_spe_id
      * @param array<int, response_slot[]> $slots_by_spe_id
+     * @param array<int, response_slot> $slots_by_id
      * @param array<int, array<int, object>> $users_by_slot_id
      */
     private function __construct(
@@ -64,11 +65,19 @@ class course_feedback_data {
         public readonly array $survey_parts_by_spe_id,
         /** @var array<int, response_slot[]> $slots_by_spe_id */
         public readonly array $slots_by_spe_id,
+        /** @var array<int, response_slot> $slots_by_id */
+        public readonly array $slots_by_id,
         /** @var array<int, array<int, object>> $users_by_slot_id */
         public readonly array $users_by_slot_id,
     ) {
     }
 
+    /**
+     * Loads the course feedback data for the given course if there is an active survey.
+     *
+     * @param object|int $course_or_id
+     * @return self|null
+     */
     public static function load_from_course(object|int $course_or_id): ?self {
         global $DB;
 
@@ -114,6 +123,7 @@ class course_feedback_data {
             $spes_by_event_id = [];
             $survey_parts_by_spe_id = [];
             $slots_by_spe_id = [];
+            $slots_by_id = [];
             $users_by_slot_id = [];
 
             $record_extractor = new record_extractor($recordset);
@@ -148,7 +158,7 @@ class course_feedback_data {
                 $survey_parts_by_spe_id[$spe_record->id] = new surveypart(record: $sp_record);
 
                 foreach ($record_extractor->yield_records('rs_', fn($row) => $row->spe_id === $spe_record->id) as $slot_record) {
-                    $slots_by_spe_id[$spe_record->id][] = new response_slot(record: $slot_record);
+                    $slots_by_id[$slot_record->id] = $slots_by_spe_id[$spe_record->id][] = new response_slot(record: $slot_record);
 
                     foreach ($record_extractor->yield_records('u_', fn($row) => $row->rs_id === $slot_record->id) as $user) {
                         $users_by_slot_id[$slot_record->id][$user->id] = $user;
@@ -164,6 +174,7 @@ class course_feedback_data {
                 spes_by_event_id: $spes_by_event_id,
                 survey_parts_by_spe_id: $survey_parts_by_spe_id,
                 slots_by_spe_id: $slots_by_spe_id,
+                slots_by_id: $slots_by_id,
                 users_by_slot_id: $users_by_slot_id,
             );
         } finally {
@@ -172,7 +183,7 @@ class course_feedback_data {
     }
 
     /**
-     * Loads the course feedback data for the given course.
+     * Loads the course feedback data for the given course, throwing if the course has no active survey.
      *
      * @param object|int $course_or_id
      * @return self

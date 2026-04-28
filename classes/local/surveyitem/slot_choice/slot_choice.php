@@ -22,6 +22,14 @@ use block_coursefeedback\local\surveyitem\surveyitemtype;
 use coding_exception;
 use core\lang_string;
 
+/**
+ * A special survey item for choosing the slot.
+ *
+ * @package     block_coursefeedback
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class slot_choice extends surveyitemtype {
 
     #[\Override]

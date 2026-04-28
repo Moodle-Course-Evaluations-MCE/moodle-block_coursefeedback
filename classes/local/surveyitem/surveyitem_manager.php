@@ -223,7 +223,7 @@ class surveyitem_manager {
      * Gets the questiondata ('additionaldata') for all surveyitems in the given surveyparts.
      *
      * @param surveypart[] $surveyparts
-     * @return array [string $surveyitemtype => [int $surveyitemid => mixed $data]]
+     * @return array<string, array<int, mixed>> [string $surveyitemtype => [int $surveyitemid => mixed $data]]
      * @throws coding_exception
      */
     public static function get_questiondata_for_surveyparts(array $surveyparts): array {
