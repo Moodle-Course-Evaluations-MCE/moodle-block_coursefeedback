@@ -27,6 +27,7 @@ namespace block_coursefeedback\local\table;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\survey_execution;
 use core\output\html_writer;
 
 defined('MOODLE_INTERNAL') || die;
@@ -143,7 +144,7 @@ class evaluations_table extends no_pagination_table {
         return html_writer::span(
             userdate($starttime, $this->strings->strftimedatetimeshort)
             . ' - ' . userdate($endtime, $this->strings->strftimedatetimeshort),
-            $starttime && $endtime ? 'fw-bold font-weight-bold' : 'text-muted'
+            $row->starttime && $row->endtime ? 'fw-bold font-weight-bold' : 'text-muted'
         );
     }
 
@@ -153,13 +154,14 @@ class evaluations_table extends no_pagination_table {
      * @return string
      */
     public function col_status($row) {
+        if ($row->endtime && time() > $row->endtime) {
+            return $this->strings->finished;
+        }
         switch ($row->status) {
-            case 0:
+            case survey_execution::STATUS_PLANNED:
                 return $this->strings->planned;
-            case 1:
+            case survey_execution::STATUS_STARTED:
                 return $this->strings->ongoing;
-            case 2:
-                return $this->strings->finished;
         }
         return '';
     }

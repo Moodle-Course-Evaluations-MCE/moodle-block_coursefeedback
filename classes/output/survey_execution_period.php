@@ -84,7 +84,6 @@ class survey_execution_period implements named_templatable, renderable {
                 $this->organization->get('default_evaluation_starttime')),
             'endtime' => $this->timestamp_to_iso_and_user($this->survey_execution->get('endtime') ??
                 $this->organization->get('default_evaluation_endtime')),
-            // TODO: Replace hardcoded defaults.
             'default_starttime' => $this->timestamp_to_iso_and_user($this->organization->get('default_evaluation_starttime')),
             'default_endtime' => $this->timestamp_to_iso_and_user($this->organization->get('default_evaluation_endtime')),
         ];

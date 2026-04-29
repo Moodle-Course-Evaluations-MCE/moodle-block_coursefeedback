@@ -29,6 +29,11 @@ class survey_execution extends persistent_with_bulk_actions {
     /** Table name for the persistent. */
     public const TABLE = 'block_coursefeedback_surveyexecution';
 
+    /** @var int Survey is planned. */
+    public const STATUS_PLANNED = 0;
+    /** @var int Survey is active (and locked). The default event and surveypart was added, if there were no associated events. */
+    public const STATUS_STARTED = 1;
+
     /**
      * Return the definition of the properties of this model.
      * @return array
@@ -51,6 +56,10 @@ class survey_execution extends persistent_with_bulk_actions {
             'status' => [
                 'type' => PARAM_INT,
                 'default' => 0,
+                'choices' => [
+                    self::STATUS_PLANNED,
+                    self::STATUS_STARTED,
+                ],
             ],
         ];
     }

@@ -50,6 +50,9 @@ if ($action) {
     require_sesskey();
     switch ($action) {
         case 'create-default':
+            if (!$organization->get('default_evaluation_starttime') || !$organization->get('default_evaluation_endtime')) {
+                throw new \core\exception\moodle_exception('define_evaluation_period_before', 'block_coursefeedback');
+            }
             $courseids = required_param_array('selected', PARAM_INT);
             $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
             foreach ($courseids as $courseid) {
