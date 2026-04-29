@@ -36,7 +36,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
      * Add JavaScript code to initialize Alpine.js, if the `register_alpine_js_module` has been called.
      */
     private static function init_alpine_js(): void {
-        if (!self::$alpinejsdependencies) {
+        if ((defined('AJAX_SCRIPT') && AJAX_SCRIPT) || (defined('CLI_SCRIPT') && CLI_SCRIPT) || !self::$alpinejsdependencies) {
             return;
         }
 
@@ -64,7 +64,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         $this->page->requires->js_call_amd($module);
         self::$alpinejsdependencies[] = $module;
 
-        if (!self::$shutdownhookadded) {
+        if ((!defined('AJAX_SCRIPT') || !AJAX_SCRIPT) && (!defined('CLI_SCRIPT') || !CLI_SCRIPT) && !self::$shutdownhookadded) {
             core_shutdown_manager::register_function(self::init_alpine_js(...));
             self::$shutdownhookadded = true;
         }
