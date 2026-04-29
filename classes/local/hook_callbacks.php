@@ -40,7 +40,7 @@ class hook_callbacks {
      * @param after_standard_main_region_html_generation $hook
      */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
-        global $DB, $PAGE;
+        global $PAGE;
         if ($PAGE->context->contextlevel !== CONTEXT_COURSE) {
             return;
         }
