@@ -31,7 +31,6 @@ use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use block_coursefeedback\output\survey;
-use core\output\local\collapsable_section;
 use core\output\notification;
 
 require_once(__DIR__ . '/../../config.php');
@@ -165,12 +164,11 @@ try {
     ));
 }
 
-echo html_writer::empty_tag("hr");
-echo $renderer->render(new collapsable_section(
-    titlecontent: get_string('surveypart_preview', 'block_coursefeedback'),
-    sectioncontent: $preview_content,
-    classes: "block_coursefeedback-surveypart-preview",
-    open: true,
-));
+echo html_writer::tag(
+    "section",
+    html_writer::empty_tag("hr")
+    . html_writer::tag("h3", get_string('surveypart_preview', 'block_coursefeedback'), ['class' => 'mb-3'])
+    . $preview_content
+);
 
 echo $OUTPUT->footer();
