@@ -64,8 +64,8 @@ abstract class ms_choice extends surveyitemtype_with_settings {
 
         /** @var array[] $to_insert */
         $to_insert = [];
-        /** @var int[] $to_delete */
-        $to_delete = [];
+        /** @var int[] $to_delete_ids */
+        $to_delete_ids = [];
         /** @var array[] $to_update */
         $to_update = [];
 
@@ -83,11 +83,11 @@ abstract class ms_choice extends surveyitemtype_with_settings {
             } else if ($submitted && $existing && multilang_string::deserialize($existing->text) != $submitted) {
                 $to_update[] = ['id' => $existing->id, 'text' => $submitted->serialize()];
             } else if (!$submitted && $existing) {
-                $to_delete[] = $existing;
+                $to_delete_ids[] = $existing->id;
             }
         }
 
-        $DB->delete_records_list('block_coursefeedback_surveyitemansweroption', 'id', $to_delete);
+        $DB->delete_records_list('block_coursefeedback_surveyitemansweroption', 'id', $to_delete_ids);
         $DB->insert_records('block_coursefeedback_surveyitemansweroption', $to_insert);
         foreach ($to_update as $update_record) {
             // No bulk update method :(.
