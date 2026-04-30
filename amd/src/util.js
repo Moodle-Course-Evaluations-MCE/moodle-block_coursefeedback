@@ -29,3 +29,23 @@ export async function ajaxAndHandleError(call) {
         throw error;
     }
 }
+
+/**
+ * Turns a NodeList or HTMLCollection into an array.
+ * @param {null|undefined|Array|NodeList|HTMLCollection|Object} maybeNodeList
+ * @returns {Array}
+ */
+export function toArray(maybeNodeList) {
+    // eslint-disable-next-line no-eq-null
+    if (maybeNodeList == null) {
+        return [];
+    }
+    if (Array.isArray(maybeNodeList)) {
+        return maybeNodeList;
+    }
+    if (maybeNodeList instanceof NodeList || maybeNodeList instanceof HTMLCollection) {
+        return [...maybeNodeList];
+    }
+
+    return [maybeNodeList];
+}
