@@ -25,6 +25,7 @@
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
+use block_coursefeedback\local\default_survey_creation_method\default_survey_creation_method;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -65,6 +66,21 @@ if ($hassiteconfig) {
                     course_semester_mapping::MAP_MATCH_ALL =>
                         new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
                 ],
+            )
+        );
+
+        $settings->add(
+            new admin_setting_configselect(
+                'block_coursefeedback/default_survey_creation_method',
+                new lang_string('settings:default_survey_creation_method', 'block_coursefeedback'),
+                '',
+                default_survey_creation_method::METHOD_CREATE_EMPTY,
+                [
+                    default_survey_creation_method::METHOD_CREATE_EMPTY =>
+                        new lang_string('settings:default_survey_creation_method:create_empty', 'block_coursefeedback'),
+                    default_survey_creation_method::METHOD_RUB =>
+                        new lang_string('settings:default_survey_creation_method:rub', 'block_coursefeedback'),
+                ]
             )
         );
     }

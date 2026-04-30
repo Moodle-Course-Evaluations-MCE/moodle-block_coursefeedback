@@ -24,7 +24,6 @@
  */
 
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
-use block_coursefeedback\local\default_survey_creation_method\default_survey_creation_method;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\survey_execution_manager;
 use block_coursefeedback\local\persistent\organization;
@@ -40,43 +39,18 @@ $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
 
 permission_manager::require_manage_organization($organization);
-\block_coursefeedback\local\manager\breadcrumbs_manager::setup_organization_courses_without_evaluation($organization);
+\block_coursefeedback\local\manager\breadcrumbs_manager::setup_organization_evaluations($organization);
 
-$PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_courses_without_evaluation.php', ['id' => $id]));
+$PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_evaluations.php', ['id' => $id]));
 $PAGE->set_context($context);
 
-$action = optional_param('action', null, PARAM_ALPHANUMEXT);
-if ($action) {
-    require_sesskey();
-    switch ($action) {
-        case 'create-default':
-            if (!$organization->get('default_evaluation_starttime') || !$organization->get('default_evaluation_endtime')) {
-                throw new \core\exception\moodle_exception('define_evaluation_period_before', 'block_coursefeedback');
-            }
-            $courseids = required_param_array('selected', PARAM_INT);
-            $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
-            foreach ($courseids as $courseid) {
-                $course = get_course($courseid);
-                if (!in_array($course->category, $coursecatids)) {
-                    throw new \core\exception\coding_exception('Try to create survey for course not in category');
-                }
-            }
-            default_survey_creation_method::get_instance()::create_survey_execution(
-                $courseids,
-                $organization,
-                course_semester_mapping::SELECTED_SEMESTER,
-            );
-            redirect($PAGE->url);
-    }
-}
-
-$title = get_string('list_of_courses_without_evaluation', 'block_coursefeedback') . ': ' . $organization->get('name');
+$title = get_string('list_of_evaluations', 'block_coursefeedback') . ': ' . $organization->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]);
 
-$table = new courses_without_evaluation_table(course_semester_mapping::SELECTED_SEMESTER, $organization);
+$table = new \block_coursefeedback\local\table\evaluations_table(course_semester_mapping::SELECTED_SEMESTER, $organization);
 
 echo $OUTPUT->header();
 

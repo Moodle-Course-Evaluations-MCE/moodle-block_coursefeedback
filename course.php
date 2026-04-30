@@ -24,6 +24,7 @@
  */
 
 use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
@@ -42,6 +43,12 @@ $PAGE->set_url('/blocks/coursefeedback/course.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_course($course);
 
+$organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+
+if (!$organization) {
+    throw new \core\exception\coding_exception('Course does not belong to an evaluation organization');
+}
+
 $survey_executions = survey_execution::get_records(['courseid' => $course->id]);
 if (!$survey_executions) {
     throw new moodle_exception('no_survey_execution', 'block_coursefeedback', a: $course, debuginfo: "courseid: $course->id");
@@ -58,6 +65,7 @@ $model = course_feedback_data::load_from_course($course);
 $table = new course_event_slot_table($model);
 $survey_execution_period = new survey_execution_period(
     $survey_execution,
+    $organization,
     editable: has_capability('block/coursefeedback:changecoursesurveyperiod', $context)
 );
 

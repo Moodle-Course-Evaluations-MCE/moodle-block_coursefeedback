@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\external;
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
@@ -135,6 +136,9 @@ class update_survey_execution extends external_api {
 
         $survey_execution = survey_execution::get_record(['id' => $surveyexecutionid], MUST_EXIST);
 
+        $organization =
+            course_organization_mapping::get_instance()::get_organization_for_course($survey_execution->get('courseid'));
+
         $courseid = $survey_execution->get('courseid');
 
         $context = context_course::instance($courseid);
@@ -151,7 +155,7 @@ class update_survey_execution extends external_api {
         $renderer = $PAGE->get_renderer('block_coursefeedback');
         $survey_execution_period = new survey_execution_period(
             $survey_execution,
-            // If we're here, the user has the capability.
+            $organization,
             editable: true
         );
         return [

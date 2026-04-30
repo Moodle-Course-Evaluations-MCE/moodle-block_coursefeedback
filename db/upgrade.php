@@ -957,6 +957,116 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026041600, 'coursefeedback');
     }
 
+    if ($oldversion < 2026042600) {
+        // Define field default_evaluation_starttime to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'default_evaluation_starttime',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'default_surveypartid'
+        );
+
+        // Conditionally launch add field default_evaluation_starttime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field default_evaluation_endtime to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'default_evaluation_endtime',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'default_evaluation_starttime'
+        );
+
+        // Conditionally launch add field default_evaluation_endtime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026042600, 'coursefeedback');
+    }
+
+    if ($oldversion < 2026042800) {
+        // Define table block_coursefeedback_rub_eventtype_mapping to be created.
+        $table = new xmldb_table('block_coursefeedback_rub_eventtype_mapping');
+
+        // Adding fields to table block_coursefeedback_rub_eventtype_mapping.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('rub_coursetype', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventtypeid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_rub_eventtype_mapping.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fk_organizationid', XMLDB_KEY_FOREIGN, ['organizationid'], 'block_coursefeedback_organization', ['id']);
+        $table->add_key('fk_eventtypeid', XMLDB_KEY_FOREIGN, ['eventtypeid'], 'block_coursefeedback_eventtype', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('u_organizationid_coursetype', XMLDB_KEY_UNIQUE, ['organizationid', 'rub_coursetype']);
+
+        // Conditionally launch create table for block_coursefeedback_rub_eventtype_mapping.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026042800, 'coursefeedback');
+    }
+
+    if ($oldversion < 2026042802) {
+        // Changing nullability of field starttime on table block_coursefeedback_surveyexecution to null.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution');
+        $field = new xmldb_field('starttime', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
+
+        // Launch change of nullability for field starttime.
+        $dbman->change_field_notnull($table, $field);
+
+        // Changing nullability of field endtime on table block_coursefeedback_surveyexecution to null.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution');
+        $field = new xmldb_field('endtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'starttime');
+
+        // Launch change of nullability for field endtime.
+        $dbman->change_field_notnull($table, $field);
+
+        // Define key frk_surveypartid (foreign) to be dropped form block_coursefeedback_surveypartexecution.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecution');
+        $key = new xmldb_key('frk_surveypartid', XMLDB_KEY_FOREIGN, ['surveypartid'], 'block_coursefeedback_surveypart', ['id']);
+
+        // Launch drop key frk_surveypartid.
+        $dbman->drop_key($table, $key);
+
+        // Changing nullability of field surveypartid on table block_coursefeedback_surveypartexecution to null.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecution');
+        $field = new xmldb_field('surveypartid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'surveyexecutionid');
+
+        // Launch change of nullability for field surveypartid.
+        $dbman->change_field_notnull($table, $field);
+
+        // Define key frk_surveypartid (foreign) to be added to block_coursefeedback_surveypartexecution.
+        $table = new xmldb_table('block_coursefeedback_surveypartexecution');
+        $key = new xmldb_key('frk_surveypartid', XMLDB_KEY_FOREIGN, ['surveypartid'], 'block_coursefeedback_surveypart', ['id']);
+
+        // Launch add key frk_surveypartid.
+        $dbman->add_key($table, $key);
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026042802, 'coursefeedback');
+    }
+
     return true;
 }
 
