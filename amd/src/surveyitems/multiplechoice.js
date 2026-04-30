@@ -14,6 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import {SurveyItem} from "block_coursefeedback/surveyitem";
+import {toArray} from "block_coursefeedback/util";
 
 /**
  * Implement SurveyItem for Multiplechoice
@@ -31,13 +32,13 @@ export class MultipleChoice extends SurveyItem {
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     getValue() {
-        return (this.form.elements[this.inputName] ?? [])
+        return toArray(this.form.elements[this.inputName])
             .filter(input => input.checked)
             .map(input => input.value);
     }
 
     setValue(value) {
-        for (let input of this.form.elements[this.inputName] ?? []) {
+        for (let input of toArray(this.form.elements[this.inputName])) {
             if (value.includes(input.value)) {
                 input.checked = true;
             }
