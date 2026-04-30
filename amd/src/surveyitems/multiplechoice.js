@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import {SurveyItem} from "block_coursefeedback/surveyitem";
-import {toArray} from "block_coursefeedback/util";
+import { SurveyItem } from "block_coursefeedback/surveyitem";
+import { toArray } from "block_coursefeedback/util";
 
 /**
  * Implement SurveyItem for Multiplechoice
@@ -32,16 +32,12 @@ export class MultipleChoice extends SurveyItem {
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     getValue() {
-        return toArray(this.form.elements[this.inputName])
-            .filter(input => input.checked)
-            .map(input => input.value);
+        return new FormData(this.form).getAll(this.inputName);
     }
 
     setValue(value) {
-        for (let input of toArray(this.form.elements[this.inputName])) {
-            if (value.includes(input.value)) {
-                input.checked = true;
-            }
-        }
+        toArray(this.form.elements[this.inputName])
+            .filter(input => value.includes(input.value))
+            .forEach(input => void (input.checked = true));
     }
 }
