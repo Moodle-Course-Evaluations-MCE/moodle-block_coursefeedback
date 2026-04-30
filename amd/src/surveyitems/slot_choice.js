@@ -14,6 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import { SurveyItem } from "block_coursefeedback/surveyitem";
+import { toArray } from "block_coursefeedback/util";
 
 /**
  * Implement SurveyItem for the slot choice item.
@@ -30,9 +31,9 @@ export class SlotChoiceSurveyItem extends SurveyItem {
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     initialize() {
-        if (this.inputName in this.form.elements) {
-            this.form.elements[this.inputName].value = this.surveyContext.slotId;
-        }
+        toArray(this.form.elements[this.inputName])
+            .filter(input => input.value === this.surveyContext.slotId)
+            .forEach(input => void (input.checked = true));
 
         this.form.addEventListener('change', (e) => {
             this.surveyContext.slotId = parseInt(e.target.value);

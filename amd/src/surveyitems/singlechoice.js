@@ -14,6 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import { SurveyItem } from "block_coursefeedback/surveyitem";
+import { toArray } from "block_coursefeedback/util";
 
 /**
  * Implement SurveyItem for Singlechoice
@@ -30,12 +31,12 @@ export class SingleChoice extends SurveyItem {
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     getValue() {
-        return this.form.elements[this.inputName]?.value || null;
+        return new FormData(this.form).get(this.inputName);
     }
 
     setValue(value) {
-        if (this.inputName in this.form.elements) {
-            this.form.elements[this.inputName].value = value;
-        }
+        toArray(this.form.elements[this.inputName])
+            .filter(input => input.value === value)
+            .forEach(input => void (input.checked = true));
     }
 }

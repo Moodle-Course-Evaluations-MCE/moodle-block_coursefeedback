@@ -133,7 +133,9 @@ const surveyRoot = (
 
         handler.initialize();
         if (page.spe_id in this.values && itemId in this.values[page.spe_id]) {
-            handler.setValue(this.values[page.spe_id][surveyItem.surveyitemid]);
+            // If value isn't primitive, it will be wrapped by a reactive proxy, which we need to unwrap first.
+            const value = Alpine.raw(this.values[page.spe_id][surveyItem.surveyitemid]);
+            handler.setValue(value);
         }
     },
 
