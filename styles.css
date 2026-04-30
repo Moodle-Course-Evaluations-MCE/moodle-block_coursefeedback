@@ -74,6 +74,12 @@
     outline: .2rem solid #000102;
 }
 
+.block_coursefeedback-survey-success {
+    /* For Moodle 4/5 compatibility. */
+    /* stylelint-disable-next-line declaration-no-important */
+    padding-right: var(--bs-alert-padding-x, 1rem) !important;
+}
+
 #page-blocks-coursefeedback-course {
     .btn-link {
         padding: .1em;
