@@ -59,6 +59,10 @@ class hook_callbacks {
         }
 
         $survey = survey::for_course($course_data);
+        if ($survey->is_empty()) {
+            debugging("There is an active survey, but it's empty.");
+            return;
+        }
 
         $renderer = $PAGE->get_renderer('block_coursefeedback');
 

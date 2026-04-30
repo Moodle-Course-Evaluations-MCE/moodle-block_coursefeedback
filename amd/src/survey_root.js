@@ -81,7 +81,7 @@ const surveyRoot = (
 
     init() {
         const page = pages[this.currentPage0];
-        for (const item of page.items) {
+        for (const item of page?.items ?? []) {
             this.initHandlerFor(item, page);
         }
     },
