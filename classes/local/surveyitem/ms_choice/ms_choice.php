@@ -27,11 +27,7 @@ namespace block_coursefeedback\local\surveyitem\ms_choice;
 use block_coursefeedback\local\multilang_string;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
-use coding_exception;
-use dml_exception;
-use JsonException;
 use moodle_url;
 use moodleform;
 

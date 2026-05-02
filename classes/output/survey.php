@@ -22,7 +22,6 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\survey_page;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
-use core\exception\coding_exception;
 use core\output\named_templatable;
 use core\output\renderer_base;
 use renderable;

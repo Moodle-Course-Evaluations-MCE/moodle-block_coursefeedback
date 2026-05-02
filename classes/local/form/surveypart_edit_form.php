@@ -24,7 +24,6 @@
  */
 namespace block_coursefeedback\local\form;
 
-use coding_exception;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();

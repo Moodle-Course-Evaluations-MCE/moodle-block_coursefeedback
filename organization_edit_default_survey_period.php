@@ -23,10 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\form\edit_organization_form;
 use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\organization_user;
-use block_coursefeedback\local\persistent\organization_category;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;

@@ -16,11 +16,7 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use block_coursefeedback\local\lang_utils;
 use core\exception\coding_exception;
-use core\persistent;
-use dml_exception;
-use dml_transaction_exception;
 
 /**
  * Surveypart persistent class.

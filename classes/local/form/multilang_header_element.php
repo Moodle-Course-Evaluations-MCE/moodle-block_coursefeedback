@@ -17,8 +17,6 @@
 namespace block_coursefeedback\local\form;
 
 use block_coursefeedback\local\lang_utils;
-use block_coursefeedback\local\multilang_string;
-use coding_exception;
 use MoodleQuickForm_group;
 
 defined('MOODLE_INTERNAL') || die();

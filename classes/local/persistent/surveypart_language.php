@@ -16,10 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use coding_exception;
-use core\persistent;
-use dml_exception;
-
 /**
  * Persistent class for a language enabled in a surveypart.
  *

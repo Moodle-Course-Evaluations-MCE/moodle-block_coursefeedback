@@ -18,7 +18,6 @@ namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
-use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\output\survey;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;

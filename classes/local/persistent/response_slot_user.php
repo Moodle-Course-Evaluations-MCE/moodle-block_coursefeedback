@@ -16,8 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use core\persistent;
-
 /**
  * Response slot users (those who are allowed to see the results) persistent class.
  *

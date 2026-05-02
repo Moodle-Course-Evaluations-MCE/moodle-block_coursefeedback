@@ -26,12 +26,9 @@ namespace block_coursefeedback\local\surveyitem\text;
 
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\exception\coding_exception;
 use core\lang_string;
-use moodle_url;
-use moodleform;
 
 /**
  * Survey item type definition for a text question.

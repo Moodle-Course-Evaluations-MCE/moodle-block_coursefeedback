@@ -17,7 +17,6 @@
 namespace block_coursefeedback\local\persistent;
 
 use core\exception\coding_exception;
-use core\persistent;
 
 /**
  * Response slot persistent class.

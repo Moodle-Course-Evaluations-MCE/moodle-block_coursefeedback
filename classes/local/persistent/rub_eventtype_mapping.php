@@ -18,7 +18,6 @@ namespace block_coursefeedback\local\persistent;
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
-use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**

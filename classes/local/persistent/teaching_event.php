@@ -16,8 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use core\persistent;
-
 /**
  * Teaching event (Lehrveranstaltung) persistent class.
  *

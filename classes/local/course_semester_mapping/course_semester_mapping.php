@@ -16,7 +16,6 @@
 
 namespace block_coursefeedback\local\course_semester_mapping;
 
-use block_coursefeedback\local\persistent\organization;
 use core\dml\sql_join;
 
 /**

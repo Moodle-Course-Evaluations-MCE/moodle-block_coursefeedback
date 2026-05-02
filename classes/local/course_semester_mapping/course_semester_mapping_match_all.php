@@ -17,7 +17,6 @@
 namespace block_coursefeedback\local\course_semester_mapping;
 
 use core\dml\sql_join;
-use core\exception\coding_exception;
 
 /**
  * Semester mapping which just matches all courses.

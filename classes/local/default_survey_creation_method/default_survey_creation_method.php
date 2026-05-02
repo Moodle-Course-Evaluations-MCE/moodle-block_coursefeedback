@@ -16,10 +16,7 @@
 
 namespace block_coursefeedback\local\default_survey_creation_method;
 
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_by_customfield;
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_match_all;
 use block_coursefeedback\local\persistent\organization;
-use core\dml\sql_join;
 
 /**
  * Abstract default survey creation method.

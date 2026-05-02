@@ -16,7 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
