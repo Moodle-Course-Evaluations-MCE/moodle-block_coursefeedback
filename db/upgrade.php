@@ -1067,6 +1067,31 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026042802, 'coursefeedback');
     }
 
+    if ($oldversion < 2026050200) {
+        // Define field organizationid to be added to block_coursefeedback_surveyexecution.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution');
+        $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
+
+        $mapping = \block_coursefeedback\local\course_organization_mapping\course_organization_mapping::get_instance();
+        // Conditionally launch add field organizationid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            // Set organization for survey_executions.
+            foreach ($DB->get_records($table->getName()) as $record) {
+                $record->organizationid = $mapping::get_organization_for_course($record->courseid)->get('id');
+                $DB->update_record($table->getName(), $record);
+            }
+
+            $field->setNotNull();
+
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026050200, 'coursefeedback');
+    }
+
     return true;
 }
 

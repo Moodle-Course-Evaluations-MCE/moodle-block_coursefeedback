@@ -55,6 +55,7 @@ class rub_survey_creation_method extends default_survey_creation_method {
         foreach ($courseids as $courseid) {
             $se = new survey_execution(0, (object) [
                 'courseid' => $courseid,
+                'organizationid' => $organization->get('id'),
                 'starttime' => null,
                 'endtime' => null,
                 'status' => 0,

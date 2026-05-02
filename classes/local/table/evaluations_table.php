@@ -68,9 +68,9 @@ class evaluations_table extends no_pagination_table {
             "{course} c
             $semester_join->joins
             $organization_join->joins
-            JOIN {block_coursefeedback_surveyexecution} se ON se.courseid = c.id",
+            JOIN {" . survey_execution::TABLE . "} se ON se.courseid = c.id AND se.organizationid = :organizationid",
             "$semester_join->wheres AND $organization_join->wheres",
-            array_merge($semester_join->params, $organization_join->params),
+            ['organizationid' => $this->organization->get('id'), ...$semester_join->params, ...$organization_join->params],
         );
         $this->column_nosort = ['checkbox', 'tools'];
         $this->define_columns(['checkbox', 'name', 'starttime', 'status', 'tools']);

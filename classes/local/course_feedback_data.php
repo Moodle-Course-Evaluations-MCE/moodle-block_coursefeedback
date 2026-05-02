@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\local;
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
@@ -76,12 +77,22 @@ class course_feedback_data {
      * Loads the course feedback data for the given course if there is an active survey.
      *
      * @param object|int $course_or_id
+     * @param ?int $organizationid Organization for the survey.
+     *      If null, the current organization for the course will be fetched.
      * @return self|null
      */
-    public static function load_from_course(object|int $course_or_id): ?self {
+    public static function load_from_course(object|int $course_or_id, ?int $organizationid = null): ?self {
         global $DB;
 
         $course = is_int($course_or_id) ? get_course($course_or_id) : $course_or_id;
+
+        if (!$organizationid) {
+            $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+            if (!$organization) {
+                return null;
+            }
+            $organizationid = $organization->get('id');
+        }
 
         $se_fields = survey_execution::get_sql_fields('se', 'se_');
         $event_fields = teaching_event::get_sql_fields('te', 'te_');
@@ -104,9 +115,9 @@ class course_feedback_data {
             LEFT JOIN {" . response_slot_user::TABLE . "} ru ON rs.id = ru.surveypartexecutionoptionid
             LEFT JOIN {user} u ON ru.userid = u.id
             $user_fields_sql->joins
-            WHERE se.courseid = :courseid
+            WHERE se.courseid = :courseid AND se.organizationid = :organizationid
             ORDER BY se.id, te.id, spe.id, rs.id, ru.id
-        ", ['courseid' => $course->id, ...$user_fields_sql->params]);
+        ", ['courseid' => $course->id, 'organizationid' => $organizationid, ...$user_fields_sql->params]);
 
         try {
             if (!$recordset || !$recordset->valid()) {
@@ -186,12 +197,14 @@ class course_feedback_data {
      * Loads the course feedback data for the given course, throwing if the course has no active survey.
      *
      * @param object|int $course_or_id
+     * @param ?int $organizationid Organization for the survey.
+     *       If null, the current organization for the course will be fetched.
      * @return self
      */
-    public static function load_from_course_required(object|int $course_or_id): self {
+    public static function load_from_course_required(object|int $course_or_id, ?int $organizationid = null): self {
         $course = is_int($course_or_id) ? get_course($course_or_id) : $course_or_id;
 
-        $result = self::load_from_course($course_or_id);
+        $result = self::load_from_course($course_or_id, $organizationid);
         if (!$result) {
             throw new moodle_exception(
                 'no_survey_execution',

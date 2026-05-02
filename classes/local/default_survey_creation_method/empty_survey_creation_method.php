@@ -39,6 +39,7 @@ class empty_survey_creation_method extends default_survey_creation_method {
                 'starttime' => null,
                 'endtime' => null,
                 'courseid' => $courseid,
+                'organizationid' => $organization->get('id'),
                 'status' => 0,
             ]))->save();
         }
