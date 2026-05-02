@@ -45,7 +45,7 @@ class hook_callbacks {
         }
 
         // TODO: Probably cache the result of this rather large query.
-        $course_data = course_feedback_data::load_from_course($PAGE->course);
+        $course_data = survey_execution_data::load_from_course($PAGE->course);
         if (!$course_data) {
             return;
         }

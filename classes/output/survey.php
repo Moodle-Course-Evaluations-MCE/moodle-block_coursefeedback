@@ -16,7 +16,7 @@
 
 namespace block_coursefeedback\output;
 
-use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
@@ -90,10 +90,10 @@ class survey implements named_templatable, renderable {
     /**
      * Create an instance to display the survey for the given course.
      *
-     * @param course_feedback_data $course_data
+     * @param survey_execution_data $course_data
      * @return self
      */
-    public static function for_course(course_feedback_data $course_data): self {
+    public static function for_course(survey_execution_data $course_data): self {
         $events_by_spe_id = [];
         foreach ($course_data->spes_by_event_id as $event_id => $spe) {
             $events_by_spe_id[$spe->get('id')] = $course_data->events_by_id[$event_id];
@@ -109,7 +109,7 @@ class survey implements named_templatable, renderable {
         return new self(
             $pages,
             $course_data->slots_by_spe_id,
-            $course_data->course->id,
+            $course_data->survey_execution->get('courseid'),
             "#user-notifications"
         );
     }

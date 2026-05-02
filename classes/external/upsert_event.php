@@ -16,7 +16,7 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
@@ -149,10 +149,11 @@ class upsert_event extends external_api {
 
         $transaction->allow_commit();
 
-        $model = course_feedback_data::load_from_course_required($courseid);
+        $course = get_course($courseid);
+        $model = survey_execution_data::load_from_course_required($course);
 
         return [
-            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model)),
+            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
         ];
     }
 }

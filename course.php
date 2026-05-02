@@ -23,7 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
@@ -48,9 +48,9 @@ if (!$organization) {
     throw new \core\exception\coding_exception('Course does not belong to an evaluation organization');
 }
 
-$model = course_feedback_data::load_from_course_required($course, $organization->get('id'));
+$model = survey_execution_data::load_from_course_required($course, $organization->get('id'));
 
-$table = new course_event_slot_table($model);
+$table = new course_event_slot_table($model, $course);
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,
     $organization,

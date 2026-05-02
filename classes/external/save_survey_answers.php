@@ -16,7 +16,7 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\context\course;
@@ -73,19 +73,18 @@ class save_survey_answers extends external_api {
             'surveyparts' => $submittedsurveyparts,
         ]);
 
-        global $DB, $COURSE;
+        global $DB;
 
         $context = course::instance($courseid);
         self::validate_context($context);
         require_capability('block/coursefeedback:filloutsurvey', $context);
 
-        // Global $COURSE should be set to the course now, but we check to be sure.
-        $course = $COURSE && $COURSE->id == $courseid ? $COURSE : null;
+        $course = get_course($courseid);
 
         $transaction = $DB->start_delegated_transaction();
 
         // TODO: Cache this.
-        $course_data = course_feedback_data::load_from_course_required($course ?? $courseid);
+        $course_data = survey_execution_data::load_from_course_required($course);
 
         $all_question_data = surveyitem_manager::get_questiondata_for_surveyparts(
             array_values($course_data->survey_parts_by_spe_id)
