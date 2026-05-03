@@ -5,26 +5,44 @@
         <div class="row no-gutters align-items-center">
             <div class="col-md-5">
                 <div class="card-body">
-                    <h5 class="card-title m-0 mb-1">{{{questiontext}}}</h5>
+                    <h5 class="card-title m-0 mb-1">{{index}}: {{{questiontext}}}</h5>
 
                     <div class="ml-3 mt-1" style="font-size: 0.85rem; color: #555;">
-                        {{#scale_name}}
-                            <p class="mb-1"><strong>Skala:</strong> {{scale_name}} (1 - {{counts_length}})</p>
-                        {{/scale_name}}
+                        {{#is_scale}}
+                            <p class="mb-1"><strong>Skala:</strong> Werte von (1 - {{counts_length}})</p>
+                            <ul>
+                                <li>(1) - {{scale_min_name}}</li>
+                                <li>({{counts_length}}) - {{scale_max_name}}</li>
+                            </ul>
+                        {{/is_scale}}
 
-                        {{#is_singlechoice}}
+                        {{^is_scale}}
                             <ul class="list-unstyled mb-0">
                                 {{#legend}}
                                     <li><strong>{{number}} - </strong> {{text}}</li>
                                 {{/legend}}
                             </ul>
-                        {{/is_singlechoice}}
+                        {{/is_scale}}
                     </div>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="card-body">
-                    <div id="chart_{{itemid}}" class="w-100" style="background: white; border-radius: 8px; padding: 10px;"></div>
+                    {{#is_text}}
+                        <div class="text-responses-container" style="max-height: 200px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
+                            <ul class="list-group list-group-flush">
+                                {{#responses}}
+                                    <li class="list-group-item p-1" style="background: transparent; font-size: 0.9rem;">- {{text}}</li>
+                                {{/responses}}
+                                {{^responses}}
+                                    <li class="list-group-item p-1 text-muted small">Keine Antworten vorhanden.</li>
+                                {{/responses}}
+                            </ul>
+                        </div>
+                    {{/is_text}}
+                    {{^is_text}}
+                        <div id="chart_{{itemid}}" class="w-100" style="background: white; border-radius: 8px; padding: 10px;"></div>
+                    {{/is_text}}
                 </div>
             </div>
             <div class="col-md-2">
@@ -46,140 +64,142 @@
     </div>
 
 
-    <script>
-        (function() {
-            const render = () => {
-                if (typeof d3 === 'undefined') {
-                    setTimeout(render, 50);
-                    return;
-                }
-
-                const data = {{{chart_data_json}}};
-                const containerSelector = "#chart_{{itemid}}";
-
-                const width = 500;
-                const height = 250; // Etwas flacher für die Karten-Optik
-                const margin = {top: 40, right: 30, bottom: 40, left: 40};
-
-                // Select container.
-                const svg = d3.select(containerSelector)
-                        .append("svg")
-                        .attr("viewBox", `0 0 ${width} ${height}`)
-                        .attr("preserveAspectRatio", "xMidYMid meet");
-
-                // Axes scales.
-                const x = d3.scaleLinear().domain([0.5, data.counts.length + 0.5]).range([margin.left, width - margin.right]);
-                const y = d3.scaleLinear().domain([0, d3.max(data.counts) + 1]).range([height - margin.bottom, margin.top]);
-
-                // Dynamic bar width calculation - uses 70% of space currently
-                const bandwidth = x(2) - x(1);
-                const barWidth = bandwidth * 0.7;
-
-                // Plot the bars
-                svg.selectAll("rect.bar")
-                        .data(data.counts)
-                        .enter()
-                        .append("rect")
-                        .attr("class", "bar")
-                        .attr("x", (d, i) => x(i + 1) - (barWidth / 2))
-                        .attr("y", d => y(d))
-                        .attr("width", barWidth)
-                        .attr("height", d => Math.max(0, height - margin.bottom - y(d)))
-                        .attr("fill", "#8EAC00");
-
-                // Check for metric data ... only in scale questions.
-                if (data.is_scale === true && data.n > 0) {
-
-                    // Get and define some values.
-                    const nMean = parseFloat(data.mean);
-                    const nMedian = parseFloat(data.median);
-                    const nStdDev = parseFloat(data.stddev);
-                    const nCount = data.counts.length;
-                    const xMean = x(nMean);
-                    const xMedian = x(nMedian);
-                    const xStart = x(Math.max(0.5, nMean - nStdDev));
-                    const xEnd = x(Math.min(nCount + 0.5, nMean + nStdDev));
-
-                    // Plot the standard deviation.
-                    if (nStdDev > 0) {
-                        const lineY = margin.top + 10;
-
-                        // Main line
-                        svg.append("line")
-                                .attr("x1", xStart)
-                                .attr("x2", xEnd)
-                                .attr("y1", lineY)
-                                .attr("y2", lineY)
-                                .attr("stroke", "#383838")
-                                .attr("stroke-width", 1)
-
-                        // Left Tick
-                        svg.append("line")
-                                .attr("x1", xStart).attr("x2", xStart)
-                                .attr("y1", lineY - 5).attr("y2", lineY + 5)
-                                .attr("stroke", "#383838")
-                                .attr("stroke-width", 2);
-
-                        // Right Tick
-                        svg.append("line")
-                                .attr("x1", xEnd).attr("x2", xEnd)
-                                .attr("y1", lineY - 5).attr("y2", lineY + 5)
-                                .attr("stroke", "#383838")
-                                .attr("stroke-width", 2);
+    {{^is_text}}
+        <script>
+            (function() {
+                const render = () => {
+                    if (typeof d3 === 'undefined') {
+                        setTimeout(render, 50);
+                        return;
                     }
 
-                    // Mean - Red square.
-                    svg.append("rect")
-                            .attr("x", xMean - 2)
-                            .attr("y", margin.top - 2) // Ein Stück über den Balken
-                            .attr("width", 4)
-                            .attr("height", 25)
-                            .attr("fill", "#ba3f3f")
-                            .attr("class", "marker-mean");
+                    const data = {{{chart_data_json}}};
+                    const containerSelector = "#chart_{{itemid}}";
 
-                    // Median - Blue triangel.
-                    svg.append("path")
-                            .attr("d", `M ${xMedian-4} ${margin.top-2} L ${xMedian+4} ${margin.top-2} L ${xMedian} ${margin.top+18} Z`)
-                            .attr("fill", "#6583c9")
-                            .attr("class", "marker-median");
+                    const width = 500;
+                    const height = 250; // Etwas flacher für die Karten-Optik
+                    const margin = {top: 40, right: 30, bottom: 40, left: 40};
 
-                }
+                    // Select container.
+                    const svg = d3.select(containerSelector)
+                            .append("svg")
+                            .attr("viewBox", `0 0 ${width} ${height}`)
+                            .attr("preserveAspectRatio", "xMidYMid meet");
 
-                // Number and percent values beneath the x-axis.
-                data.counts.forEach((val, i) => {
-                    const posX = x(i + 1);
+                    // Axes scales.
+                    const x = d3.scaleLinear().domain([0.5, data.counts.length + 0.5]).range([margin.left, width - margin.right]);
+                    const y = d3.scaleLinear().domain([0, d3.max(data.counts) + 1]).range([height - margin.bottom, margin.top]);
 
-                    // Percent values.
-                    if(data.counts_percent && data.counts_percent[i] !== undefined) {
+                    // Dynamic bar width calculation - uses 70% of space currently
+                    const bandwidth = x(2) - x(1);
+                    const barWidth = bandwidth * 0.7;
+
+                    // Plot the bars
+                    svg.selectAll("rect.bar")
+                            .data(data.counts)
+                            .enter()
+                            .append("rect")
+                            .attr("class", "bar")
+                            .attr("x", (d, i) => x(i + 1) - (barWidth / 2))
+                            .attr("y", d => y(d))
+                            .attr("width", barWidth)
+                            .attr("height", d => Math.max(0, height - margin.bottom - y(d)))
+                            .attr("fill", "#8EAC00");
+
+                    // Check for metric data ... only in scale questions.
+                    if (data.is_scale === true && data.n > 0) {
+
+                        // Get and define some values.
+                        const nMean = parseFloat(data.mean);
+                        const nMedian = parseFloat(data.median);
+                        const nStdDev = parseFloat(data.stddev);
+                        const nCount = data.counts.length;
+                        const xMean = x(nMean);
+                        const xMedian = x(nMedian);
+                        const xStart = x(Math.max(0.5, nMean - nStdDev));
+                        const xEnd = x(Math.min(nCount + 0.5, nMean + nStdDev));
+
+                        // Plot the standard deviation.
+                        if (nStdDev > 0) {
+                            const lineY = margin.top + 10;
+
+                            // Main line
+                            svg.append("line")
+                                    .attr("x1", xStart)
+                                    .attr("x2", xEnd)
+                                    .attr("y1", lineY)
+                                    .attr("y2", lineY)
+                                    .attr("stroke", "#383838")
+                                    .attr("stroke-width", 1)
+
+                            // Left Tick
+                            svg.append("line")
+                                    .attr("x1", xStart).attr("x2", xStart)
+                                    .attr("y1", lineY - 5).attr("y2", lineY + 5)
+                                    .attr("stroke", "#383838")
+                                    .attr("stroke-width", 2);
+
+                            // Right Tick
+                            svg.append("line")
+                                    .attr("x1", xEnd).attr("x2", xEnd)
+                                    .attr("y1", lineY - 5).attr("y2", lineY + 5)
+                                    .attr("stroke", "#383838")
+                                    .attr("stroke-width", 2);
+                        }
+
+                        // Mean - Red square.
+                        svg.append("rect")
+                                .attr("x", xMean - 2)
+                                .attr("y", margin.top - 2) // Ein Stück über den Balken
+                                .attr("width", 4)
+                                .attr("height", 25)
+                                .attr("fill", "#ba3f3f")
+                                .attr("class", "marker-mean");
+
+                        // Median - Blue triangel.
+                        svg.append("path")
+                                .attr("d", `M ${xMedian-4} ${margin.top-2} L ${xMedian+4} ${margin.top-2} L ${xMedian} ${margin.top+18} Z`)
+                                .attr("fill", "#6583c9")
+                                .attr("class", "marker-median");
+
+                    }
+
+                    // Number and percent values beneath the x-axis.
+                    data.counts.forEach((val, i) => {
+                        const posX = x(i + 1);
+
+                        // Percent values.
+                        if(data.counts_percent && data.counts_percent[i] !== undefined) {
+                            svg.append("text")
+                                    .attr("x", posX)
+                                    .attr("y", height - 13)
+                                    .attr("text-anchor", "middle")
+                                    .attr("font-size", "8px")
+                                    .attr("fill", "#555")
+                                    .text(data.counts_percent[i] + "%");
+                        }
+
+                        // Number values.
                         svg.append("text")
                                 .attr("x", posX)
-                                .attr("y", height - 13)
+                                .attr("y", height - 2)
                                 .attr("text-anchor", "middle")
                                 .attr("font-size", "8px")
                                 .attr("fill", "#555")
-                                .text(data.counts_percent[i] + "%");
-                    }
-
-                    // Number values.
-                    svg.append("text")
-                            .attr("x", posX)
-                            .attr("y", height - 2)
-                            .attr("text-anchor", "middle")
-                            .attr("font-size", "8px")
-                            .attr("fill", "#555")
-                            .text(val + "x");
+                                .text(val + "x");
 
 
-                });
+                    });
 
-                // Axis.
-                svg.append("g")
-                        .attr("transform", `translate(0,${height - margin.bottom})`)
-                        .call(d3.axisBottom(x).ticks(data.counts.length).tickFormat(d3.format("d")));
-            };
-            render();
-        })();
-    </script>
+                    // Axis.
+                    svg.append("g")
+                            .attr("transform", `translate(0,${height - margin.bottom})`)
+                            .call(d3.axisBottom(x).ticks(data.counts.length).tickFormat(d3.format("d")));
+                };
+                render();
+            })();
+        </script>
+    {{/is_text}}
 {{/questions}}
 
 <script src="{{config.wwwroot}}/blocks/coursefeedback/js/d3.min.js"></script>
