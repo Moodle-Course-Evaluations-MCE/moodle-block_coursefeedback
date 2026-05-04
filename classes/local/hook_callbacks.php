@@ -19,6 +19,7 @@ namespace block_coursefeedback\local;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
 use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\output\survey;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
@@ -59,6 +60,17 @@ class hook_callbacks {
             && $course_data->survey_execution->get('starttime') <= $now
             && $now < $course_data->survey_execution->get('endtime');
         if (!$is_active) {
+            return;
+        }
+
+        global $USER;
+        if (
+            survey_execution_user::record_exists_cond([
+                'surveyexecutionid' => $course_data->survey_execution->get('id'),
+                'userid' => $USER->id,
+            ])
+        ) {
+            // The user has already filled out this survey.
             return;
         }
 

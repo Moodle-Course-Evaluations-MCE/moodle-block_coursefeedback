@@ -117,4 +117,15 @@ abstract class persistent_with_bulk_actions extends persistent {
 
         $transaction->allow_commit();
     }
+
+    /**
+     * Like {@see \moodle_database::record_exists()}, but for a persistent.
+     *
+     * @param array<string, mixed> $conditions
+     * @return string
+     */
+    public static function record_exists_cond(array $conditions): string {
+        global $DB;
+        return $DB->record_exists(static::TABLE, $conditions);
+    }
 }

@@ -14,19 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace block_coursefeedback\local\persistent;
+
 /**
- * Plugin version and other meta-data are defined here.
+ * Survey part execution persistent class.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 IT.Services, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class survey_execution_user extends persistent_with_bulk_actions {
 
-defined('MOODLE_INTERNAL') || die();
+    /** Table name for the persistent. */
+    public const TABLE = 'block_coursefeedback_surveyexecution_user';
 
-$plugin->component = 'block_coursefeedback';
-$plugin->release = '4.0.0 (Build: 2026050400)';
-$plugin->version = 2026050400;
-$plugin->requires = 2022042208;
-$plugin->maturity = MATURITY_ALPHA;
+    #[\Override]
+    protected static function define_properties(): array {
+        return [
+            'surveyexecutionid' => [
+                'type' => PARAM_INT,
+            ],
+            'userid' => [
+                'type' => PARAM_INT,
+            ],
+        ];
+    }
+}

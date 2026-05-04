@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\external;
 
+use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitemtype_answerdata;
@@ -73,7 +74,7 @@ class save_survey_answers extends external_api {
             'surveyparts' => $submittedsurveyparts,
         ]);
 
-        global $DB;
+        global $DB, $COURSE, $USER;
 
         $context = course::instance($courseid);
         self::validate_context($context);
@@ -98,8 +99,7 @@ class save_survey_answers extends external_api {
 
         foreach ($submittedsurveyparts as ['surveypartexecutionoptionid' => $slotid, 'answers' => $answers]) {
             if (!$answers) {
-                // TODO: When a students "clicks through" the survey without answering any questions, should we save the response?
-                // Right now, we don't, which has the effect of asking the student again the next time they reload.
+                // We don't save the empty response set. The fact that the user did the survey is saved separately after all SPEs.
                 continue;
             }
 
@@ -146,6 +146,13 @@ class save_survey_answers extends external_api {
         foreach ($answerdata as $surveyitemtype => $data) {
             surveyitem_manager::get_surveyitemtype($surveyitemtype)->check_and_save_answers($data);
         }
+
+        // Save the fact that the user completed this survey execution.
+        (new survey_execution_user())->set_many([
+            'surveyexecutionid' => $course_data->survey_execution->get('id'),
+            'userid' => $USER->id,
+        ])->create();
+
         $transaction->allow_commit();
 
         return [];
