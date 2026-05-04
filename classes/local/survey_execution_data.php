@@ -18,6 +18,7 @@ namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\eventtype;
+use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_execution;
@@ -42,6 +43,7 @@ class survey_execution_data {
      * Private constructor, use {@see load_from_course()} or {@see load_from_course_required()}.
      *
      * @param survey_execution $survey_execution
+     * @param organization $organization
      * @param array<int, teaching_event> $events_by_id
      * @param array<int, eventtype> $types_by_event_id
      * @param array<int, survey_part_execution> $spes_by_event_id
@@ -53,6 +55,8 @@ class survey_execution_data {
     private function __construct(
         /** @var survey_execution $survey_execution */
         public readonly survey_execution $survey_execution,
+        /** @var organization $organization */
+        public readonly organization $organization,
         /** @var array<int, teaching_event> $events_by_id */
         public readonly array $events_by_id,
         /** @var array<int, eventtype> $types_by_event_id */
@@ -80,6 +84,7 @@ class survey_execution_data {
         global $DB;
 
         $se_fields = survey_execution::get_sql_fields('se', 'se_');
+        $organization_fields = organization::get_sql_fields('o', 'o_');
         $event_fields = teaching_event::get_sql_fields('te', 'te_');
         $event_type_fields = eventtype::get_sql_fields('et', 'et_');
         $spe_fields = survey_part_execution::get_sql_fields('spe', 'spe_');
@@ -90,8 +95,10 @@ class survey_execution_data {
             ->get_sql(alias: 'u', namedparams: true, prefix: 'u_');
 
         $recordset = $DB->get_recordset_sql("
-            SELECT $se_fields, $event_fields, $event_type_fields, $spe_fields, $sp_fields, $slot_fields $user_fields_sql->selects
+            SELECT $se_fields, $organization_fields, $event_fields, $event_type_fields,
+                   $spe_fields, $sp_fields, $slot_fields $user_fields_sql->selects
             FROM {" . survey_execution::TABLE . "} se
+            LEFT JOIN {" . organization::TABLE . "} o ON se.organizationid = o.id
             LEFT JOIN {" . teaching_event::TABLE . "} te ON se.courseid = te.courseid
             LEFT JOIN {" . eventtype::TABLE . "} et ON te.eventtypeid = et.id
             LEFT JOIN {" . survey_part_execution::TABLE . "} spe ON se.id = spe.surveyexecutionid AND te.id = spe.eventid
@@ -115,6 +122,7 @@ class survey_execution_data {
 
             foreach ($record_extractor->yield_records('se_') as $se_record) {
                 $survey_execution = new survey_execution(record: $se_record);
+                $organization = new organization(record: $record_extractor->get_related('o_'));
 
                 $events_by_id = [];
                 $event_types_by_id = [];
@@ -133,18 +141,20 @@ class survey_execution_data {
                 ) {
                     $events_by_id[$event_record->id] = new teaching_event(record: $event_record);
 
-                    // Avoid creating multiple instances of the same event type.
-                    $type = $event_types_by_id[$event_record->eventtypeid] ?? null;
-                    if (!$type) {
-                        $et_record = $record_extractor->get_related('et_');
-                        if (!$et_record) {
-                            throw new coding_exception(
-                                "Event '$event_record->id' has eventtypeid '$event_record->eventtypeid' that doesn't exist"
-                            );
+                    if ($event_record->eventtypeid) {
+                        // Avoid creating multiple instances of the same event type.
+                        $type = $event_types_by_id[$event_record->eventtypeid] ?? null;
+                        if (!$type) {
+                            $et_record = $record_extractor->get_related('et_');
+                            if (!$et_record) {
+                                throw new coding_exception(
+                                    "Event '$event_record->id' has eventtypeid '$event_record->eventtypeid' that doesn't exist"
+                                );
+                            }
+                            $type = $event_types_by_id[$event_record->eventtypeid] = new eventtype(record: $et_record);
                         }
-                        $type = $event_types_by_id[$event_record->eventtypeid] = new eventtype(record: $et_record);
+                        $types_by_event_id[$event_record->id] = $type;
                     }
-                    $types_by_event_id[$event_record->id] = $type;
 
                     $spe_record = $record_extractor->get_related('spe_');
                     if (!$spe_record) {
@@ -182,6 +192,7 @@ class survey_execution_data {
 
                 $datas[] = new self(
                     survey_execution: $survey_execution,
+                    organization: $organization,
                     events_by_id: $events_by_id,
                     types_by_event_id: $types_by_event_id,
                     spes_by_event_id: $spes_by_event_id,

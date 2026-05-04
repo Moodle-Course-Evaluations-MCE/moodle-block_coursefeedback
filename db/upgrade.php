@@ -1092,6 +1092,26 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026050200, 'coursefeedback');
     }
 
+    if ($oldversion < 2026050300) {
+        // Define key fk_eventtypeid (foreign) to be dropped form block_coursefeedback_course_eventtype.
+        $table = new xmldb_table('block_coursefeedback_course_eventtype');
+        $key = new xmldb_key('fk_eventtypeid', XMLDB_KEY_FOREIGN, ['eventtypeid'], 'block_coursefeedback_eventtype', ['id']);
+
+        // Launch drop key fk_eventtypeid.
+        $dbman->drop_key($table, $key);
+
+        // Changing nullability of field eventtypeid on table block_coursefeedback_course_eventtype to null.
+        $field = new xmldb_field('eventtypeid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
+        // Launch change of nullability for field eventtypeid.
+        $dbman->change_field_notnull($table, $field);
+
+        // Launch add key fk_eventtypeid.
+        $dbman->add_key($table, $key);
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026050300, 'coursefeedback');
+    }
+
     return true;
 }
 

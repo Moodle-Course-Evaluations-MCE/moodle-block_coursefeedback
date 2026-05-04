@@ -170,7 +170,9 @@ class course_event_slot_table implements named_templatable, renderable {
             'id' => $id,
             'name' => $event->get('name'),
             'type' => [
-                'name' => $this->survey_data->types_by_event_id[$id]->get('name'),
+                'name' => $event->get('eventtypeid') ?
+                    $this->survey_data->types_by_event_id[$id]->get('name') :
+                    get_string('default', 'block_coursefeedback'),
             ],
             'available_event_types' => $this->export_available_event_types(selectedid: $event->get('eventtypeid')),
             'survey_part_execution' => $this->export_spe($output, $spe),
