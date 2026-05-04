@@ -16,6 +16,9 @@
 
 namespace block_coursefeedback\local\persistent;
 
+use core\exception\coding_exception;
+use core\lang_string;
+
 /**
  * Survey execution persistent class.
  *
@@ -65,5 +68,32 @@ class survey_execution extends persistent_with_bulk_actions {
                 ],
             ],
         ];
+    }
+
+    /**
+     * Returns the appropriate string for this survey execution's state.
+     *
+     * @return lang_string
+     */
+    public function get_localized_status(): lang_string {
+        $id = $this->get('id');
+        $endtime = $this->get('endtime');
+        $ended = $endtime && time() > $endtime;
+        $status = $this->get('status');
+
+        switch ($this->get('status')) {
+            case self::STATUS_PLANNED:
+                if ($ended) {
+                    debugging("Survey execution '$id' endtime has passed but state is still planned.");
+                }
+                return new lang_string('planned', 'block_coursefeedback');
+            case self::STATUS_STARTED:
+                if ($ended) {
+                    return new lang_string('finished', 'block_coursefeedback');
+                }
+                return new lang_string('ongoing', 'block_coursefeedback');
+            default:
+                throw new coding_exception("Survey execution '$id' has invalid status: '$status'");
+        }
     }
 }

@@ -120,6 +120,7 @@ echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
     'course_fullname' => $course->fullname,
+    'localized_status' => $model->survey_execution->get_localized_status(),
     'num_responses' => $num_responses,
     'show_delete_responses' => $num_responses > 0 && permission_manager::can_delete_responses($organization),
     'delete_responses_url' => $PAGE->url->out(false, ['action' => 'delete_responses', 'sesskey' => sesskey()]),
