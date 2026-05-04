@@ -66,6 +66,8 @@ class start_surveys_task extends \core\task\scheduled_task {
 
             $has_surveypart = false;
 
+            $transaction = $DB->start_delegated_transaction();
+
             foreach ($survey_execution_data->events_by_id as $event) {
                 $spe = $survey_execution_data->spes_by_event_id[$event->get('id')];
                 $surveypart = $survey_execution_data->survey_parts_by_spe_id[$spe->get('id')] ?? null;
@@ -111,6 +113,8 @@ class start_surveys_task extends \core\task\scheduled_task {
             }
             $se->set('status', survey_execution::STATUS_STARTED);
             $se->save();
+
+            $transaction->allow_commit();
         }
     }
 }
