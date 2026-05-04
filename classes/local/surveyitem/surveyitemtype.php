@@ -76,7 +76,7 @@ abstract class surveyitemtype {
      *
      * @param surveyitem[] $surveyitems all surveyitems to load questiondata for, all of this surveyitemtype.
      * @return array<int, mixed> An associative array with surveyitemids as keys, and arbitrary data as value, which will get
-     *                           passed onto create_question_structure.
+     *                           passed into {@see self::export_for_template}.
      */
     public function load_additional_data_for(array $surveyitems): array {
         // Return an empty array for all surveyitems.
