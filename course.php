@@ -25,8 +25,13 @@
 
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+use block_coursefeedback\event\survey_responses_deleted;
+use block_coursefeedback\local\manager\permission_manager;
+use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
+use core\exception\coding_exception;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $PAGE;
@@ -50,7 +55,47 @@ if (!$organization) {
 
 $model = survey_execution_data::load_from_course_required($course, $organization->get('id'));
 
+$action = optional_param('action', false, PARAM_ALPHANUMEXT);
+if ($action === 'delete_responses') {
+    require_sesskey();
+
+    if (!permission_manager::can_delete_responses($organization)) {
+        throw new coding_exception('You do not have permission to do this.');
+    }
+
+    global $DB, $USER;
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $DB->delete_records_subquery('block_coursefeedback_surveypartexecutionoptionresp', 'id', 'id', '
+    SELECT resp_set.id FROM {block_coursefeedback_surveypartexecutionoptionresp} resp_set
+    JOIN {block_coursefeedback_surveypartexecutionoption} slot ON slot.id = resp_set.surveypartexecutionoptionid
+    JOIN {block_coursefeedback_surveypartexecution} spe ON spe.id = slot.surveypartexecutionid
+    WHERE spe.surveyexecutionid = :surveyexecutionid
+    ', ['surveyexecutionid' => $model->survey_execution->get('id')]);
+
+    $DB->delete_records_select(
+        'block_coursefeedback_surveyexecution_user',
+        'surveyexecutionid = :surveyexecutionid',
+        ['surveyexecutionid' => $model->survey_execution->get('id')]
+    );
+
+    $event = survey_responses_deleted::create([
+        'context' => $context,
+        'courseid' => $course->id,
+        'userid' => $USER->id,
+        'other' => [
+            'surveyexecutionid' => $model->survey_execution->get('id'),
+        ],
+    ]);
+    $event->trigger();
+
+    $transaction->allow_commit();
+    redirect($PAGE->url);
+}
+
 $table = new course_event_slot_table($model, $course);
+
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,
     $organization,
@@ -69,9 +114,15 @@ $PAGE->add_body_class('container');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
+$num_responses = survey_execution_user::count_records(['surveyexecutionid' => $model->survey_execution->get('id')]);
+
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
+    'course_fullname' => $course->fullname,
+    'num_responses' => $num_responses,
+    'show_delete_responses' => $num_responses > 0 && permission_manager::can_delete_responses($organization),
+    'delete_responses_url' => $PAGE->url->out(false, ['action' => 'delete_responses', 'sesskey' => sesskey()]),
 ]);
 
 echo $OUTPUT->footer();
