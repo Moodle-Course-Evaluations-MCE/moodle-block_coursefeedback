@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\local\manager;
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\response_slot;
@@ -25,7 +26,6 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use core\exception\coding_exception;
-use core\invalid_persistent_exception;
 
 /**
  * Contains methods managing test data for now. Will be generalized or binned.
@@ -89,22 +89,18 @@ class survey_execution_manager {
         global $DB;
         $transaction = $DB->start_delegated_transaction();
 
-        $org = organization::get_record();
-        if (!$org) {
-            $org = (new organization())->set_many([
-                'name' => 'Fakultät 24',
-            ])->create();
-        }
+        $org = course_organization_mapping::get_instance()::get_organization_for_course($courseid);
 
         $surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 
-        $execution = survey_execution::get_record(['courseid' => $courseid]);
+        $execution = survey_execution::get_record(['courseid' => $courseid, 'organizationid' => $org->get('id')]);
         if ($execution) {
             throw new coding_exception("Course $courseid already has a survey execution.");
         }
 
         $execution = (new survey_execution())->set_many([
             'courseid' => $courseid,
+            'organizationid' => $org->get('id'),
             'starttime' => 0,
             // 10 years.
             'endtime' => time() + 365 * 24 * 60 * 60,
@@ -153,21 +149,6 @@ class survey_execution_manager {
     }
 
     /**
-     * Creates an empty survey execution.
-     * @param organization $organization
-     * @param int $courseid
-     * @return void
-     */
-    public function create_empty_survey_execution(int $courseid): void {
-        // TODO use either correct starttime and endtime, or null.
-        (new survey_execution(0, (object)[
-            'courseid' => $courseid,
-            'starttime' => 0,
-            'endtime' => 0,
-        ]))->create();
-    }
-
-    /**
      * Deletes a survey execution and all sub-resources.
      *
      * @param int $surveyexecutionid
@@ -179,7 +160,7 @@ class survey_execution_manager {
         $transaction = $DB->start_delegated_transaction();
 
         $recordset = $DB->get_recordset_sql("
-            SELECT se.id AS se_id, spe.id AS spe_id, slot.id AS slot_id
+            SELECT se.id AS se_id, spe.id AS spe_id, slot.id AS slot_id, spe.eventid as spe_eventid
             FROM {" . survey_execution::TABLE . "} se
             LEFT JOIN {" . survey_part_execution::TABLE . "} spe ON se.id = spe.surveyexecutionid
             LEFT JOIN {" . response_slot::TABLE . "} slot ON spe.id = slot.surveypartexecutionid
@@ -196,6 +177,7 @@ class survey_execution_manager {
         $DB->delete_records_list(response_slot_user::TABLE, 'surveypartexecutionoptionid', array_column($records, 'slot_id'));
         $DB->delete_records_list(response_slot::TABLE, 'id', array_column($records, 'slot_id'));
         $DB->delete_records_list(survey_part_execution::TABLE, 'id', array_column($records, 'spe_id'));
+        $DB->delete_records_list(teaching_event::TABLE, 'id', array_column($records, 'spe_eventid'));
         $DB->delete_records(survey_execution::TABLE, ['id' => $surveyexecutionid]);
 
         $transaction->allow_commit();

@@ -17,12 +17,7 @@
 namespace block_coursefeedback\local\form;
 
 use block_coursefeedback\local\multilang_string;
-use block_coursefeedback\local\lang_utils;
-use coding_exception;
-use HTML_QuickForm_element;
 use HTML_QuickForm_text;
-use HTML_QuickForm_utils;
-use invalid_parameter_exception;
 use MoodleQuickForm_group;
 use MoodleQuickForm_text;
 

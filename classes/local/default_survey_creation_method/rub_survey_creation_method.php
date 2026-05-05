@@ -16,15 +16,11 @@
 
 namespace block_coursefeedback\local\default_survey_creation_method;
 
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_by_customfield;
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_match_all;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\response_slot;
-use block_coursefeedback\local\persistent\rub_eventtype_mapping;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
-use core\dml\sql_join;
 
 /**
  * RUB default survey creation method.
@@ -55,6 +51,7 @@ class rub_survey_creation_method extends default_survey_creation_method {
         foreach ($courseids as $courseid) {
             $se = new survey_execution(0, (object) [
                 'courseid' => $courseid,
+                'organizationid' => $organization->get('id'),
                 'starttime' => null,
                 'endtime' => null,
                 'status' => 0,

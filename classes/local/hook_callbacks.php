@@ -18,7 +18,7 @@ namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
-use block_coursefeedback\local\surveyitem\surveyitem_manager;
+use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\survey;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
@@ -41,18 +41,22 @@ class hook_callbacks {
      */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
         global $PAGE;
-        if ($PAGE->context->contextlevel !== CONTEXT_COURSE) {
+        if (
+            $PAGE->context->contextlevel !== CONTEXT_COURSE
+            || !$PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
+        ) {
             return;
         }
 
         // TODO: Probably cache the result of this rather large query.
-        $course_data = course_feedback_data::load_from_course($PAGE->course);
+        $course_data = survey_execution_data::load_from_course($PAGE->course);
         if (!$course_data) {
             return;
         }
 
         $now = time();
-        $is_active = $course_data->survey_execution->get('starttime') <= $now
+        $is_active = $course_data->survey_execution->get('status') === survey_execution::STATUS_STARTED
+            && $course_data->survey_execution->get('starttime') <= $now
             && $now < $course_data->survey_execution->get('endtime');
         if (!$is_active) {
             return;

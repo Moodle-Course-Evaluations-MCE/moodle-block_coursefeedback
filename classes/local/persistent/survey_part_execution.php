@@ -16,8 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use core\persistent;
-
 /**
  * Survey part execution persistent class.
  *

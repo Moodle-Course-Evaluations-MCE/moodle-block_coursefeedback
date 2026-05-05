@@ -26,13 +26,8 @@ namespace block_coursefeedback\local\surveyitem\ms_choice;
 
 use block_coursefeedback\local\form\multilang_header_element;
 use block_coursefeedback\local\form\multilang_input_element;
-use block_coursefeedback\local\multilang_string;
-use block_coursefeedback\local\surveyitem\surveyitem_form;
 use block_coursefeedback\local\lang_utils;
-use core\exception\coding_exception;
-use HTML_QuickForm_element;
-use function array_combine;
-use function array_map;
+use block_coursefeedback\local\surveyitem\surveyitem_form;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.

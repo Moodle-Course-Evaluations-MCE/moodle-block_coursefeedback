@@ -24,8 +24,8 @@
  */
 namespace block_coursefeedback\local\form;
 
-use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\lang_utils;
+use block_coursefeedback\local\persistent\surveypart;
 
 defined('MOODLE_INTERNAL') || die();
 

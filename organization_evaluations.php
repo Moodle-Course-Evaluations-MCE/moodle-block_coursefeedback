@@ -25,10 +25,7 @@
 
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\manager\permission_manager;
-use block_coursefeedback\local\manager\survey_execution_manager;
 use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\organization_category;
-use block_coursefeedback\local\table\courses_without_evaluation_table;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;

@@ -16,8 +16,6 @@
 
 namespace block_coursefeedback\local\persistent;
 
-use core\persistent;
-
 /**
  * Teaching event (Lehrveranstaltung) persistent class.
  *
@@ -39,6 +37,8 @@ class teaching_event extends persistent_with_bulk_actions {
             ],
             'eventtypeid' => [
                 'type' => PARAM_INT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
             'teacherid' => [
                 'type' => PARAM_INT,

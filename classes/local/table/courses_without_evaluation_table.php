@@ -27,6 +27,7 @@ namespace block_coursefeedback\local\table;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\survey_execution;
 use core\output\html_writer;
 
 defined('MOODLE_INTERNAL') || die;
@@ -60,9 +61,9 @@ class courses_without_evaluation_table extends no_pagination_table {
             "{course} c
             $semester_join->joins
             $organization_join->joins
-            LEFT JOIN {block_coursefeedback_surveyexecution} se ON c.id = se.courseid",
+            LEFT JOIN {" . survey_execution::TABLE . "} se ON c.id = se.courseid AND se.organizationid = :organizationid",
             "se.id IS NULL AND $semester_join->wheres AND $organization_join->wheres",
-            array_merge($semester_join->params, $organization_join->params),
+            ['organizationid' => $organization->get('id'), ...$semester_join->params, ...$organization_join->params],
         );
         $this->column_nosort = ['checkbox', 'tools'];
         $this->define_columns(['checkbox', 'name', 'tools']);

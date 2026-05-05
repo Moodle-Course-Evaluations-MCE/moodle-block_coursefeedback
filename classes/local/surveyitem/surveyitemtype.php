@@ -25,14 +25,8 @@
 namespace block_coursefeedback\local\surveyitem;
 
 use block_coursefeedback\local\persistent\surveyitem;
-use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitemtype_answerdata;
-use core\dml\sql_join;
-use core\exception\coding_exception;
 use core\lang_string;
-use moodle_recordset;
-use moodle_url;
-use moodleform;
 
 /**
  * Abstract surveyitem class, to be extended by all survey elements.

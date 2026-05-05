@@ -24,7 +24,6 @@
  */
 namespace block_coursefeedback\local\table;
 
-use block_coursefeedback\local\persistent\surveypart;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die;

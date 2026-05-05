@@ -16,11 +16,8 @@
 
 namespace block_coursefeedback\local\default_survey_creation_method;
 
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_by_customfield;
-use block_coursefeedback\local\course_semester_mapping\course_semester_mapping_match_all;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
-use core\dml\sql_join;
 
 /**
  * Empty default survey creation method.
@@ -39,6 +36,7 @@ class empty_survey_creation_method extends default_survey_creation_method {
                 'starttime' => null,
                 'endtime' => null,
                 'courseid' => $courseid,
+                'organizationid' => $organization->get('id'),
                 'status' => 0,
             ]))->save();
         }

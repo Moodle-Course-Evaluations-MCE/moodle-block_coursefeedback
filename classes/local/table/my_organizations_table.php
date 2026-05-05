@@ -25,10 +25,8 @@
 namespace block_coursefeedback\local\table;
 
 use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\organization_category;
 use block_coursefeedback\local\persistent\organization_user;
 use moodle_url;
-use html_writer;
 
 defined('MOODLE_INTERNAL') || die;
 

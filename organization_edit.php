@@ -25,8 +25,8 @@
 
 use block_coursefeedback\local\form\edit_organization_form;
 use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\organization_user;
 use block_coursefeedback\local\persistent\organization_category;
+use block_coursefeedback\local\persistent\organization_user;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;

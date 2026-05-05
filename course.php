@@ -23,9 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\course_feedback_data;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
-use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
 
@@ -49,22 +48,11 @@ if (!$organization) {
     throw new \core\exception\coding_exception('Course does not belong to an evaluation organization');
 }
 
-$survey_executions = survey_execution::get_records(['courseid' => $course->id]);
-if (!$survey_executions) {
-    throw new moodle_exception('no_survey_execution', 'block_coursefeedback', a: $course, debuginfo: "courseid: $course->id");
-}
-if (count($survey_executions) > 1) {
-    // TODO: Do we need to support this in any way?
-    debugging('More than one survey execution for course ' . $course->id);
-}
+$model = survey_execution_data::load_from_course_required($course, $organization->get('id'));
 
-$survey_execution = reset($survey_executions);
-
-$model = course_feedback_data::load_from_course_required($course);
-
-$table = new course_event_slot_table($model);
+$table = new course_event_slot_table($model, $course);
 $survey_execution_period = new survey_execution_period(
-    $survey_execution,
+    $model->survey_execution,
     $organization,
     editable: has_capability('block/coursefeedback:changecoursesurveyperiod', $context)
 );

@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\slot_users_editable;
 use core\output\inplace_editable;
@@ -60,7 +61,11 @@ function block_coursefeedback_extend_navigation_course(
     global $DB;
     if (
         has_capability('block/coursefeedback:viewcoursesettings', $context)
-        && $DB->record_exists(survey_execution::TABLE, ['courseid' => $course->id])
+        && ($organization = course_organization_mapping::get_instance()::get_organization_for_course($course))
+        && $DB->record_exists(
+            survey_execution::TABLE,
+            ['courseid' => $course->id, 'organizationid' => $organization->get('id')]
+        )
     ) {
         $url = new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]);
         $parentnode->add(get_string("course_settings", "block_coursefeedback"), $url, key: "coursefeedback");

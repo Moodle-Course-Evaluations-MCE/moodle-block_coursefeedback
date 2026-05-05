@@ -16,15 +16,9 @@
 
 namespace block_coursefeedback\local\course_organization_mapping;
 
-use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\organization_category;
-use block_coursefeedback\local\persistent\surveypart;
-use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use core\dml\sql_join;
-use core\hook\navigation\primary_extend;
-use core\hook\output\after_standard_main_region_html_generation;
-use moodle_url;
 
 /**
  * Course category course organization mapping.
