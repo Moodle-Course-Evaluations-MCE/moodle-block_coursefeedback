@@ -164,11 +164,13 @@ class survey_execution_data {
 
                     $spes_by_event_id[$event_record->id] = new survey_part_execution(record: $spe_record);
                     $sp_record = $record_extractor->get_related('sp_');
-                    if ($spe_record->surveypartid && !$sp_record) {
-                        throw new coding_exception("Survey part execution '$spe_record->id' has surveypartid "
-                            . "'$spe_record->surveypartid' that doesn't exist.");
+                    if ($spe_record->surveypartid) {
+                        if (!$sp_record) {
+                            throw new coding_exception("Survey part execution '$spe_record->id' has surveypartid "
+                                . "'$spe_record->surveypartid' that doesn't exist.");
+                        }
+                        $survey_parts_by_spe_id[$spe_record->id] = new surveypart(record: $sp_record);
                     }
-                    $survey_parts_by_spe_id[$spe_record->id] = new surveypart(record: $sp_record);
 
                     foreach (
                         $record_extractor->yield_records(
