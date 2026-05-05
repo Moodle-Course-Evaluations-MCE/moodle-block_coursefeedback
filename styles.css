@@ -4,6 +4,12 @@
     display: none !important;
 }
 
+.hidden-preserving-width {
+    display: block;
+    visibility: hidden;
+    height: 0;
+}
+
 .coursefeedback-dnd-item.grabbed {
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
@@ -100,12 +106,6 @@
 
     .action-buttons-column {
         text-align: center;
-    }
-
-    .hidden-preserving-width {
-        display: block;
-        visibility: hidden;
-        height: 0;
     }
 
     .editing-in-cell {
