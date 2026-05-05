@@ -54,7 +54,7 @@ class record_extractor {
      * @param string $prefix The prefix of the columns to extract.
      * @return object|null The extracted record if at least one column is non-null, otherwise null.
      */
-    private function maybe_extract(object $row, string $prefix): ?object {
+    public static function maybe_extract(object $row, string $prefix): ?object {
         $extracted = persistent::extract_record($row, $prefix);
         if (!((array) $extracted)) {
             // This most likely means that the prefix is wrong.
@@ -80,7 +80,7 @@ class record_extractor {
         }
 
         $row = $this->recordset->current();
-        return $this->maybe_extract($row, $prefix);
+        return self::maybe_extract($row, $prefix);
     }
 
     /**
@@ -106,7 +106,7 @@ class record_extractor {
                 return;
             }
 
-            $record = $this->maybe_extract($row, $prefix);
+            $record = self::maybe_extract($row, $prefix);
             $this->consumedfromcurrent[] = $prefix;
             if (!$record) {
                 return;

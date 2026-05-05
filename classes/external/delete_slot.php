@@ -22,8 +22,10 @@ use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\survey_freeze_checker;
 use block_coursefeedback\output\course_event_slot_table;
 use context_course;
+use core\di;
 use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_description;
@@ -65,6 +67,7 @@ class delete_slot extends external_api {
     /**
      * Does the thing.
      *
+     * @param int $courseid
      * @param int $slotid
      * @return array
      */
@@ -81,8 +84,9 @@ class delete_slot extends external_api {
 
         $transaction = $DB->start_delegated_transaction();
 
+        $se_fields = survey_execution::get_sql_fields('se', 'se_');
         $recordset = $DB->get_recordset_sql("
-            SELECT se.courseid, rs.id AS rs_id, rsu.id as rsu_id
+            SELECT $se_fields, rs.id AS rs_id, rsu.id as rsu_id
             FROM {" . response_slot::TABLE . "} rs
             JOIN {" . survey_part_execution::TABLE . "} spe ON spe.id = rs.surveypartexecutionid
             JOIN {" . survey_execution::TABLE . "} se ON se.id = spe.surveyexecutionid
@@ -99,9 +103,19 @@ class delete_slot extends external_api {
         if (!$records) {
             debugging("Tried to delete nonexistent slot '$slotid'");
         } else {
-            if (reset($records)->courseid != $courseid) {
+            $first_record = reset($records);
+
+            $survey_execution = survey_execution::extract($first_record, 'se_');
+            if (!$survey_execution) {
+                throw new coding_exception("Slot '$slotid' does not belong to any survey execution");
+            }
+
+            if ($survey_execution->get('courseid') != $courseid) {
                 throw new coding_exception("Slot '$slotid' does not belong to the course '$courseid'");
             }
+
+            di::get(survey_freeze_checker::class)
+                ->check_se_action($survey_execution, "delete slot '$slotid'");
 
             $rsu_ids = array_filter(array_unique(array_column($records, 'rsu_id')));
 

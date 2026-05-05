@@ -19,11 +19,14 @@ namespace block_coursefeedback\external;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
+use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\survey_freeze_checker;
 use block_coursefeedback\output\course_event_slot_table;
 use context_course;
+use core\di;
 use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_description;
@@ -44,6 +47,7 @@ class delete_event extends external_api {
 
     /**
      * Returns description of method parameters.
+     *
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
@@ -55,6 +59,7 @@ class delete_event extends external_api {
 
     /**
      * Returns description of method return.
+     *
      * @return external_function_parameters
      */
     public static function execute_returns(): external_description {
@@ -110,10 +115,13 @@ class delete_event extends external_api {
 
         $transaction = $DB->start_delegated_transaction();
 
+        $se_fields = survey_execution::get_sql_fields('se', 'se_');
         $recordset = $DB->get_recordset_sql("
-            SELECT te.courseid, spe.id AS spe_id, rs.id AS rs_id, rsu.id as rsu_id
+            SELECT te.courseid, $se_fields,
+                   spe.id AS spe_id, rs.id AS rs_id, rsu.id as rsu_id
             FROM {" . teaching_event::TABLE . "} te
             LEFT JOIN {" . survey_part_execution::TABLE . "} spe ON spe.eventid = te.id
+            LEFT JOIN {" . survey_execution::TABLE . "} se ON se.id = spe.surveyexecutionid
             LEFT JOIN {" . response_slot::TABLE . "} rs ON spe.id = rs.surveypartexecutionid
             LEFT JOIN {" . response_slot_user::TABLE . "} rsu ON rs.id = rsu.surveypartexecutionoptionid
             WHERE te.id = :eventid
@@ -126,6 +134,13 @@ class delete_event extends external_api {
                 $first_row = $recordset->current();
                 if ($first_row->courseid != $courseid) {
                     throw new coding_exception("Event '$eventid' does not belong to the course '$courseid'");
+                }
+
+                $survey_execution = survey_execution::extract($first_row, 'se_');
+                if ($survey_execution) {
+                    // If the event doesn't belong to a survey execution, it definitely isn't locked.
+                    di::get(survey_freeze_checker::class)
+                        ->check_se_action($survey_execution, "delete event '$eventid'");
                 }
 
                 [$spe_ids, $rs_ids, $rsu_ids] = self::extract_courseid_and_ids_to_delete($recordset);
