@@ -74,9 +74,12 @@
         </button>
         <button class="btn btn-primary button-next"
                 x-show="currentPage0 >= {{amount_pages}} - 1" x-cloak
-                :disabled="!canFinish"
+                :disabled="!canFinish || isSubmitting"
                 @click="submit">
-            {{#str}}finish, block_coursefeedback{{/str}}
+            <span x-show="isSubmitting" class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only">{{#str}}loading{{/str}}</span>
+            </span>
+            <span :class="isSubmitting && 'hidden-preserving-width'">{{#str}}finish, block_coursefeedback{{/str}}</span>
         </button>
     </div>
     <div class="progress mb-3" role="progressbar" aria-hidden="true">

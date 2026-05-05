@@ -79,6 +79,8 @@ const surveyRoot = (
 
     canFinish: courseid && courseid > 0,
 
+    isSubmitting: false,
+
     init() {
         const page = pages[this.currentPage0];
         for (const item of page?.items ?? []) {
@@ -209,13 +211,18 @@ const surveyRoot = (
             }
         }
 
-        await ajaxAndHandleError({
-            methodname: 'block_coursefeedback_save_survey_answers',
-            args: {
-                courseid,
-                surveyparts: apiValues
-            }
-        });
+        this.isSubmitting = true;
+        try {
+            await ajaxAndHandleError({
+                methodname: 'block_coursefeedback_save_survey_answers',
+                args: {
+                    courseid,
+                    surveyparts: apiValues
+                }
+            });
+        } finally {
+            this.isSubmitting = false;
+        }
 
         // Replace ourselves with a thank-you message.
         const {html} = await Templates.renderForPromise('block_coursefeedback/survey/success', {});
