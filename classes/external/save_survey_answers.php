@@ -74,7 +74,7 @@ class save_survey_answers extends external_api {
             'surveyparts' => $submittedsurveyparts,
         ]);
 
-        global $DB, $COURSE, $USER;
+        global $DB, $USER;
 
         $context = course::instance($courseid);
         self::validate_context($context);
@@ -86,6 +86,15 @@ class save_survey_answers extends external_api {
 
         // TODO: Cache this.
         $course_data = survey_execution_data::load_from_course_required($course);
+
+        if (
+            survey_execution_user::record_exists_cond([
+                'surveyexecutionid' => $course_data->survey_execution->get('id'),
+                'userid' => $USER->id,
+            ])
+        ) {
+            throw new coding_exception("The user has already filled out this survey.");
+        }
 
         $all_question_data = surveyitem_manager::get_questiondata_for_surveyparts(
             array_values($course_data->survey_parts_by_spe_id)
