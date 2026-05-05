@@ -22,7 +22,6 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
-use core\exception\coding_exception;
 
 /**
  * Task file for locking survey_executions.
@@ -68,6 +67,8 @@ class start_surveys_task extends \core\task\scheduled_task {
 
             $transaction = $DB->start_delegated_transaction();
 
+            mtrace("Activate survey for course " . $se->get('courseid'));
+
             foreach ($survey_execution_data->events_by_id as $event) {
                 $spe = $survey_execution_data->spes_by_event_id[$event->get('id')];
                 $surveypart = $survey_execution_data->survey_parts_by_spe_id[$spe->get('id')] ?? null;
@@ -79,6 +80,9 @@ class start_surveys_task extends \core\task\scheduled_task {
                         $spe->set('surveypartid', $eventtype->get('surveypartid'));
                         $spe->save();
                         $has_surveypart = true;
+                        mtrace("... and inherit surveypartid for " . $event->get('id'));
+                    } else {
+                        mtrace("... and skip event " . $event->get('id') . " with no eventtype or default surveypartid");
                     }
                     // TODO Otherwise, should we delete SPE and Event?
                 }
@@ -103,6 +107,7 @@ class start_surveys_task extends \core\task\scheduled_task {
                     'externalid' => null,
                 ]);
                 $slot->create();
+                mtrace(" ... and create default event");
             }
 
             if (!$se->get('starttime')) {
