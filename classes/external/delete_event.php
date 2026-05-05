@@ -16,13 +16,14 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
+use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\output\course_event_slot_table;
-use coding_exception;
 use context_course;
 use core_external\external_api;
 use core_external\external_description;
@@ -47,7 +48,6 @@ class delete_event extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'course id'),
             'eventid' => new external_value(PARAM_INT, 'id of the event to delete'),
         ]);
     }
@@ -91,48 +91,40 @@ class delete_event extends external_api {
     /**
      * Does the thing.
      *
-     * @param int $courseid
      * @param int $eventid
      * @return array
      */
-    public static function execute(int $courseid, int $eventid): array {
+    public static function execute(int $eventid): array {
         global $DB, $OUTPUT;
 
-        [ 'courseid' => $courseid, 'eventid' => $eventid ] =
-            self::validate_parameters(self::execute_parameters(), [ 'courseid' => $courseid, 'eventid' => $eventid ]);
-
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
-        require_capability('block/coursefeedback:changecoursesettings', $context);
+        [ 'eventid' => $eventid ] =
+            self::validate_parameters(self::execute_parameters(), [ 'eventid' => $eventid ]);
 
         $transaction = $DB->start_delegated_transaction();
 
         $recordset = $DB->get_recordset_sql("
-            SELECT te.courseid, spe.id AS spe_id, rs.id AS rs_id, rsu.id as rsu_id
+            SELECT se.courseid, se.organizationid, spe.id AS spe_id, rs.id AS rs_id, rsu.id as rsu_id
             FROM {" . teaching_event::TABLE . "} te
             LEFT JOIN {" . survey_part_execution::TABLE . "} spe ON spe.eventid = te.id
+            LEFT JOIN {" . survey_execution::TABLE . "} se ON se.id = spe.surveyexecutionid
             LEFT JOIN {" . response_slot::TABLE . "} rs ON spe.id = rs.surveypartexecutionid
             LEFT JOIN {" . response_slot_user::TABLE . "} rsu ON rs.id = rsu.surveypartexecutionoptionid
             WHERE te.id = :eventid
         ", ['eventid' => $eventid]);
 
-        try {
-            if (!$recordset || !$recordset->valid()) {
-                debugging("Tried to delete nonexistent event '$eventid'");
-                $spe_ids = [];
-                $rs_ids = [];
-                $rsu_ids = [];
-            } else {
-                $first_row = $recordset->current();
-                if ($first_row->courseid != $courseid) {
-                    throw new coding_exception("Event '$eventid' does not belong to the course '$courseid'");
-                }
-
-                [$spe_ids, $rs_ids, $rsu_ids] = self::extract_courseid_and_ids_to_delete($recordset);
-            }
-        } finally {
-            $recordset?->close();
+        if (!$recordset || !$recordset->valid()) {
+            throw new \core\exception\coding_exception("Tried to delete nonexistent event '$eventid'");
         }
+
+        $record = $recordset->current();
+
+        $context = context_course::instance($record->courseid);
+        self::validate_context($context);
+        $course = get_course($record->courseid);
+
+        permission_manager::require_edit_course_surveysettings($course, $record->organizationid);
+
+        [$spe_ids, $rs_ids, $rsu_ids] = self::extract_courseid_and_ids_to_delete($recordset);
 
         if ($rsu_ids) {
             $DB->delete_records_list(response_slot_user::TABLE, 'id', $rsu_ids);
@@ -148,7 +140,6 @@ class delete_event extends external_api {
 
         $transaction->allow_commit();
 
-        $course = get_course($courseid);
         $model = survey_execution_data::load_from_course_required($course);
 
         return [

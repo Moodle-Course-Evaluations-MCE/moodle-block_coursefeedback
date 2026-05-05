@@ -19,6 +19,7 @@
 
     Example context (json):
     {
+      "show_event_table": true,
       "survey_execution_period_context": {
         "survey_execution_id": 6,
         "starttime": {
@@ -189,10 +190,12 @@
         </div>
     </div>
 </div>
-<section class="mt-4">
-    <h4 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h4>
+{{#show_event_table}}
+    <section class="mt-4">
+        <h4 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h4>
 
-    {{#table_context}}
-        {{> block_coursefeedback/course_event_slot_table }}
-    {{/table_context}}
-</section>
+        {{#table_context}}
+            {{> block_coursefeedback/course_event_slot_table }}
+        {{/table_context}}
+    </section>
+{{/show_event_table}}

@@ -55,17 +55,40 @@ class user_organization_cache_manager {
     }
 
     /**
+     * Fetch user_organizationids from DB.
+     * @return int[]
+     */
+    private function fetch_user_organizationids(): array {
+        global $DB, $USER;
+        return $DB->get_fieldset(organization_user::TABLE, 'organizationid', ['userid' => $USER->id]);
+    }
+
+    /**
+     * Get (cached) user_organizationids.
+     * @return int[]
+     */
+    public function get_user_organizationids(): array {
+        if (!$this->usercache->has('user_organizationids')) {
+            $this->usercache->set('user_organizationids', self::fetch_user_organizationids());
+        }
+        return $this->usercache->get('user_organizationids');
+    }
+
+    /**
      * Returns if the user is evaluation coordinator for any organization.
      * @return bool
      */
-    public function is_user_evaluation_coordinator(): bool {
-        global $USER;
+    public function is_user_evaluation_coordinator_anywhere(): bool {
+        return count($this->get_user_organizationids()) > 0;
+    }
 
-        if (!$this->usercache->has('is_evaluation_coordinator')) {
-            $this->usercache->set('is_evaluation_coordinator', organization_user::count_records(['userid' => $USER->id]) > 0);
-        }
-
-        return $this->usercache->get('is_evaluation_coordinator');
+    /**
+     * Returns if the user is a evaluation coordinator for the given organization.
+     * @param int $organizationid
+     * @return bool
+     */
+    public function is_user_evaluation_coordinator_for(int $organizationid): bool {
+        return in_array($organizationid, $this->get_user_organizationids());
     }
 
     /**
@@ -73,6 +96,6 @@ class user_organization_cache_manager {
      * @return void
      */
     public function purge() {
-        $this->usercache->delete('is_evaluation_coordinator');
+        $this->usercache->purge();
     }
 }

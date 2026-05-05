@@ -79,7 +79,6 @@ document.addEventListener('alpine:init', () => {
                 const result = await ajaxAndHandleError({
                     methodname: 'block_coursefeedback_delete_event',
                     args: {
-                        courseid: this.courseId,
                         eventid: this.eventId,
                     }
                 });
@@ -119,7 +118,6 @@ document.addEventListener('alpine:init', () => {
                 const result = await ajaxAndHandleError({
                     methodname: 'block_coursefeedback_delete_slot',
                     args: {
-                        courseid: this.courseId,
                         slotid: slotId,
                     }
                 });

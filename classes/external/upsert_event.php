@@ -16,13 +16,14 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
@@ -87,7 +88,9 @@ class upsert_event extends external_api {
 
         $context = context_course::instance($courseid);
         self::validate_context($context);
-        require_capability('block/coursefeedback:changecoursesettings', $context);
+        $course = get_course($courseid);
+
+        permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
 
         global $DB, $OUTPUT;
         $transaction = $DB->start_delegated_transaction();
@@ -149,7 +152,6 @@ class upsert_event extends external_api {
 
         $transaction->allow_commit();
 
-        $course = get_course($courseid);
         $model = survey_execution_data::load_from_course_required($course);
 
         return [

@@ -24,8 +24,8 @@
  */
 namespace block_coursefeedback\local\manager;
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\organization_user;
 use block_coursefeedback\local\persistent\surveypart;
 use core\exception\coding_exception;
 
@@ -64,7 +64,6 @@ class permission_manager {
      * @return bool
      */
     public static function can_manage_organization(?organization $organization): bool {
-        global $USER;
         $context = \context_system::instance();
         if (!$organization) {
             return has_capability('block/coursefeedback:managesurveysglobally', $context);
@@ -72,8 +71,7 @@ class permission_manager {
         if (has_capability('block/coursefeedback:manageorganizations', $context)) {
             return true;
         }
-        $record = organization_user::get_record(['organizationid' => $organization->get('id'), 'userid' => $USER->id]);
-        return (bool) $record;
+        return user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator_for($organization->get('id'));
     }
 
     /**
@@ -94,5 +92,69 @@ class permission_manager {
         if (!self::can_manage_organization($organization)) {
             throw new coding_exception('You do not have permission to do this.');
         }
+    }
+
+    /**
+     * Checks whether the user can do something, a teacher in the given course can
+     * do depending on the $organization->$organization_property.
+     * @param \stdClass $course
+     * @param int|organization|null $organization_or_id
+     * @param string $organization_property
+     */
+    private static function check_teacher_organization_capability(
+        \stdClass $course,
+        int|organization|null $organization_or_id,
+        string $organization_property
+    ) {
+        if (!$organization_or_id) {
+            $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+        } else if (is_int($organization_or_id)) {
+            $organization = organization::get_record(['id' => $organization_or_id], MUST_EXIST);
+        } else {
+            $organization = $organization_or_id;
+        }
+        if (!$organization instanceof organization) {
+            return false;
+        }
+
+        $context = \context_course::instance($course->id);
+
+        if ($organization->get($organization_property) && has_capability('block/coursefeedback:isevaluationteacher', $context)) {
+            return true;
+        }
+
+        return self::can_manage_organization($organization);
+    }
+
+    /**
+     * Whether the user can edit course survey settings.
+     * @param \stdClass $course
+     * @param int|organization|null $organization_or_id
+     * @return bool
+     */
+    public static function can_edit_course_surveysettings(\stdClass $course, int|organization|null $organization_or_id): bool {
+        return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_ssettings');
+    }
+
+    /**
+     * Requires that the user can edit the courses surveysettings.
+     * @param \stdClass $course
+     * @param int|organization|null $organization_or_id
+     * @return bool
+     */
+    public static function require_edit_course_surveysettings(\stdClass $course, int|organization|null $organization_or_id) {
+        if (!self::can_edit_course_surveysettings($course, $organization_or_id)) {
+            throw new coding_exception("You cannot edit survey settings for course " . htmlentities($course->shortname));
+        }
+    }
+
+    /**
+     * Whether the user can edit the course survey period.
+     * @param \stdClass $course
+     * @param int|organization|null $organization_or_id
+     * @return bool
+     */
+    public static function can_edit_course_surveyperiod(\stdClass $course, int|organization|null $organization_or_id): bool {
+        return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_speriod');
     }
 }

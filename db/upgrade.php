@@ -1112,6 +1112,47 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026050300, 'coursefeedback');
     }
 
+    if ($oldversion < 2026050400) {
+        // Define field can_teacher_edit_speriod to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'can_teacher_edit_speriod',
+            XMLDB_TYPE_INTEGER,
+            '1',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '1',
+            'default_evaluation_endtime'
+        );
+
+        // Conditionally launch add field can_teacher_edit_speriod.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field can_teacher_edit_ssettings to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'can_teacher_edit_ssettings',
+            XMLDB_TYPE_INTEGER,
+            '1',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '1',
+            'can_teacher_edit_speriod'
+        );
+
+        // Conditionally launch add field can_teacher_edit_ssetting.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026050400, 'coursefeedback');
+    }
+
     return true;
 }
 
