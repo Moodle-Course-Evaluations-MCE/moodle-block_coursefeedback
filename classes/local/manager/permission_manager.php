@@ -79,11 +79,10 @@ class permission_manager {
     /**
      * Is the current user allowed to delete survey responses for the given organization?
      *
-     * @param organization $organization
      * @return bool
      */
-    public static function can_delete_responses(organization $organization): bool {
-        return self::can_manage_organization($organization);
+    public static function can_delete_responses(): bool {
+        return is_siteadmin();
     }
 
     /**
