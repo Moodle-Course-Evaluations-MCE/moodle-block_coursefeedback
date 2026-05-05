@@ -21,9 +21,11 @@ use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\survey_freeze_checker;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
+use core\di;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
@@ -111,6 +113,9 @@ class upsert_slot extends external_api {
                 throw new coding_exception("Slot '$slotid' does not belong to survey part execution '$surveypartexecutionid'");
             }
         } else {
+            di::get(survey_freeze_checker::class)
+                ->check_se_action($survey_execution, "create slot in SPE '$surveypartexecutionid'");
+
             $slot = new response_slot();
             $slot->set('surveypartexecutionid', $surveypartexecutionid);
         }

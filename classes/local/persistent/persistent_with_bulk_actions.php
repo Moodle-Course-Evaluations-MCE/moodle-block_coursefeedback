@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\local\persistent;
 
+use block_coursefeedback\local\record_extractor;
 use coding_exception;
 use core\persistent;
 
@@ -127,5 +128,17 @@ abstract class persistent_with_bulk_actions extends persistent {
     public static function record_exists_cond(array $conditions): string {
         global $DB;
         return $DB->record_exists(static::TABLE, $conditions);
+    }
+
+    /**
+     * Shorthand for {@see record_extractor::maybe_extract()} and {@see persistent::__construct()}.
+     *
+     * @param object $record
+     * @param string $prefix
+     * @return static|null
+     */
+    public static function extract(object $record, string $prefix): ?static {
+        $record = record_extractor::maybe_extract($record, $prefix);
+        return $record ? new static(record: $record) : null;
     }
 }

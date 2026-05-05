@@ -182,6 +182,7 @@ You can do that by using the link/anchor button in the editor, freely choosing a
 </p>
 ';
 $string['survey_execution_endtime'] = 'End time of survey in this course';
+$string['survey_execution_frozen'] = 'The survey in this course has already started or is about to start. Structural changes can no longer be made.';
 $string['survey_execution_period'] = 'Survey Execution Period';
 $string['survey_execution_period_click_to_edit'] = 'Click to edit the survey execution period';
 $string['survey_execution_period_default_is'] = 'The default survey period for the evaluation is {$a}.';

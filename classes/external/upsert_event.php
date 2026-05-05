@@ -24,9 +24,11 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\survey_freeze_checker;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
+use core\di;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
@@ -50,7 +52,7 @@ class upsert_event extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'eventid' => new external_value(PARAM_INT, 'if updating, the id of the event to update, otherwise 0', VALUE_DEFAULT, 0),
-            'surveyexecutionid' => new external_value(PARAM_INT, 'id of the survey execution to which the slot belongs'),
+            'surveyexecutionid' => new external_value(PARAM_INT, 'id of the survey execution to which the course belongs'),
             'name' => new external_value(PARAM_TEXT, 'name of the (new) event'),
             'eventtypeid' => new external_value(PARAM_INT, 'id of the event type'),
         ]);
@@ -73,7 +75,6 @@ class upsert_event extends external_api {
      * @param int $surveyexecutionid
      * @param string $name
      * @param int $eventtypeid
-     * @param int $surveypartid
      * @return array
      */
     public static function execute(int $eventid, int $surveyexecutionid, string $name, int $eventtypeid): array {
@@ -95,67 +96,111 @@ class upsert_event extends external_api {
         global $DB, $OUTPUT;
         $transaction = $DB->start_delegated_transaction();
 
-        if ($eventid) {
-            $event = teaching_event::get_record(['id' => $eventid], MUST_EXIST);
-            if ($event->get('courseid') !== $courseid) {
-                throw new coding_exception("Teaching event '$eventid' does not belong to course '$courseid'");
-            }
-
-            $isnew = false;
-        } else {
-            $event = new teaching_event();
-            $event->set('courseid', $courseid);
-
-            $isnew = true;
-        }
-
         $eventtype = eventtype::get_record(['id' => $eventtypeid], MUST_EXIST);
 
-        $event->set('name', $name);
-        $event->set('eventtypeid', $eventtypeid);
-        $event->save();
-
-        $eventid = $event->get('id');
-
-        $spe = $isnew ? null : survey_part_execution::get_record(['eventid' => $eventid]);
-        if (!$spe) {
-            $spe = new survey_part_execution();
-            $spe->set_many([
-                'surveyexecutionid' => $surveyexecutionid,
-                'eventid' => $eventid,
-            ]);
-        }
-
         $surveypartid = $eventtype->get('surveypartid');
-        if (!$surveypartid) {
-            // TODO: Support this, probably.
-            throw new coding_exception("Event type '$eventtypeid' does not have a survey part");
-        }
-        if (!surveypart::record_exists($surveypartid)) {
+        if ($surveypartid && !surveypart::record_exists($surveypartid)) {
             throw new coding_exception("Survey part '$surveypartid' does not exist");
         }
 
-        if ($spe->get('surveypartid') !== $surveypartid) {
-            $spe->set('surveypartid', $surveypartid);
-        }
-
-        $spe->save();
-
-        if ($isnew) {
-            $response_slot = new response_slot();
-            $response_slot->set_many([
-                'surveypartexecutionid' => $spe->get('id'),
-                'name' => '-',
-            ]);
-            $response_slot->save();
+        if ($eventid) {
+            self::update_event($courseid, $survey_execution, $eventtype, $name, $eventid);
+        } else {
+            self::create_event($courseid, $survey_execution, $eventtype, $name);
         }
 
         $transaction->allow_commit();
 
         $model = survey_execution_data::load_from_course_required($course);
-
         return [
             'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
         ];
+    }
+
+    /**
+     * Creates a new event.
+     *
+     * @param int $courseid
+     * @param survey_execution $survey_execution
+     * @param eventtype $eventtype
+     * @param string $name
+     * @return void
+     */
+    private static function create_event(
+        int $courseid,
+        survey_execution $survey_execution,
+        eventtype $eventtype,
+        string $name
+    ): void {
+        di::get(survey_freeze_checker::class)
+            ->check_se_action($survey_execution, "create event in course '$courseid'");
+
+        $event = new teaching_event();
+        $event->set_many([
+            'courseid' => $courseid,
+            'name' => $name,
+            'eventtypeid' => $eventtype->get('id'),
+        ]);
+        $event->save();
+
+        $spe = new survey_part_execution();
+        $spe->set_many([
+            'surveyexecutionid' => $survey_execution->get('id'),
+            'eventid' => $event->get('id'),
+            'surveypartid' => $eventtype->get('surveypartid'),
+        ]);
+        $spe->save();
+
+        $response_slot = new response_slot();
+        $response_slot->set_many([
+            'surveypartexecutionid' => $spe->get('id'),
+            'name' => '-',
+        ]);
+        $response_slot->save();
+    }
+
+    /**
+     * Updates an existing event.
+     *
+     * @param int $courseid
+     * @param survey_execution $survey_execution
+     * @param eventtype $eventtype
+     * @param string $name
+     * @param int $eventid
+     * @return void
+     */
+    private static function update_event(
+        int $courseid,
+        survey_execution $survey_execution,
+        eventtype $eventtype,
+        string $name,
+        int $eventid
+    ): void {
+        $event = teaching_event::get_record(['id' => $eventid], MUST_EXIST);
+        if ($event->get('courseid') !== $courseid) {
+            throw new coding_exception("Teaching event '$eventid' does not belong to course '$courseid'");
+        }
+
+        $event->set('name', $name);
+
+        if ($event->get('eventtypeid') !== $eventtype->get('id')) {
+            di::get(survey_freeze_checker::class)
+                ->check_se_action($survey_execution, "update type of event '$eventid'");
+
+            $event->set('eventtypeid', $eventtype->get('id'));
+        }
+
+        $event->save();
+
+        $spe = survey_part_execution::get_record(['eventid' => $eventid]);
+
+        if ($spe->get('surveypartid') !== $eventtype->get('surveypartid')) {
+            // This _should_ only happen if the event type is changed, but we check to be sure.
+            di::get(survey_freeze_checker::class)
+                ->check_se_action($survey_execution, "update survey part of SPE '{$spe->get('id')}'");
+
+            $spe->set('surveypartid', $eventtype->get('surveypartid'));
+            $spe->save();
+        }
     }
 }
