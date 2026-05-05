@@ -23,8 +23,8 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\output\course_event_slot_table;
-use coding_exception;
 use context_course;
+use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
@@ -47,6 +47,7 @@ class delete_slot extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
+            'courseid' => new external_value(PARAM_INT, 'course id'),
             'slotid' => new external_value(PARAM_INT, 'id of the slot to delete'),
         ]);
     }
@@ -67,16 +68,21 @@ class delete_slot extends external_api {
      * @param int $slotid
      * @return array
      */
-    public static function execute(int $slotid): array {
+    public static function execute(int $courseid, int $slotid): array {
         global $DB, $OUTPUT;
 
-        [ 'slotid' => $slotid ] =
-            self::validate_parameters(self::execute_parameters(), [ 'slotid' => $slotid ]);
+        [ 'courseid' => $courseid, 'slotid' => $slotid ] =
+            self::validate_parameters(self::execute_parameters(), [ 'courseid' => $courseid, 'slotid' => $slotid ]);
+
+        $context = context_course::instance($courseid);
+        self::validate_context($context);
+        $course = get_course($courseid);
+        permission_manager::require_edit_course_surveysettings($course, null);
 
         $transaction = $DB->start_delegated_transaction();
 
         $recordset = $DB->get_recordset_sql("
-            SELECT se.courseid, se.organizationid, rs.id AS rs_id, rsu.id as rsu_id
+            SELECT se.courseid, rs.id AS rs_id, rsu.id as rsu_id
             FROM {" . response_slot::TABLE . "} rs
             JOIN {" . survey_part_execution::TABLE . "} spe ON spe.id = rs.surveypartexecutionid
             JOIN {" . survey_execution::TABLE . "} se ON se.id = spe.surveyexecutionid
@@ -91,23 +97,19 @@ class delete_slot extends external_api {
         }
 
         if (!$records) {
-            throw new coding_exception("Tried to delete nonexistent slot '$slotid'");
+            debugging("Tried to delete nonexistent slot '$slotid'");
+        } else {
+            if (reset($records)->courseid != $courseid) {
+                throw new coding_exception("Slot '$slotid' does not belong to the course '$courseid'");
+            }
+
+            $rsu_ids = array_filter(array_unique(array_column($records, 'rsu_id')));
+
+            if ($rsu_ids) {
+                $DB->delete_records_list(response_slot_user::TABLE, 'id', $rsu_ids);
+            }
+            $DB->delete_records(response_slot::TABLE, ['id' => $slotid]);
         }
-
-        $record = reset($records);
-
-        $context = context_course::instance($record->courseid);
-        self::validate_context($context);
-        $course = get_course($record->courseid);
-
-        permission_manager::require_edit_course_surveysettings($course, $record->organizationid);
-
-        $rsu_ids = array_filter(array_unique(array_column($records, 'rsu_id')));
-
-        if ($rsu_ids) {
-            $DB->delete_records_list(response_slot_user::TABLE, 'id', $rsu_ids);
-        }
-        $DB->delete_records(response_slot::TABLE, ['id' => $slotid]);
 
         $transaction->allow_commit();
 

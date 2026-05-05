@@ -105,7 +105,7 @@ class permission_manager {
         \stdClass $course,
         int|organization|null $organization_or_id,
         string $organization_property
-    ) {
+    ): bool {
         if (!$organization_or_id) {
             $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
         } else if (is_int($organization_or_id)) {
