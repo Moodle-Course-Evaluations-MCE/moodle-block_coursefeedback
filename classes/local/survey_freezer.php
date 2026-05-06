@@ -27,7 +27,17 @@ use core\exception\moodle_exception;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class survey_freeze_checker {
+class survey_freezer {
+
+    /**
+     * Returns true if the survey execution is frozen, i.e., can't be modified in a structurally significant manner.
+     *
+     * @param survey_execution $se
+     * @return bool
+     */
+    public function is_se_frozen(survey_execution $se): bool {
+        return $se->get('status') == survey_execution::STATUS_STARTED;
+    }
 
     /**
      * Throws if the survey execution contained in the record is frozen.
@@ -35,10 +45,9 @@ class survey_freeze_checker {
      * @param survey_execution $se
      * @param string $action_debug_info To include in the debuginfo of the {@see moodle_exception}.
      * @return void
-     * @throws moodle_exception
      */
     public function check_se_action(survey_execution $se, string $action_debug_info): void {
-        if ($se->get('status') == survey_execution::STATUS_STARTED) {
+        if ($this->is_se_frozen($se)) {
             throw new moodle_exception(
                 'survey_execution_frozen',
                 'block_coursefeedback',

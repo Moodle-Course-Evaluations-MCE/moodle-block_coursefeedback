@@ -24,7 +24,7 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
-use block_coursefeedback\local\survey_freeze_checker;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
@@ -93,6 +93,8 @@ class upsert_event extends external_api {
 
         permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
 
+        $freezer = di::get(survey_freezer::class);
+
         global $DB, $OUTPUT;
         $transaction = $DB->start_delegated_transaction();
 
@@ -112,8 +114,9 @@ class upsert_event extends external_api {
         $transaction->allow_commit();
 
         $model = survey_execution_data::load_from_course_required($course);
+        $table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
         return [
-            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
+            'new_table_html' => $OUTPUT->render($table),
         ];
     }
 
@@ -132,7 +135,7 @@ class upsert_event extends external_api {
         eventtype $eventtype,
         string $name
     ): void {
-        di::get(survey_freeze_checker::class)
+        di::get(survey_freezer::class)
             ->check_se_action($survey_execution, "create event in course '$courseid'");
 
         $event = new teaching_event();
@@ -184,7 +187,7 @@ class upsert_event extends external_api {
         $event->set('name', $name);
 
         if ($event->get('eventtypeid') !== $eventtype->get('id')) {
-            di::get(survey_freeze_checker::class)
+            di::get(survey_freezer::class)
                 ->check_se_action($survey_execution, "update type of event '$eventid'");
 
             $event->set('eventtypeid', $eventtype->get('id'));
@@ -196,7 +199,7 @@ class upsert_event extends external_api {
 
         if ($spe->get('surveypartid') !== $eventtype->get('surveypartid')) {
             // This _should_ only happen if the event type is changed, but we check to be sure.
-            di::get(survey_freeze_checker::class)
+            di::get(survey_freezer::class)
                 ->check_se_action($survey_execution, "update survey part of SPE '{$spe->get('id')}'");
 
             $spe->set('surveypartid', $eventtype->get('surveypartid'));

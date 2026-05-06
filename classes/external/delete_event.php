@@ -23,7 +23,7 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
-use block_coursefeedback\local\survey_freeze_checker;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use context_course;
 use core\di;
@@ -113,6 +113,8 @@ class delete_event extends external_api {
 
         permission_manager::require_edit_course_surveysettings($course, null);
 
+        $freezer = di::get(survey_freezer::class);
+
         $transaction = $DB->start_delegated_transaction();
 
         $se_fields = survey_execution::get_sql_fields('se', 'se_');
@@ -139,8 +141,7 @@ class delete_event extends external_api {
                 $survey_execution = survey_execution::extract($first_row, 'se_');
                 if ($survey_execution) {
                     // If the event doesn't belong to a survey execution, it definitely isn't locked.
-                    di::get(survey_freeze_checker::class)
-                        ->check_se_action($survey_execution, "delete event '$eventid'");
+                    $freezer->check_se_action($survey_execution, "delete event '$eventid'");
                 }
 
                 [$spe_ids, $rs_ids, $rsu_ids] = self::extract_courseid_and_ids_to_delete($recordset);
@@ -165,9 +166,9 @@ class delete_event extends external_api {
 
         $course = get_course($courseid);
         $model = survey_execution_data::load_from_course_required($course);
-
+        $table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
         return [
-            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
+            'new_table_html' => $OUTPUT->render($table),
         ];
     }
 }

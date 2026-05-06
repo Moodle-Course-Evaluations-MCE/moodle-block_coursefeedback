@@ -21,7 +21,7 @@ use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
-use block_coursefeedback\local\survey_freeze_checker;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
 use context_course;
@@ -104,6 +104,8 @@ class upsert_slot extends external_api {
 
         permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
 
+        $freezer = di::get(survey_freezer::class);
+
         global $DB, $OUTPUT;
         $transaction = $DB->start_delegated_transaction();
 
@@ -113,8 +115,7 @@ class upsert_slot extends external_api {
                 throw new coding_exception("Slot '$slotid' does not belong to survey part execution '$surveypartexecutionid'");
             }
         } else {
-            di::get(survey_freeze_checker::class)
-                ->check_se_action($survey_execution, "create slot in SPE '$surveypartexecutionid'");
+            $freezer->check_se_action($survey_execution, "create slot in SPE '$surveypartexecutionid'");
 
             $slot = new response_slot();
             $slot->set('surveypartexecutionid', $surveypartexecutionid);
@@ -126,9 +127,10 @@ class upsert_slot extends external_api {
         $transaction->allow_commit();
 
         $model = survey_execution_data::load_from_course_required($course);
+        $table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
 
         return [
-            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
+            'new_table_html' => $OUTPUT->render($table),
         ];
     }
 }
