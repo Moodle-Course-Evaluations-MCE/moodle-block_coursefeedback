@@ -26,6 +26,7 @@
         "id": 1,
         "shortname": "ABCEFG"
       },
+      "show_add_event": true,
       "events": [
         {
           "id": 1,
@@ -33,6 +34,9 @@
           "type": {
             "name": "Vorlesung"
           },
+          "allow_deletion": true,
+          "deletion_tooltip": "Delete event",
+          "allow_changing_type": true,
           "available_event_types": [
             {
               "id": 1,
@@ -48,10 +52,12 @@
           "survey_part_execution": {
             "id": 11,
             "rowspan": 2,
+            "show_add_slot": true,
             "first_slot": {
               "id": 111,
               "name": "-",
               "allow_deletion": false,
+              "deletion_tooltip": "An event must have at least one slot, so the last one can't be deleted.",
               "users_editable_context": {}
             },
             "more_slots": []
@@ -63,6 +69,9 @@
           "type": {
             "name": "Übung"
           },
+          "allow_deletion": false,
+          "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
+          "allow_changing_type": false,
           "available_event_types": [
             {
               "id": 1,
@@ -78,23 +87,27 @@
           "survey_part_execution": {
             "id": 21,
             "rowspan": 4,
+            "show_add_slot": false,
             "first_slot": {
               "id": 211,
               "name": "Mo 12-14 Uhr",
-              "allow_deletion": true,
+              "allow_deletion": false,
+              "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
               "users_editable_context": {}
             },
             "more_slots": [
               {
                 "id": 212,
                 "name": "Do 14-16 Uhr",
-                "allow_deletion": true,
+                "allow_deletion": false,
+                "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
                 "users_editable_context": {}
               },
               {
                 "id": 213,
                 "name": "Fr 10-12 Uhr",
-                "allow_deletion": true,
+                "allow_deletion": false,
+                "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
                 "users_editable_context": {}
               }
             ]
@@ -147,8 +160,8 @@
                     </form>
                 </td>
                 <td rowspan="{{survey_part_execution.rowspan}}">
-                    <div :class='editingEvent && "hidden-preserving-width"'>{{type.name}}</div>
-                    <div class="editing-in-cell" x-show="editingEvent" x-cloak>
+                    <div :class='editingEvent && {{allow_changing_type}} && "hidden-preserving-width"'>{{type.name}}</div>
+                    <div class="editing-in-cell" x-show="editingEvent && {{allow_changing_type}}" x-cloak>
                         <select title="{{#str}} event_type, block_coursefeedback {{/str}}"
                                 aria-label="{{#str}} event_type, block_coursefeedback {{/str}}"
                                 class="form-control form-select"
@@ -168,12 +181,18 @@
                             title="{{#str}} edit_event, block_coursefeedback {{/str}}" @click="editingEvent = true">
                         {{#pix}}t/edit{{/pix}}
                     </button>
-                    <button x-show="!editingEvent"
-                            class="btn btn-link text-danger"
-                            aria-label="{{#str}} delete_event, block_coursefeedback {{/str}}"
-                            title="{{#str}} delete_event, block_coursefeedback {{/str}}" @click="deleteEvent">
-                        {{#pix}}t/delete{{/pix}}
-                    </button>
+                    {{! Disabled buttons aren't focusable or hoverable, so we attach the tooltip to a div. }}
+                    <div class="d-inline-block"
+                         title="{{deletion_tooltip}}"
+                         tabindex="0">
+                        <button x-show="!editingEvent"
+                                class="btn btn-link {{#allow_deletion}}text-danger{{/allow_deletion}}"
+                                aria-label="{{deletion_tooltip}}"
+                                @click="deleteEvent"
+                                {{^allow_deletion}}disabled{{/allow_deletion}}>
+                            {{#pix}}t/delete{{/pix}}
+                        </button>
+                    </div>
                     <button x-show="editingEvent" x-cloak
                             type="submit" class="btn btn-link text-success"
                             form="block_coursefeedback-event-form-{{uniqid}}-{{id}}"
@@ -197,58 +216,63 @@
                     {{> block_coursefeedback/course_event_slot_table/slot_cells }}
                 </tr>
             {{/survey_part_execution.more_slots}}
-            <tr @click.outside="addingNewSlot = false">
-                <td colspan="2">
-                    <a class="link-primary" role="button"
-                       :class="addingNewSlot && 'hidden-preserving-width'"
-                       @click="addingNewSlot = true; $nextTick(() => $refs.slotNameInput.focus())"
-                    >
-                        {{#pix}}t/add{{/pix}} {{#str}} add_new_slot_to, block_coursefeedback, {{name}} {{/str}}
-                    </a>
-                    <form id="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}" action="#"
-                          @submit.prevent="submitSlot($event); addingNewSlot = false"
-                          class="editing-in-cell"
-                          x-show="addingNewSlot" x-cloak>
-                        <input type="text"
-                               title="{{#str}} slot_name, block_coursefeedback {{/str}}"
-                               aria-label="{{#str}} slot_name, block_coursefeedback {{/str}}"
-                               placeholder="{{#str}} slot_name_placeholder, block_coursefeedback {{/str}}"
-                               class="form-control"
-                               x-ref="slotNameInput"
-                               name="name"
-                               required
-                        />
+            {{#survey_part_execution.show_add_slot}}
+                <tr @click.outside="addingNewSlot = false">
+                    <td colspan="2">
+                        <a class="link-primary" role="button"
+                           :class="addingNewSlot && 'hidden-preserving-width'"
+                           @click="addingNewSlot = true; $nextTick(() => $refs.slotNameInput.focus())"
+                        >
+                            {{#pix}}t/add{{/pix}} {{#str}} add_new_slot_to, block_coursefeedback, {{name}} {{/str}}
+                        </a>
+                        <form id="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}" action="#"
+                              @submit.prevent="submitSlot($event); addingNewSlot = false"
+                              class="editing-in-cell"
+                              x-show="addingNewSlot" x-cloak>
+                            <input type="text"
+                                   title="{{#str}} slot_name, block_coursefeedback {{/str}}"
+                                   aria-label="{{#str}} slot_name, block_coursefeedback {{/str}}"
+                                   placeholder="{{#str}} slot_name_placeholder, block_coursefeedback {{/str}}"
+                                   class="form-control"
+                                   x-ref="slotNameInput"
+                                   name="name"
+                                   required
+                            />
 
-                        <input type="hidden" name="surveypartexecutionid" value="{{survey_part_execution.id}}">
-                    </form>
-                </td>
-                <td class="action-buttons-column" x-cloak>
-                    <button :class="addingNewSlot || 'invisible'"
-                            type="submit" class="btn btn-link text-success"
-                            form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
-                            title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
-                        {{#pix}}t/check{{/pix}}
-                    </button>
-                    <button :class="addingNewSlot || 'invisible'"
-                            type="reset" class="btn btn-link text-danger"
-                            form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
-                            title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
-                            @click="addingNewSlot = false">
-                        {{#pix}}e/cancel{{/pix}}
-                    </button>
-                </td>
-            </tr>
+                            <input type="hidden" name="surveypartexecutionid" value="{{survey_part_execution.id}}">
+                        </form>
+                    </td>
+                    <td class="action-buttons-column" x-cloak>
+                        <button :class="addingNewSlot || 'invisible'"
+                                type="submit" class="btn btn-link text-success"
+                                form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
+                                title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}">
+                            {{#pix}}t/check{{/pix}}
+                        </button>
+                        <button :class="addingNewSlot || 'invisible'"
+                                type="reset" class="btn btn-link text-danger"
+                                form="block_coursefeedback-new-slot-form-{{uniqid}}-event-{{id}}"
+                                title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                                @click="addingNewSlot = false">
+                            {{#pix}}e/cancel{{/pix}}
+                        </button>
+                    </td>
+                </tr>
+            {{/survey_part_execution.show_add_slot}}
             </tbody>
         {{/events}}
-        <tr x-show="!addingNewEvent">
-            <td colspan="6">
-                <a class="link-primary" role="button"
-                   @click="addingNewEvent = true; $nextTick(() => $refs.newEventNameInput.focus())"
-                >
-                    {{#pix}}t/add{{/pix}} {{#str}} add_new_event_to, block_coursefeedback, {{course.shortname}} {{/str}}
-                </a>
-            </td>
-        </tr>
+        {{#show_add_event}}
+            <tr x-show="!addingNewEvent">
+                <td colspan="6">
+                    <a class="link-primary" role="button"
+                       @click="addingNewEvent = true; $nextTick(() => $refs.newEventNameInput.focus())"
+                    >
+                        {{#pix}}
+                            t/add{{/pix}} {{#str}} add_new_event_to, block_coursefeedback, {{course.shortname}} {{/str}}
+                    </a>
+                </td>
+            </tr>
+        {{/show_add_event}}
         <tr x-show="addingNewEvent" x-cloak @click.outside="addingNewEvent = false">
             <td>
                 <form id="block_coursefeedback-new-event-form-{{uniqid}}" action="#"

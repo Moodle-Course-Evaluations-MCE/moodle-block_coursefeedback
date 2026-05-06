@@ -51,12 +51,15 @@ class course_event_slot_table implements named_templatable, renderable {
      *
      * @param survey_execution_data $survey_data
      * @param object $course
+     * @param bool $is_frozen
      */
     public function __construct(
         /** @var survey_execution_data $survey_data */
         private readonly survey_execution_data $survey_data,
         /** @var object $course */
         private readonly object $course,
+        /** @var bool $is_frozen */
+        private readonly bool $is_frozen = true,
     ) {
     }
 
@@ -70,10 +73,10 @@ class course_event_slot_table implements named_templatable, renderable {
      *
      * @param renderer_base $output
      * @param response_slot $slot
-     * @param bool $allow_deletion
+     * @param bool $is_only_slot
      * @return array
      */
-    private function export_slot(renderer_base $output, response_slot $slot, bool $allow_deletion): array {
+    private function export_slot(renderer_base $output, response_slot $slot, bool $is_only_slot = false): array {
         if ($this->enrolledusers === null) {
             $this->enrolledusers = array_column(enrol_get_course_users($this->course->id), null, 'id');
         }
@@ -88,7 +91,12 @@ class course_event_slot_table implements named_templatable, renderable {
         return [
             'id' => $slot->get('id'),
             'name' => $slot->get('name'),
-            'allow_deletion' => $allow_deletion,
+            'allow_deletion' => !($this->is_frozen || $is_only_slot),
+            'deletion_tooltip' => match (true) {
+                $this->is_frozen => get_string('survey_execution_frozen', 'block_coursefeedback'),
+                $is_only_slot => get_string('last_slot_deletion_disabled', 'block_coursefeedback'),
+                default => get_string('delete_slot', 'block_coursefeedback'),
+            },
             'users_editable_context' => $users_editable->export_for_template($output),
         ];
     }
@@ -102,13 +110,20 @@ class course_event_slot_table implements named_templatable, renderable {
      */
     private function export_spe(renderer_base $output, survey_part_execution $survey_part_execution): array {
         $slots = $this->survey_data->slots_by_spe_id[$survey_part_execution->get('id')] ?? [];
-        $allow_slot_deletion = count($slots) > 1;
+
+        $rowspan = count($slots);
+        if (!$this->is_frozen) {
+            // For the "Add slot" button.
+            $rowspan += 1;
+        }
+
         $first_slot = array_shift($slots);
         return [
             'id' => $survey_part_execution->get('id'),
-            'rowspan' => ($first_slot ? 1 : 0) + count($slots) + 1,
-            'first_slot' => $first_slot ? $this->export_slot($output, $first_slot, $allow_slot_deletion) : null,
-            'more_slots' => array_map(fn($slot) => $this::export_slot($output, $slot, $allow_slot_deletion), $slots),
+            'rowspan' => $rowspan,
+            'show_add_slot' => !$this->is_frozen,
+            'first_slot' => $first_slot ? $this->export_slot($output, $first_slot, is_only_slot: !$slots) : null,
+            'more_slots' => array_map(fn($slot) => $this::export_slot($output, $slot), $slots),
         ];
     }
 
@@ -169,6 +184,11 @@ class course_event_slot_table implements named_templatable, renderable {
                     $this->survey_data->types_by_event_id[$id]->get('name') :
                     get_string('default', 'block_coursefeedback'),
             ],
+            'allow_deletion' => !$this->is_frozen,
+            'deletion_tooltip' => $this->is_frozen
+                ? get_string('survey_execution_frozen', 'block_coursefeedback')
+                : get_string('delete_event', 'block_coursefeedback'),
+            'allow_changing_type' => !$this->is_frozen,
             'available_event_types' => $this->export_available_event_types(selectedid: $event->get('eventtypeid')),
             'survey_part_execution' => $this->export_spe($output, $spe),
             'available_survey_parts' => $this->export_available_survey_parts(selectedid: $spe->get('surveypartid')),
@@ -185,6 +205,7 @@ class course_event_slot_table implements named_templatable, renderable {
             'survey_execution' => [
                 'id' => $this->survey_data->survey_execution->get('id'),
             ],
+            'show_add_event' => !$this->is_frozen,
             'events' => array_map(
                 fn($event) => self::export_event($output, $event),
                 array_values($this->survey_data->events_by_id)

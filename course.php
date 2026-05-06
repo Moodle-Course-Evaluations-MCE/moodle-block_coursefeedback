@@ -28,8 +28,10 @@ use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\persistent\survey_execution_user;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
+use core\di;
 use core\exception\coding_exception;
 
 require_once(__DIR__ . '/../../config.php');
@@ -93,7 +95,9 @@ if ($action === 'delete_responses') {
     redirect($PAGE->url);
 }
 
-$table = new course_event_slot_table($model, $course);
+$freezer = di::get(survey_freezer::class);
+
+$table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
 
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,

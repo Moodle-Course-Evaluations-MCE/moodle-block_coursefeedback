@@ -22,7 +22,7 @@ use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
-use block_coursefeedback\local\survey_freeze_checker;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use context_course;
 use core\di;
@@ -82,6 +82,8 @@ class delete_slot extends external_api {
         $course = get_course($courseid);
         permission_manager::require_edit_course_surveysettings($course, null);
 
+        $freezer = di::get(survey_freezer::class);
+
         $transaction = $DB->start_delegated_transaction();
 
         $se_fields = survey_execution::get_sql_fields('se', 'se_');
@@ -114,8 +116,7 @@ class delete_slot extends external_api {
                 throw new coding_exception("Slot '$slotid' does not belong to the course '$courseid'");
             }
 
-            di::get(survey_freeze_checker::class)
-                ->check_se_action($survey_execution, "delete slot '$slotid'");
+            $freezer->check_se_action($survey_execution, "delete slot '$slotid'");
 
             $rsu_ids = array_filter(array_unique(array_column($records, 'rsu_id')));
 
@@ -128,9 +129,10 @@ class delete_slot extends external_api {
         $transaction->allow_commit();
 
         $model = survey_execution_data::load_from_course_required($course);
+        $table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
 
         return [
-            'new_table_html' => $OUTPUT->render(new course_event_slot_table($model, $course)),
+            'new_table_html' => $OUTPUT->render($table),
         ];
     }
 }
