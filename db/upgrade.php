@@ -1112,7 +1112,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026050300, 'coursefeedback');
     }
 
-    if ($oldversion < 2026050400) {
+    if ($oldversion < 2026050401) {
         // Define field can_teacher_edit_speriod to be added to block_coursefeedback_organization.
         $table = new xmldb_table('block_coursefeedback_organization');
         $field = new xmldb_field(
@@ -1150,7 +1150,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         }
 
         // Coursefeedback savepoint reached.
-        upgrade_block_savepoint(true, 2026050400, 'coursefeedback');
+        upgrade_block_savepoint(true, 2026050401, 'coursefeedback');
     }
 
     return true;
