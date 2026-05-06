@@ -127,7 +127,11 @@ class courses_without_evaluation_table extends no_pagination_table {
 
         $alt = get_string('new');
         $icon = 't/add';
-        $url = new \moodle_url($PAGE->url);
+        $url = new \moodle_url($PAGE->url, [
+            'sesskey' => sesskey(),
+            'selected[]' => $row->id,
+            'action' => 'create-default',
+        ]);
         $output .= $OUTPUT->action_icon(
             $url,
             new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),

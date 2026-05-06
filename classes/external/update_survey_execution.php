@@ -17,6 +17,7 @@
 namespace block_coursefeedback\external;
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
@@ -143,7 +144,11 @@ class update_survey_execution extends external_api {
 
         $context = context_course::instance($courseid);
         self::validate_context($context);
-        require_capability('block/coursefeedback:changecoursesurveyperiod', $context);
+        $course = get_course($courseid);
+
+        if (!permission_manager::can_edit_course_surveyperiod($course, $organization)) {
+            throw new coding_exception('You are not allowed to edit the survey period.');
+        }
 
         $survey_execution->set('starttime', $starttime);
         $survey_execution->set('endtime', $endtime);

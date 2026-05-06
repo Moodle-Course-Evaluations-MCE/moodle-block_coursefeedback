@@ -63,6 +63,14 @@ class organization extends persistent {
                 'null' => NULL_ALLOWED,
                 'default' => null,
             ],
+            'can_teacher_edit_speriod' => [
+                'type' => PARAM_BOOL,
+                'default' => true,
+            ],
+            'can_teacher_edit_ssettings' => [
+                'type' => PARAM_BOOL,
+                'default' => true,
+            ],
         ];
     }
 }

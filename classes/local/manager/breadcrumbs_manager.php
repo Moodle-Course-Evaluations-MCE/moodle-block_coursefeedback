@@ -103,6 +103,21 @@ class breadcrumbs_manager {
     }
 
     /**
+     * Setup organization settings breadcrumbs.
+     * @param organization $organization
+     * @return \navigation_node
+     */
+    public static function setup_organization_settings(organization $organization): \navigation_node {
+        $parent = self::setup_organization($organization);
+        $node = $parent->add(
+            get_string('general_settings_and_permissions', 'block_coursefeedback'),
+            new moodle_url('/blocks/coursefeedback/organization_settings.php', ['id' => $organization->get('id')]),
+        );
+        $node->make_active();
+        return $node;
+    }
+
+    /**
      * Setup edit organization breadcrumbs.
      * @param organization|null $organization
      * @return \navigation_node

@@ -16,14 +16,15 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\output\course_event_slot_table;
-use coding_exception;
 use context_course;
+use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
@@ -103,7 +104,9 @@ class delete_event extends external_api {
 
         $context = context_course::instance($courseid);
         self::validate_context($context);
-        require_capability('block/coursefeedback:changecoursesettings', $context);
+        $course = get_course($courseid);
+
+        permission_manager::require_edit_course_surveysettings($course, null);
 
         $transaction = $DB->start_delegated_transaction();
 
@@ -119,9 +122,6 @@ class delete_event extends external_api {
         try {
             if (!$recordset || !$recordset->valid()) {
                 debugging("Tried to delete nonexistent event '$eventid'");
-                $spe_ids = [];
-                $rs_ids = [];
-                $rsu_ids = [];
             } else {
                 $first_row = $recordset->current();
                 if ($first_row->courseid != $courseid) {
@@ -129,22 +129,22 @@ class delete_event extends external_api {
                 }
 
                 [$spe_ids, $rs_ids, $rsu_ids] = self::extract_courseid_and_ids_to_delete($recordset);
+
+                if ($rsu_ids) {
+                    $DB->delete_records_list(response_slot_user::TABLE, 'id', $rsu_ids);
+                }
+                if ($rs_ids) {
+                    $DB->delete_records_list(response_slot::TABLE, 'id', $rs_ids);
+                }
+                if ($spe_ids) {
+                    $DB->delete_records_list(survey_part_execution::TABLE, 'id', $spe_ids);
+                }
+
+                $DB->delete_records(teaching_event::TABLE, ['id' => $eventid]);
             }
         } finally {
             $recordset?->close();
         }
-
-        if ($rsu_ids) {
-            $DB->delete_records_list(response_slot_user::TABLE, 'id', $rsu_ids);
-        }
-        if ($rs_ids) {
-            $DB->delete_records_list(response_slot::TABLE, 'id', $rs_ids);
-        }
-        if ($spe_ids) {
-            $DB->delete_records_list(survey_part_execution::TABLE, 'id', $spe_ids);
-        }
-
-        $DB->delete_records(teaching_event::TABLE, ['id' => $eventid]);
 
         $transaction->allow_commit();
 

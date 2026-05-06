@@ -99,7 +99,7 @@ class hook_callbacks {
                 get_string('evaluationadministration', 'block_coursefeedback'),
                 new moodle_url('/blocks/coursefeedback/overview.php'),
             );
-        } else if (user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator()) {
+        } else if (user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator_anywhere()) {
             $hook->primaryview->add(
                 get_string('evaluationadministration', 'block_coursefeedback'),
                 new moodle_url('/blocks/coursefeedback/organizations.php'),

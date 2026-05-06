@@ -63,15 +63,8 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
-    'block/coursefeedback:changecoursesettings' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => [
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-    'block/coursefeedback:changecoursesurveyperiod' => [
+    'block/coursefeedback:isevaluationteacher' => [
+        // What exactly evaluationteachers can do can be set in the organization settings.
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => [
@@ -83,7 +76,6 @@ $capabilities = [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => [
-            'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],

@@ -23,11 +23,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
-use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\manager\permission_manager;
-use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\survey_execution_data;
+use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
@@ -99,7 +98,7 @@ $table = new course_event_slot_table($model, $course);
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,
     $organization,
-    editable: has_capability('block/coursefeedback:changecoursesurveyperiod', $context)
+    editable: permission_manager::can_edit_course_surveyperiod($course, $organization),
 );
 
 global $OUTPUT;
@@ -114,11 +113,14 @@ $PAGE->add_body_class('container');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
+$show_event_table = count($model->events_by_id) > 0 || permission_manager::can_edit_course_surveysettings($course, $organization);
+
 $num_responses = survey_execution_user::count_records(['surveyexecutionid' => $model->survey_execution->get('id')]);
 
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
+    'show_event_table' => $show_event_table,
     'course_fullname' => $course->fullname,
     'localized_status' => $model->survey_execution->get_localized_status(),
     'num_responses' => $num_responses,
