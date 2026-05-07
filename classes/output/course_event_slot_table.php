@@ -16,12 +16,12 @@
 
 namespace block_coursefeedback\output;
 
-use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\survey_execution_data;
 use core\exception\coding_exception;
 use core\output\named_templatable;
 use core\output\renderable;
@@ -101,16 +101,11 @@ class course_event_slot_table implements named_templatable, renderable {
      * @return array
      */
     private function export_spe(renderer_base $output, survey_part_execution $survey_part_execution): array {
-        $survey_part = $this->survey_data->survey_parts_by_spe_id[$survey_part_execution->get('id')];
         $slots = $this->survey_data->slots_by_spe_id[$survey_part_execution->get('id')] ?? [];
         $allow_slot_deletion = count($slots) > 1;
         $first_slot = array_shift($slots);
         return [
             'id' => $survey_part_execution->get('id'),
-            'survey_part' => [
-                'id' => $survey_part->get('id'),
-                'name' => $survey_part->get('name'),
-            ],
             'rowspan' => ($first_slot ? 1 : 0) + count($slots) + 1,
             'first_slot' => $first_slot ? $this->export_slot($output, $first_slot, $allow_slot_deletion) : null,
             'more_slots' => array_map(fn($slot) => $this::export_slot($output, $slot, $allow_slot_deletion), $slots),
