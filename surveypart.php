@@ -27,10 +27,12 @@ use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use block_coursefeedback\output\survey;
+use core\di;
 use core\output\notification;
 
 require_once(__DIR__ . '/../../config.php');
@@ -49,14 +51,21 @@ $title = $surveypart->get('name');
 $PAGE->set_heading($title);
 $PAGE->set_title($title);
 
+$freezer = di::get(survey_freezer::class);
+
 if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     require_sesskey();
     if ($action === 'delete') {
-        $surveyitem = surveyitem::get_record(['id' => required_param('deleteid', PARAM_INT)], MUST_EXIST);
+        $deleteid = required_param('deleteid', PARAM_INT);
+        $freezer->check_survey_part_action($surveypart, "delete survey item '$deleteid'");
+
+        $surveyitem = surveyitem::get_record(['id' => $deleteid], MUST_EXIST);
         $surveyitem->delete_and_fix_sortorder();
         redirect($PAGE->url);
     }
     if ($action === 'reorder') {
+        $freezer->check_survey_part_action($surveypart, "reorder survey items");
+
         $orderingjson = required_param('ordering', PARAM_RAW);
         $ordering = json_decode($orderingjson);
         $surveypart->reorder_surveyitems($ordering);
@@ -64,82 +73,98 @@ if ($action = optional_param('action', null, PARAM_ALPHANUMEXT)) {
     }
 }
 
-$PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
+$is_frozen = $freezer->is_survey_part_frozen($surveypart);
+
+if (!$is_frozen) {
+    $PAGE->requires->js_call_amd('block_coursefeedback/drag_and_drop_reorder', 'init');
+}
 
 echo $OUTPUT->header();
 
-$context = [];
-
-$actionmenu = new \core\output\action_menu();
-$actionmenu->set_menu_trigger(
-    get_string('add_surveyitem', 'block_coursefeedback'),
-    'btn btn-primary'
-);
-$actionmenu->set_menu_left();
-
-/**
- * @var string $type
- * @var surveyitemtype $class
- */
-foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
-    if (!$class->can_be_added()) {
-        continue;
-    }
-    $actionmenu->add_secondary_action(
-        new \core\output\action_link(
-            new \moodle_url(
-                '/blocks/coursefeedback/surveyitem_edit.php',
-                ['type' => $type, 'surveypartid' => $id, 'sesskey' => sesskey()]
-            ),
-            $class->get_name(),
-        )
+$actionmenu = null;
+if (!$is_frozen) {
+    $actionmenu = new \core\output\action_menu();
+    $actionmenu->set_menu_trigger(
+        get_string('add_surveyitem', 'block_coursefeedback'),
+        'btn btn-primary'
     );
+    $actionmenu->set_menu_left();
+
+    /**
+     * @var string $type
+     * @var surveyitemtype $class
+     */
+    foreach (surveyitem_manager::get_all_surveyitemtypes() as $type => $class) {
+        if (!$class->can_be_added()) {
+            continue;
+        }
+        $actionmenu->add_secondary_action(
+            new \core\output\action_link(
+                new \moodle_url(
+                    '/blocks/coursefeedback/surveyitem_edit.php',
+                    ['type' => $type, 'surveypartid' => $id, 'sesskey' => sesskey()]
+                ),
+                $class->get_name(),
+            )
+        );
+    }
 }
 
+$context = [];
 $scale_url = new moodle_url('/blocks/coursefeedback/scales.php', ['surveypartid' => $surveypart->get('id')]);
 $context['id'] = $surveypart->get('id');
 $context['action_url'] = $PAGE->url->out_omit_querystring();
-$context['add_element_menu'] = $actionmenu->export_for_template($OUTPUT);
+$context['add_element_menu'] = $actionmenu?->export_for_template($OUTPUT);
 $context['has_scales'] = (bool) $DB->count_records('block_coursefeedback_scale', ['surveypartid' => $surveypart->get('id')]);
 $context['scale_url'] = $scale_url->out(false);
 $context['sesskey'] = sesskey();
+$context['show_save_button'] = !$is_frozen;
+
+if ($is_frozen) {
+    $context['info_message'] = get_string('surveypart_frozen', 'block_coursefeedback');
+}
 
 $surveyitems = surveyitem::get_records(['surveypartid' => $surveypart->get('id')], 'sortindex');
 foreach ($surveyitems as $surveyitem) {
-    $actionmenu = new \core\output\action_menu();
     $surveyitemtype = $surveyitem->get('surveyitemtype');
 
-    // If item is editable.
-    if (surveyitem_manager::get_surveyitemtype($surveyitemtype) instanceof surveyitemtype_with_settings) {
-        $editstr = get_string('edit');
+    $actionmenu = null;
+    if (!$is_frozen) {
+        $actionmenu = new \core\output\action_menu();
+
+        // If item is editable.
+        if (surveyitem_manager::get_surveyitemtype($surveyitemtype) instanceof surveyitemtype_with_settings) {
+            $editstr = get_string('edit');
+            $actionmenu->add_secondary_action(new \core\output\action_link(
+                new \moodle_url(
+                    '/blocks/coursefeedback/surveyitem_edit.php',
+                    ['type' => $surveyitemtype, 'surveypartid' => $id, 'id' => $surveyitem->get('id')]
+                ),
+                $editstr,
+                null,
+                null,
+                new \core\output\pix_icon('t/edit', $editstr),
+            ));
+        }
+
+        $deletestr = get_string('delete');
         $actionmenu->add_secondary_action(new \core\output\action_link(
             new \moodle_url(
-                '/blocks/coursefeedback/surveyitem_edit.php',
-                ['type' => $surveyitemtype, 'surveypartid' => $id, 'id' => $surveyitem->get('id')]
+                $PAGE->url,
+                ['action' => 'delete', 'deleteid' => $surveyitem->get('id'), 'sesskey' => sesskey()],
             ),
-            $editstr,
+            $deletestr,
             null,
-            null,
-            new \core\output\pix_icon('t/edit', $editstr),
+            ['class' => 'text-danger'],
+            new pix_icon('t/delete', $deletestr),
         ));
+
+        $actionmenu->set_kebab_trigger();
     }
 
-    $deletestr = get_string('delete');
-    $actionmenu->add_secondary_action(new \core\output\action_link(
-        new \moodle_url(
-            $PAGE->url,
-            ['action' => 'delete', 'deleteid' => $surveyitem->get('id'), 'sesskey' => sesskey()],
-        ),
-        $deletestr,
-        null,
-        ['class' => 'text-danger'],
-        new pix_icon('t/delete', $deletestr),
-    ));
-
-    $actionmenu->set_kebab_trigger();
-
     $item_context = (object) [
-        'actionmenu' => $actionmenu->export_for_template($OUTPUT),
+        'show_handle' => !$is_frozen,
+        'actionmenu' => $actionmenu?->export_for_template($OUTPUT),
         'type' => $surveyitem->get('surveyitemtype'),
         'itemid' => $surveyitem->get('id'),
         'text' => $surveyitem->maybe_format_text(),
