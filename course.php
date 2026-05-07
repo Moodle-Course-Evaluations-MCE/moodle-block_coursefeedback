@@ -103,7 +103,7 @@ $table = new course_event_slot_table($model, $course, is_frozen: $is_frozen);
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,
     $organization,
-    editable: permission_manager::can_edit_course_surveyperiod($course, $organization),
+    editable: permission_manager::can_edit_course_survey_period($course, $organization, is_frozen: $is_frozen),
 );
 
 global $OUTPUT;
@@ -118,24 +118,11 @@ $PAGE->add_body_class('container');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
-if ($is_frozen) {
-    $notification = new notification(
-        html_writer::tag(
-            'div',
-            $renderer->render(new \core\output\pix_icon("i/circleinfo", alt: get_string('info'), attributes: ['class' => 'mr-2'])) .
-            html_writer::tag('div', get_string('survey_execution_frozen_long', 'block_coursefeedback')),
-            attributes: ['class' => 'd-flex align-items-center']
-        ),
-        notification::NOTIFY_INFO,
-        closebutton: false,
-    );
-    echo $renderer->render($notification);
-}
-
 $show_event_table = count($model->events_by_id) > 0 || permission_manager::can_edit_course_surveysettings($course, $organization);
 $num_responses = survey_execution_user::count_records(['surveyexecutionid' => $model->survey_execution->get('id')]);
 
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
+    'info_message' => $is_frozen ? get_string('survey_execution_frozen_long', 'block_coursefeedback') : null,
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
     'show_event_table' => $show_event_table,

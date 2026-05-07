@@ -19,9 +19,11 @@ namespace block_coursefeedback\external;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
 use context_course;
+use core\di;
 use core\exception\moodle_exception;
 use core_date;
 use core_external\external_api;
@@ -146,7 +148,13 @@ class update_survey_execution extends external_api {
         self::validate_context($context);
         $course = get_course($courseid);
 
-        if (!permission_manager::can_edit_course_surveyperiod($course, $organization)) {
+        if (
+            !permission_manager::can_edit_course_survey_period(
+                $course,
+                $organization,
+                is_frozen: di::get(survey_freezer::class)->is_se_frozen($survey_execution)
+            )
+        ) {
             throw new coding_exception('You are not allowed to edit the survey period.');
         }
 

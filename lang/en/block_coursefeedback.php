@@ -183,7 +183,7 @@ You can do that by using the link/anchor button in the editor, freely choosing a
 ';
 $string['survey_execution_endtime'] = 'End time of survey in this course';
 $string['survey_execution_frozen_long'] = 'The survey in this course has already started or is about to start. ' .
-    'You can no longer add and remove events or slots, or change event types. You may still rename events and slots, though.';
+    'You can no longer add and remove events or slots, or change event types. You may still rename events and slots and evaluation coordinators may still change the survey period.';
 $string['survey_execution_frozen_short'] = 'The survey in this course has already started or is about to start. Structural changes can no longer be made.';
 $string['survey_execution_period'] = 'Survey Execution Period';
 $string['survey_execution_period_click_to_edit'] = 'Click to edit the survey execution period';
