@@ -580,39 +580,55 @@
 
 }}
 
-<div class="d-flex">
-    {{# add_element_menu }}
-        {{> core/action_menu }}
-    {{/ add_element_menu }}
-    {{# has_scales }}
-        <a href="{{{scale_url}}}" class="btn btn-secondary ml-2">{{# str }} view_scales, block_coursefeedback {{/str}}</a>
-    {{/ has_scales }}
-</div>
+{{#info_message}}
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+        {{#pix}} i/circleinfo {{/pix}}
+        <span class="ml-2">{{.}}</span>
+    </div>
+{{/info_message}}
 
-<div class="coursefeedback-dnd-list" style="min-height: 100px">
-    {{# surveyitems }}
-        <div class="d-flex border rounded p-3 mt-3 coursefeedback-dnd-item align-items-center"
-             data-itemid="{{ itemid }}">
-            <div class="p-2 coursefeedback-dnd-handle" style="cursor: move">
-                {{# pix }} t/move {{/ pix }}
-            </div>
-            <div class="flex-grow-1 coursefeedback-custom-content">
-                {{{ text }}}
-            </div>
-            <div class="text-muted mr-3">
-                {{ type }}
-            </div>
-            {{# actionmenu }}
-                {{> core/action_menu }}
-            {{/ actionmenu }}
-        </div>
-    {{/ surveyitems }}
-</div>
+<section>
+    <h3>{{#str}} surveyitems, block_coursefeedback {{/str}}</h3>
 
-<form class="mt-2" id="coursefeedback-save-ordering-form" method="post" action="{{{ action_url }}}">
-    <input type="hidden" name="id" value="{{id}}">
-    <input type="hidden" name="sesskey" value="{{sesskey}}">
-    <input type="hidden" name="action" value="reorder">
-    <input type="hidden" name="ordering">
-    <input type="submit" value="{{# str }} save {{/ str }}" class="btn btn-primary">
-</form>
+    <div class="d-flex">
+        {{# add_element_menu }}
+            {{> core/action_menu }}
+        {{/ add_element_menu }}
+        {{# has_scales }}
+            <a href="{{{scale_url}}}" class="btn btn-secondary ml-2">
+                {{# str }} view_scales, block_coursefeedback {{/str}}
+            </a>
+        {{/ has_scales }}
+    </div>
+
+    <div class="coursefeedback-dnd-list my-2">
+        {{# surveyitems }}
+            <div class="d-flex border rounded p-3 mb-2 coursefeedback-dnd-item align-items-center"
+                 data-itemid="{{ itemid }}">
+                <div class="p-2 coursefeedback-dnd-handle {{^show_handle}}hidden-preserving-height{{/show_handle}}"
+                     {{#show_handle}}style="cursor: move"{{/show_handle}}>
+                    {{# pix }} t/move {{/ pix }}
+                </div>
+                <div class="flex-grow-1 coursefeedback-custom-content">
+                    {{{ text }}}
+                </div>
+                <div class="text-muted mr-3">
+                    {{ type }}
+                </div>
+                {{# actionmenu }}
+                    {{> core/action_menu }}
+                {{/ actionmenu }}
+            </div>
+        {{/ surveyitems }}
+    </div>
+
+    {{#show_save_button}}
+    <form class="mt-2" id="coursefeedback-save-ordering-form" method="post" action="{{{ action_url }}}">
+        <input type="hidden" name="id" value="{{id}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <input type="hidden" name="action" value="reorder">
+        <input type="hidden" name="ordering">
+        <input type="submit" value="{{# str }} save {{/ str }}" class="btn btn-primary">
+    </form>
+    {{/show_save_button}}
+</section>

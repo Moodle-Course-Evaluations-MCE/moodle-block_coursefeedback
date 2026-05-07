@@ -33,6 +33,8 @@ global $CFG, $DB, $OUTPUT, $PAGE;
 
 require_login();
 
+// TODO: Prevent changes when frozen.
+
 $surveypartid = required_param('surveypartid', PARAM_INT);
 $surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 permission_manager::require_permission_for_editing_surveypart($surveypart);

@@ -198,6 +198,7 @@ $string['survey_no_languages'] = 'Please select at least one language.';
 $string['survey_responses_deleted'] = 'Survey responses deleted';
 $string['surveyitem'] = 'Questionnaire element';
 $string['surveyitems'] = 'Questionnaire elements';
+$string['surveypart_frozen'] = 'This questionnaire is used in ongoing and/or past surveys and cannot be modified.';
 $string['surveypart_preview'] = 'Preview';
 $string['surveypart_preview_error'] = 'The questionnaire could not be displayed due to the following error: {$a}';
 $string['task:start_surveys'] = 'Start surveys and apply defaults from organization';

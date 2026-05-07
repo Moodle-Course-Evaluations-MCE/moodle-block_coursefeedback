@@ -24,7 +24,10 @@
  */
 
 use block_coursefeedback\local\form\surveypart_edit_form;
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey_freezer;
+use core\di;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -41,7 +44,7 @@ if ($id) {
     $surveypart = surveypart::get_record(['id' => $id], MUST_EXIST);
 }
 
-\block_coursefeedback\local\manager\breadcrumbs_manager::setup_edit_survey($surveypart);
+breadcrumbs_manager::setup_edit_survey($surveypart);
 
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/surveypart_edit.php', $params));
 if ($id) {
@@ -56,7 +59,19 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveyparts.php');
 
-$mform = new surveypart_edit_form($PAGE->url);
+$freezer = di::get(survey_freezer::class);
+if ($surveypart) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $freezer->check_survey_part_action($surveypart, 'edit name and languages');
+        $is_frozen = false;
+    } else {
+        $is_frozen = $freezer->is_survey_part_frozen($surveypart);
+    }
+} else {
+    $is_frozen = false;
+}
+
+$mform = new surveypart_edit_form($PAGE->url, editable: !$is_frozen);
 if ($surveypart) {
     $mform->set_data($surveypart->to_form_data());
 }

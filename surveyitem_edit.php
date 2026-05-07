@@ -27,9 +27,11 @@ use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\local\surveyitem\surveyitem_form;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
+use core\di;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -41,6 +43,9 @@ $surveypartid = required_param('surveypartid', PARAM_INT);
 $surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 
 permission_manager::require_permission_for_editing_surveypart($surveypart);
+
+di::get(survey_freezer::class)
+    ->check_survey_part_action($surveypart, $id ? "edit survey item '$id'" : "add survey item");
 
 $type = required_param('type', PARAM_ALPHANUMEXT);
 $surveyitemtype = surveyitem_manager::get_surveyitemtype($type);

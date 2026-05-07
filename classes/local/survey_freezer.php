@@ -17,6 +17,8 @@
 namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\persistent\survey_part_execution;
+use block_coursefeedback\local\persistent\surveypart;
 use core\exception\moodle_exception;
 
 /**
@@ -40,7 +42,7 @@ class survey_freezer {
     }
 
     /**
-     * Throws if the survey execution contained in the record is frozen.
+     * Throws if the survey execution is frozen.
      *
      * @param survey_execution $se
      * @param string $action_debug_info To include in the debuginfo of the {@see moodle_exception}.
@@ -52,6 +54,55 @@ class survey_freezer {
                 'survey_execution_frozen_short',
                 'block_coursefeedback',
                 debuginfo: "cannot $action_debug_info due to survey execution '{$se->get('id')}' in status '{$se->get('status')}'"
+            );
+        }
+    }
+
+    /**
+     * Gets the started (and finished) survey executions using the given surveypart.
+     *
+     * @param surveypart $surveypart
+     * @return survey_execution[]
+     */
+    private function get_started_ses_using_sp(surveypart $surveypart): array {
+        global $DB;
+        $se_fields = survey_execution::get_sql_fields('se', 'se_');
+        $records = $DB->get_records_sql("
+            SELECT DISTINCT $se_fields
+            FROM {" . survey_execution::TABLE . "} se
+            JOIN {" . survey_part_execution::TABLE . "} spe ON se.id = spe.surveyexecutionid
+            WHERE spe.surveypartid = :surveypartid AND se.status = :status
+        ", ['surveypartid' => $surveypart->get('id'), 'status' => survey_execution::STATUS_STARTED]);
+
+        return array_filter(array_map(fn($record) => survey_execution::extract($record, 'se_'), $records));
+    }
+
+    /**
+     * Returns true if the survey part is frozen, i.e., can't be modified.
+     *
+     * @param surveypart $surveypart
+     * @return bool
+     */
+    public function is_survey_part_frozen(surveypart $surveypart): bool {
+        return count($this->get_started_ses_using_sp($surveypart)) > 0;
+    }
+
+    /**
+     * Throws if the given survey part contained is frozen due to an ongoing or past survey execution.
+     *
+     * @param surveypart $surveypart
+     * @param string $action_debug_info To include in the debuginfo of the {@see moodle_exception}.
+     * @return void
+     */
+    public function check_survey_part_action(surveypart $surveypart, string $action_debug_info): void {
+        $started_ses = $this->get_started_ses_using_sp($surveypart);
+        if ($started_ses) {
+            $se_ids = implode(', ', array_map(fn($se) => "'{$se->get('id')}'", $started_ses));
+            throw new moodle_exception(
+                'surveypart_frozen',
+                'block_coursefeedback',
+                debuginfo: "cannot $action_debug_info in survey part '{$surveypart->get('id')}' due to started survey executions: "
+                . $se_ids
             );
         }
     }
