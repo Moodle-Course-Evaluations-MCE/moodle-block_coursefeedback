@@ -91,7 +91,9 @@
     padding-right: var(--bs-alert-padding-x, 1rem) !important;
 }
 
-#page-blocks-coursefeedback-course {
+.block_coursefeedback-course-event-slot-table {
+    min-width: var(--bs-breakpoint-lg, 992px);
+
     .btn-link {
         padding: .1em;
         border-width: 0;
@@ -100,10 +102,6 @@
     .icon {
         margin: 0;
     }
-}
-
-.block_coursefeedback-course-event-slot-table {
-    min-width: var(--bs-breakpoint-lg, 992px);
 
     td {
         vertical-align: middle;

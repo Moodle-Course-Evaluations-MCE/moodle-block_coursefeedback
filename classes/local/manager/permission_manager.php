@@ -28,6 +28,7 @@ use block_coursefeedback\local\course_organization_mapping\course_organization_m
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\surveypart;
 use core\exception\coding_exception;
+use stdClass;
 
 /**
  * Permission manager.
@@ -97,12 +98,12 @@ class permission_manager {
     /**
      * Checks whether the user can do something, a teacher in the given course can
      * do depending on the $organization->$organization_property.
-     * @param \stdClass $course
+     * @param stdClass $course
      * @param int|organization|null $organization_or_id
      * @param string $organization_property
      */
     private static function check_teacher_organization_capability(
-        \stdClass $course,
+        stdClass $course,
         int|organization|null $organization_or_id,
         string $organization_property
     ): bool {
@@ -128,21 +129,21 @@ class permission_manager {
 
     /**
      * Whether the user can edit course survey settings.
-     * @param \stdClass $course
+     * @param stdClass $course
      * @param int|organization|null $organization_or_id
      * @return bool
      */
-    public static function can_edit_course_surveysettings(\stdClass $course, int|organization|null $organization_or_id): bool {
+    public static function can_edit_course_surveysettings(stdClass $course, int|organization|null $organization_or_id): bool {
         return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_ssettings');
     }
 
     /**
      * Requires that the user can edit the courses surveysettings.
-     * @param \stdClass $course
+     * @param stdClass $course
      * @param int|organization|null $organization_or_id
      * @return bool
      */
-    public static function require_edit_course_surveysettings(\stdClass $course, int|organization|null $organization_or_id) {
+    public static function require_edit_course_surveysettings(stdClass $course, int|organization|null $organization_or_id) {
         if (!self::can_edit_course_surveysettings($course, $organization_or_id)) {
             throw new coding_exception("You cannot edit survey settings for course " . htmlentities($course->shortname));
         }
@@ -150,11 +151,22 @@ class permission_manager {
 
     /**
      * Whether the user can edit the course survey period.
-     * @param \stdClass $course
+     *
+     * @param stdClass $course
      * @param int|organization|null $organization_or_id
+     * @param bool $is_frozen
      * @return bool
      */
-    public static function can_edit_course_surveyperiod(\stdClass $course, int|organization|null $organization_or_id): bool {
-        return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_speriod');
+    public static function can_edit_course_survey_period(
+        stdClass $course,
+        int|organization|null $organization_or_id,
+        bool $is_frozen
+    ): bool {
+        if ($is_frozen) {
+            // Only evaluation coordinators can edit the period of frozen SEs.
+            return self::can_manage_organization($organization_or_id);
+        } else {
+            return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_speriod');
+        }
     }
 }
