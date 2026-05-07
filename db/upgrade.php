@@ -1153,6 +1153,39 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026050401, 'coursefeedback');
     }
 
+    if ($oldversion < 2026050600) {
+        // Define table block_coursefeedback_organization_texts to be created.
+        $table = new xmldb_table('block_coursefeedback_organization_texts');
+
+        // Adding fields to table block_coursefeedback_organization_texts.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveycreatedmessagesubject', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('surveycreatedmessagebody', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_coursefeedback_organization_texts.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key(
+            'fu_organizationid',
+            XMLDB_KEY_FOREIGN_UNIQUE,
+            ['organizationid'],
+            'block_coursefeedback_organization',
+            ['id']
+        );
+
+        // Conditionally launch create table for block_coursefeedback_organization_texts.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026050600, 'coursefeedback');
+    }
+
     return true;
 }
 

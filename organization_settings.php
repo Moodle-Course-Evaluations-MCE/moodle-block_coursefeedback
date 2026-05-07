@@ -27,6 +27,7 @@ use block_coursefeedback\local\form\organization_settings_form;
 use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\organization_texts;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -35,6 +36,12 @@ require_login();
 $context = context_system::instance();
 $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
+$organization_texts = organization_texts::get_record(['organizationid' => $organization->get('id')]);
+if (!$organization_texts) {
+    $organization_texts = new organization_texts(record: (object)[
+        'organizationid' => $organization->get('id'),
+    ]);
+}
 
 permission_manager::require_manage_organization($organization);
 
@@ -52,13 +59,18 @@ $returnurl = new moodle_url('/blocks/coursefeedback/organization.php', ['id' => 
 
 $mform = new organization_settings_form($PAGE->url);
 
-$mform->set_data($organization->to_record());
+$mform->set_data(
+    (object) array_merge((array) $organization->to_record(), (array) $organization_texts->to_record())
+);
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $mform->get_data()) {
     $organization->set_many(organization::properties_filter($data));
     $organization->update();
+    $organization_texts->set_many(organization_texts::properties_filter($data));
+    $organization_texts->save();
+
     redirect($returnurl);
 }
 

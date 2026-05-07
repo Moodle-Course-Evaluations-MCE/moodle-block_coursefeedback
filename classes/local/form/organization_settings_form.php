@@ -51,7 +51,49 @@ class organization_settings_form extends \moodleform {
         );
         $mform->setType('can_teacher_edit_ssettings', PARAM_BOOL);
 
+        $mform->addElement(
+            'header',
+            'surveycreatedmessageheader',
+            get_string('message_for_teachers_when_survey_created', 'block_coursefeedback')
+        );
+
+        $mform->addElement(
+            'static',
+            'surveycreatemessagehelp',
+            '',
+            get_string('surveycreatemessagehelp', 'block_coursefeedback')
+        );
+
+        $mform->addElement(
+            'text',
+            'surveycreatedmessagesubject',
+            get_string('message_subject', 'block_coursefeedback'),
+            ['size' => 100]
+        );
+        $mform->setType('surveycreatedmessagesubject', PARAM_TEXT);
+
+        $mform->addElement(
+            'editor',
+            'surveycreatedmessagebody',
+            get_string('message_content', 'block_coursefeedback'),
+            '',
+            ['changeformat' => 0],
+        );
+        $mform->setType('surveycreatedmessagebody', PARAM_RAW);
+
         $this->add_action_buttons();
+    }
+
+    #[\Override]
+    public function set_data($default_values) {
+        $default_values = (array) $default_values;
+        if ($default_values && ($default_values['surveycreatedmessagebody'] ?? null)) {
+            $default_values['surveycreatedmessagebody'] = [
+                'text' => $default_values['surveycreatedmessagebody'],
+                'format' => FORMAT_HTML,
+            ];
+        }
+        parent::set_data($default_values);
     }
 
     #[\Override]
@@ -60,6 +102,7 @@ class organization_settings_form extends \moodleform {
         if ($data) {
             $data->can_teacher_edit_speriod ??= false;
             $data->can_teacher_edit_ssettings ??= false;
+            $data->surveycreatedmessagebody = $data->surveycreatedmessagebody['text'];
         }
         return $data;
     }

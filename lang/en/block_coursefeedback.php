@@ -120,6 +120,10 @@ $string['last_slot_deletion_disabled'] = 'An event must have at least one slot, 
 $string['list_of_courses_without_evaluation'] = 'List of courses without evaluation';
 $string['list_of_evaluations'] = 'List of evaluations';
 $string['max_option_text'] = 'Text for max. pole';
+$string['message_content'] = 'Content';
+$string['message_for_teachers_when_survey_created'] = 'Message for teachers when surveys are created';
+$string['message_subject'] = 'Subject';
+$string['messageprovider:teacher_survey_created'] = 'Teacher notifications when surveys are created';
 $string['min_option_text'] = 'Text for min. pole';
 $string['multiplechoice'] = 'Multiple choice';
 $string['name'] = 'Name';
@@ -177,6 +181,18 @@ $string['survey_languages'] = 'Languages';
 $string['survey_languages_help'] = 'Select the languages in which the questionnaire should be available. When adding and editing questions, there will be inputs for these languages, and it will be checked if all questions have translations into all of these languages. Only languages installed in {$a->sitename} will be available here.';
 $string['survey_no_languages'] = 'Please select at least one language.';
 $string['survey_responses_deleted'] = 'Survey responses deleted';
+$string['surveycreatemessagehelp'] = '<p>In the following texts, these <i>placeholders</i> can be used:</p>
+<p>
+    ##NAME## for the full name of the teacher<br>
+    ##COURSENAME## for the course name<br>
+    ##PERIOD## for the evaluation period<br>
+    ##SETTINGS_URL## for the url where the teacher can edit the survey period and settings
+</p>
+<p>
+If teachers are allowed to edit the survey period or settings, please include the link for them to do so.<br>
+You can do that by using the link/anchor button in the editor, freely choosing a "Text to display" and entering ##SETTINGS_URL## in the "Enter a URL" field.
+</p>
+';
 $string['surveyitem'] = 'Questionnaire element';
 $string['surveyitems'] = 'Questionnaire elements';
 $string['surveypart_preview'] = 'Preview';

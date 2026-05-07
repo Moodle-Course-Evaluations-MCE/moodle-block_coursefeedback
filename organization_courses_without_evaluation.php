@@ -28,7 +28,9 @@ use block_coursefeedback\local\default_survey_creation_method\default_survey_cre
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\organization_category;
+use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\table\courses_without_evaluation_table;
+use block_coursefeedback\task\send_survey_created_message_task;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $OUTPUT, $PAGE;
@@ -60,10 +62,14 @@ if ($action) {
                     throw new \core\exception\coding_exception('Try to create survey for course not in category');
                 }
             }
-            default_survey_creation_method::get_instance()::create_survey_execution(
+            $surveyexecutions = default_survey_creation_method::get_instance()::create_survey_execution(
                 $courseids,
                 $organization,
                 course_semester_mapping::SELECTED_SEMESTER,
+            );
+            $surveyexecutionids = array_map(fn (survey_execution $se) => $se->get('id'), $surveyexecutions);
+            \core\task\manager::queue_adhoc_task(
+                send_survey_created_message_task::create_instance($surveyexecutionids)
             );
             redirect($PAGE->url);
     }
