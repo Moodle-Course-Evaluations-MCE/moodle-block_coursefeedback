@@ -149,6 +149,43 @@ class survey_execution_manager {
     }
 
     /**
+     * Deletes all responses for the given $responseslotids.
+     * @param int[] $responseslotids
+     * @return void
+     */
+    public function delete_survey_execution_answers(array $responseslotids): void {
+        global $DB;
+        if (!$responseslotids) {
+            return;
+        }
+        $transaction = $DB->start_delegated_transaction();
+        [$insql, $inparams] = $DB->get_in_or_equal($responseslotids, SQL_PARAMS_NAMED);
+        // TODO Refactor out to surveyitems?.
+        $DB->delete_records_subquery(
+            'block_coursefeedback_surveyitemintresponse',
+            'surveypartexecutionoptionresponseid',
+            'slotid',
+            "SELECT speor.id as slotid FROM {block_coursefeedback_surveypartexecutionoptionresp} speor
+                          WHERE speor.surveypartexecutionoptionid $insql",
+            $inparams
+        );
+        $DB->delete_records_subquery(
+            'block_coursefeedback_surveyitemtextresponse',
+            'surveypartexecutionoptionresponseid',
+            'slotid',
+            "SELECT speor.id as slotid FROM {block_coursefeedback_surveypartexecutionoptionresp} speor
+                          WHERE speor.surveypartexecutionoptionid $insql",
+            $inparams
+        );
+        $DB->delete_records_list(
+            'block_coursefeedback_surveypartexecutionoptionresp',
+            'surveypartexecutionoptionid',
+            $responseslotids
+        );
+        $transaction->allow_commit();
+    }
+
+    /**
      * Deletes a survey execution and all sub-resources.
      *
      * @param int $surveyexecutionid
@@ -173,6 +210,8 @@ class survey_execution_manager {
         }
 
         $records = iterator_to_array($recordset, preserve_keys: false);
+
+        $this->delete_survey_execution_answers(array_column($records, 'slot_id'));
 
         $DB->delete_records_list(response_slot_user::TABLE, 'surveypartexecutionoptionid', array_column($records, 'slot_id'));
         $DB->delete_records_list(response_slot::TABLE, 'id', array_column($records, 'slot_id'));

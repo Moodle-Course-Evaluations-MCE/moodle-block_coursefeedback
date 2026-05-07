@@ -25,10 +25,14 @@
 
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\manager\permission_manager;
+use block_coursefeedback\local\manager\survey_execution_manager;
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\organization_category;
+use block_coursefeedback\local\persistent\survey_execution;
+use core\di;
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $OUTPUT, $PAGE;
+global $DB, $CFG, $OUTPUT, $PAGE;
 
 require_login();
 $context = context_system::instance();
@@ -40,6 +44,33 @@ permission_manager::require_manage_organization($organization);
 
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_evaluations.php', ['id' => $id]));
 $PAGE->set_context($context);
+
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
+if ($action) {
+    require_sesskey();
+    switch ($action) {
+        case 'delete':
+            require_admin();
+            $courseids = required_param_array('selected', PARAM_INT);
+
+            $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
+            foreach ($courseids as $courseid) {
+                $course = get_course($courseid);
+                if (!in_array($course->category, $coursecatids)) {
+                    throw new \core\exception\coding_exception('Try to create survey for course not in category');
+                }
+            }
+
+            $se_manager = di::get(survey_execution_manager::class);
+
+            [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+            $surveyexecutions = survey_execution::get_records_select("courseid $insql", $inparams);
+            foreach ($surveyexecutions as $surveyexecution) {
+                $se_manager->delete_survey_execution($surveyexecution->get('id'));
+            }
+            redirect($PAGE->url);
+    }
+}
 
 $title = get_string('list_of_evaluations', 'block_coursefeedback') . ': ' . $organization->get('name');
 $PAGE->set_heading($title);

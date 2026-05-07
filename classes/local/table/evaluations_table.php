@@ -28,7 +28,9 @@ use block_coursefeedback\local\course_organization_mapping\course_organization_m
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
+use context_system;
 use core\output\html_writer;
+use core\output\pix_icon;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -48,6 +50,9 @@ class evaluations_table extends no_pagination_table {
 
     /** @var object Some pre-fetched strings. */
     private object $strings;
+
+    /** @var bool Whether the user can delete surveys. */
+    private bool $candelete;
 
     /**
      * Constructs the table of evaluations.
@@ -98,7 +103,12 @@ class evaluations_table extends no_pagination_table {
             (array) get_strings([
                 'strftimedatetimeshort',
             ], 'core_langconfig'),
+            (array) get_strings([
+                'delete',
+            ])
         );
+
+        $this->candelete = has_capability('moodle/site:config', context_system::instance());
 
         $PAGE->requires->js_call_amd('block_coursefeedback/bulkactions_post', 'init');
     }
@@ -172,7 +182,7 @@ class evaluations_table extends no_pagination_table {
      * @return string action buttons for workflows
      */
     public function col_tools($row) {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
         $output = '';
 
         $alt = get_string('edit');
@@ -184,6 +194,29 @@ class evaluations_table extends no_pagination_table {
             null,
             ['title' => $alt]
         );
+
+        if ($this->candelete) {
+            $alt = get_string('delete');
+            $icon = 't/delete';
+            $url = new \moodle_url($PAGE->url, [
+                'action' => 'delete',
+                'sesskey' => sesskey(),
+                'selected[]' => $row->courseid,
+            ]);
+            $output .= $OUTPUT->action_icon(
+                $url,
+                new \pix_icon($icon, $alt, 'moodle', ['title' => $alt]),
+                null,
+                [
+                    'title' => $alt,
+                    'class' => 'text-danger',
+                    'data-confirmation' => 'modal',
+                    'data-confirmation-title-str' => json_encode(['delete', 'core']),
+                    'data-confirmation-content-str' => json_encode(['areyousure']),
+                    'data-confirmation-yes-button-str' => json_encode(['delete', 'core']),
+                ],
+            );
+        }
 
         return $output;
     }
