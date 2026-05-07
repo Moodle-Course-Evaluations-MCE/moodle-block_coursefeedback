@@ -33,6 +33,7 @@ use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
 use core\di;
 use core\exception\coding_exception;
+use core\output\notification;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $PAGE;
@@ -95,9 +96,9 @@ if ($action === 'delete_responses') {
     redirect($PAGE->url);
 }
 
-$freezer = di::get(survey_freezer::class);
+$is_frozen = di::get(survey_freezer::class)->is_se_frozen($model->survey_execution);
 
-$table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
+$table = new course_event_slot_table($model, $course, is_frozen: $is_frozen);
 
 $survey_execution_period = new survey_execution_period(
     $model->survey_execution,
@@ -117,8 +118,21 @@ $PAGE->add_body_class('container');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
-$show_event_table = count($model->events_by_id) > 0 || permission_manager::can_edit_course_surveysettings($course, $organization);
+if ($is_frozen) {
+    $notification = new notification(
+        html_writer::tag(
+            'div',
+            $renderer->render(new \core\output\pix_icon("i/circleinfo", alt: get_string('info'), attributes: ['class' => 'mr-2'])) .
+            html_writer::tag('div', get_string('survey_execution_frozen_long', 'block_coursefeedback')),
+            attributes: ['class' => 'd-flex align-items-center']
+        ),
+        notification::NOTIFY_INFO,
+        closebutton: false,
+    );
+    echo $renderer->render($notification);
+}
 
+$show_event_table = count($model->events_by_id) > 0 || permission_manager::can_edit_course_surveysettings($course, $organization);
 $num_responses = survey_execution_user::count_records(['surveyexecutionid' => $model->survey_execution->get('id')]);
 
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
@@ -128,7 +142,7 @@ echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'course_fullname' => $course->fullname,
     'localized_status' => $model->survey_execution->get_localized_status(),
     'num_responses' => $num_responses,
-    'show_delete_responses' => $num_responses > 0 && permission_manager::can_delete_responses($organization),
+    'show_delete_responses' => $num_responses > 0 && permission_manager::can_delete_responses(),
     'delete_responses_url' => $PAGE->url->out(false, ['action' => 'delete_responses', 'sesskey' => sesskey()]),
 ]);
 

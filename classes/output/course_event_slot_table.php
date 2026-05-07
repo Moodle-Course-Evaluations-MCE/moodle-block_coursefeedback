@@ -93,7 +93,7 @@ class course_event_slot_table implements named_templatable, renderable {
             'name' => $slot->get('name'),
             'allow_deletion' => !($this->is_frozen || $is_only_slot),
             'deletion_tooltip' => match (true) {
-                $this->is_frozen => get_string('survey_execution_frozen', 'block_coursefeedback'),
+                $this->is_frozen => get_string('survey_execution_frozen_short', 'block_coursefeedback'),
                 $is_only_slot => get_string('last_slot_deletion_disabled', 'block_coursefeedback'),
                 default => get_string('delete_slot', 'block_coursefeedback'),
             },
@@ -186,7 +186,7 @@ class course_event_slot_table implements named_templatable, renderable {
             ],
             'allow_deletion' => !$this->is_frozen,
             'deletion_tooltip' => $this->is_frozen
-                ? get_string('survey_execution_frozen', 'block_coursefeedback')
+                ? get_string('survey_execution_frozen_short', 'block_coursefeedback')
                 : get_string('delete_event', 'block_coursefeedback'),
             'allow_changing_type' => !$this->is_frozen,
             'available_event_types' => $this->export_available_event_types(selectedid: $event->get('eventtypeid')),

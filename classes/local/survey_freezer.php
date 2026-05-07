@@ -49,7 +49,7 @@ class survey_freezer {
     public function check_se_action(survey_execution $se, string $action_debug_info): void {
         if ($this->is_se_frozen($se)) {
             throw new moodle_exception(
-                'survey_execution_frozen',
+                'survey_execution_frozen_short',
                 'block_coursefeedback',
                 debuginfo: "cannot $action_debug_info due to survey execution '{$se->get('id')}' in status '{$se->get('status')}'"
             );
