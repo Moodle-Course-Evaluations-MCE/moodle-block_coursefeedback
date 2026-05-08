@@ -55,7 +55,7 @@ class organizations_table extends \table_sql {
         $this->define_columns(['name', 'categories', 'users', 'tools']);
         $this->define_headers([
             get_string('name', 'block_coursefeedback'),
-            'Categories',
+            get_string('coursecategories', 'block_coursefeedback'),
             get_string('users'),
             get_string('tools', 'block_coursefeedback'),
         ]);
