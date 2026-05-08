@@ -53,33 +53,33 @@ class organization_settings_form extends \moodleform {
 
         $mform->addElement(
             'header',
-            'surveycreatedmessageheader',
+            'survey_created_message_header',
             get_string('message_for_teachers_when_survey_created', 'block_coursefeedback')
         );
 
         $mform->addElement(
             'static',
-            'surveycreatemessagehelp',
+            'survey_created_message_help',
             '',
-            get_string('surveycreatemessagehelp', 'block_coursefeedback')
+            get_string('survey_created_message_help', 'block_coursefeedback')
         );
 
         $mform->addElement(
             'text',
-            'surveycreatedmessagesubject',
+            'survey_created_message_subject',
             get_string('message_subject', 'block_coursefeedback'),
             ['size' => 100]
         );
-        $mform->setType('surveycreatedmessagesubject', PARAM_TEXT);
+        $mform->setType('survey_created_message_subject', PARAM_TEXT);
 
         $mform->addElement(
             'editor',
-            'surveycreatedmessagebody',
+            'survey_created_message_body',
             get_string('message_content', 'block_coursefeedback'),
             '',
             ['changeformat' => 0],
         );
-        $mform->setType('surveycreatedmessagebody', PARAM_RAW);
+        $mform->setType('survey_created_message_body', PARAM_RAW);
 
         $this->add_action_buttons();
     }
@@ -87,9 +87,9 @@ class organization_settings_form extends \moodleform {
     #[\Override]
     public function set_data($default_values) {
         $default_values = (array) $default_values;
-        if ($default_values && ($default_values['surveycreatedmessagebody'] ?? null)) {
-            $default_values['surveycreatedmessagebody'] = [
-                'text' => $default_values['surveycreatedmessagebody'],
+        if ($default_values && ($default_values['survey_created_message_body'] ?? null)) {
+            $default_values['survey_created_message_body'] = [
+                'text' => $default_values['survey_created_message_body'],
                 'format' => FORMAT_HTML,
             ];
         }
@@ -102,7 +102,7 @@ class organization_settings_form extends \moodleform {
         if ($data) {
             $data->can_teacher_edit_speriod ??= false;
             $data->can_teacher_edit_ssettings ??= false;
-            $data->surveycreatedmessagebody = $data->surveycreatedmessagebody['text'];
+            $data->survey_created_message_body = $data->survey_created_message_body['text'];
         }
         return $data;
     }

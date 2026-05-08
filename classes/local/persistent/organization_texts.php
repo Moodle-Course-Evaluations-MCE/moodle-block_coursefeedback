@@ -40,10 +40,10 @@ class organization_texts extends persistent {
             'organizationid' => [
                 'type' => PARAM_INT,
             ],
-            'surveycreatedmessagebody' => [
+            'survey_created_message_body' => [
                 'type' => PARAM_RAW,
             ],
-            'surveycreatedmessagesubject' => [
+            'survey_created_message_subject' => [
                 'type' => PARAM_RAW,
             ],
         ];

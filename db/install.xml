@@ -97,8 +97,8 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="organizationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="surveycreatedmessagesubject" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="surveycreatedmessagebody" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="survey_created_message_subject" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="survey_created_message_body" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

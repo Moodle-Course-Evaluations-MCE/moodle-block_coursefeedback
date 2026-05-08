@@ -85,7 +85,10 @@ class send_survey_created_message_task extends \core\task\adhoc_task {
                 continue;
             }
 
-            if (!$organization_texts->get('surveycreatedmessagesubject') || !$organization_texts->get('surveycreatedmessagebody')) {
+            if (
+                !$organization_texts->get('survey_created_message_subject')
+                || !$organization_texts->get('survey_created_message_body')
+            ) {
                 mtrace('Skipping mail sending for survey execution ' . $surveyexecution->get('id') .
                     ' because texts for organization ' . $organization->get('id') . ' are empty.');
             }
@@ -97,7 +100,7 @@ class send_survey_created_message_task extends \core\task\adhoc_task {
 
             foreach ($users as $user) {
                 $subject = self::replace_placeholders(
-                    $organization_texts->get('surveycreatedmessagesubject'),
+                    $organization_texts->get('survey_created_message_subject'),
                     $user,
                     $surveyexecution,
                     $organization,
@@ -105,7 +108,7 @@ class send_survey_created_message_task extends \core\task\adhoc_task {
                 );
 
                 $body = self::replace_placeholders(
-                    $organization_texts->get('surveycreatedmessagebody'),
+                    $organization_texts->get('survey_created_message_body'),
                     $user,
                     $surveyexecution,
                     $organization,
@@ -151,7 +154,7 @@ class send_survey_created_message_task extends \core\task\adhoc_task {
         $endtime = $survey_execution->get('endtime') ?? $organization->get('default_evaluation_endtime');
         $placeholders = [
             '##NAME##' => fullname($user),
-            '##COURSENAME##' => $course->fullname,
+            '##COURSE_NAME##' => $course->fullname,
             '##PERIOD##' => userdate($starttime, $dateformatstr) . ' - ' . userdate($endtime, $dateformatstr),
             '##SETTINGS_URL##' => (new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]))->out(false),
         ];
