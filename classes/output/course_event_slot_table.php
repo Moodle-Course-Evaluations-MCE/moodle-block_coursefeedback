@@ -23,6 +23,8 @@ use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
 use core\exception\coding_exception;
+use core\output\core_renderer;
+use core\output\help_icon;
 use core\output\named_templatable;
 use core\output\renderable;
 use core\output\renderer_base;
@@ -205,6 +207,8 @@ class course_event_slot_table implements named_templatable, renderable {
             'survey_execution' => [
                 'id' => $this->survey_data->survey_execution->get('id'),
             ],
+            'slot_name_help_icon_context' => (new help_icon('slots', 'block_coursefeedback'))->export_for_template($output),
+            'slot_users_help_icon_context' => (new help_icon('slot_users', 'block_coursefeedback'))->export_for_template($output),
             'show_add_event' => !$this->is_frozen,
             'events' => array_map(
                 fn($event) => self::export_event($output, $event),

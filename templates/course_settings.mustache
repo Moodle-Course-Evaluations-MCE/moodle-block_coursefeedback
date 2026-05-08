@@ -48,6 +48,59 @@
           "id": 1,
           "shortname": "ABCEFG"
         },
+        "slot_name_help_icon_context": {
+          "heading": "Untergruppen",
+          "text": "<div class=\"no-overflow\"><p>Untergruppen k\u00f6nnen verwendet werden, um beispielsweise das besuchte Tutorium abzufragen. Wenn es mehrere gibt, muss eine ausgew\u00e4hlt werden, bevor der Fragebogen beantwortet werden kann.<\/p>\n<\/div>",
+          "alt": "Hilfe f\u00fcr Untergruppen",
+          "icon": {
+            "attributes": [
+              {
+                "name": "alt",
+                "value": "Hilfe f\u00fcr Untergruppen"
+              },
+              {
+                "name": "title",
+                "value": "Hilfe f\u00fcr Untergruppen"
+              },
+              {
+                "name": "src",
+                "value": "http:\/\/localhost:8000\/theme\/image.php\/boost\/core\/1778160883\/help"
+              }
+            ],
+            "extraclasses": ""
+          },
+          "linktext": null,
+          "title": "Hilfe f\u00fcr Untergruppen",
+          "url": "http:\/\/localhost:8000\/help.php?component=block_coursefeedback&identifier=slots&lang=de",
+          "ltr": true
+        },
+        "slot_users_help_icon_context": {
+          "heading": "Untergruppen-Lehrende",
+          "text": "<div class=\"no-overflow\"><p>Hier k\u00f6nnen Nutzer\/innen (z.B. Tutor\/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, k\u00f6nnen alle Trainer\/innen die Ergebnisse sehen. Teilnehmer\/innen sehen nur den Namen der Untergruppe.<\/p>\n<\/div>",
+          "alt": "Hilfe f\u00fcr Untergruppen-Lehrende",
+          "icon": {
+            "attributes": [
+              {
+                "name": "alt",
+                "value": "Hilfe f\u00fcr Untergruppen-Lehrende"
+              },
+              {
+                "name": "title",
+                "value": "Hilfe f\u00fcr Untergruppen-Lehrende"
+              },
+              {
+                "name": "src",
+                "value": "http:\/\/localhost:8000\/theme\/image.php\/boost\/core\/1778160883\/help"
+              }
+            ],
+            "extraclasses": ""
+          },
+          "linktext": null,
+          "title": "Hilfe f\u00fcr Untergruppen-Lehrende",
+          "url": "http:\/\/localhost:8000\/help.php?component=block_coursefeedback&identifier=slot_users&lang=de",
+          "ltr": true
+        },
+        "show_add_event": true,
         "events": [
           {
             "id": 1,
@@ -55,6 +108,9 @@
             "type": {
               "name": "Vorlesung"
             },
+            "allow_deletion": true,
+            "deletion_tooltip": "Delete event",
+            "allow_changing_type": true,
             "available_event_types": [
               {
                 "id": 1,
@@ -70,10 +126,12 @@
             "survey_part_execution": {
               "id": 11,
               "rowspan": 2,
+              "show_add_slot": true,
               "first_slot": {
                 "id": 111,
                 "name": "-",
                 "allow_deletion": false,
+                "deletion_tooltip": "An event must have at least one slot, so the last one can't be deleted.",
                 "users_editable_context": {}
               },
               "more_slots": []
@@ -85,6 +143,9 @@
             "type": {
               "name": "Übung"
             },
+            "allow_deletion": false,
+            "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
+            "allow_changing_type": false,
             "available_event_types": [
               {
                 "id": 1,
@@ -100,23 +161,27 @@
             "survey_part_execution": {
               "id": 21,
               "rowspan": 4,
+              "show_add_slot": false,
               "first_slot": {
                 "id": 211,
                 "name": "Mo 12-14 Uhr",
-                "allow_deletion": true,
+                "allow_deletion": false,
+                "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
                 "users_editable_context": {}
               },
               "more_slots": [
                 {
                   "id": 212,
                   "name": "Do 14-16 Uhr",
-                  "allow_deletion": true,
+                  "allow_deletion": false,
+                  "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
                   "users_editable_context": {}
                 },
                 {
                   "id": 213,
                   "name": "Fr 10-12 Uhr",
-                  "allow_deletion": true,
+                  "allow_deletion": false,
+                  "deletion_tooltip": "The survey in this course has already started or is about to start. Structural changes can no longer be made.",
                   "users_editable_context": {}
                 }
               ]
@@ -137,7 +202,8 @@
       "course_fullname": "Total toller Testkurs",
       "num_responses": 7,
       "show_delete_responses": false,
-      "delete_responses_url": "http://localhost:8000/blocks/coursefeedback/course.php?id=2&action=delete_responses&sesskey=mNGPX1Ak0P"
+      "delete_responses_url": "http://localhost:8000/blocks/coursefeedback/course.php?id=2&action=delete_responses&sesskey=mNGPX1Ak0P",
+      "info_message": "Things are locked."
     }
 }}
 
@@ -200,6 +266,24 @@
 {{#show_event_table}}
     <section class="mt-4">
         <h4 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h4>
+        <p>{{#str}} course_settings_explanation_general, block_coursefeedback {{/str}}</p>
+
+        <div class="card mb-3">
+            <section class="card-body">
+                <h5 class="card-title">{{#str}} course_settings_explanation_title, block_coursefeedback {{/str}}</h5>
+
+                <dl class="mb-0">
+                    <dt>{{#str}} teaching_events, block_coursefeedback {{/str}}</dt>
+                    <dd>{{#str}} course_settings_explanation_events, block_coursefeedback {{/str}}</dd>
+
+                    <dt>{{#str}} slots, block_coursefeedback {{/str}}</dt>
+                    <dd>{{#str}} course_settings_explanation_slots, block_coursefeedback {{/str}}</dd>
+
+                    <dt>{{#str}} slot_users, block_coursefeedback {{/str}}</dt>
+                    <dd>{{#str}} course_settings_explanation_slot_users, block_coursefeedback {{/str}}</dd>
+                </dl>
+            </section>
+        </div>
 
         {{#table_context}}
             {{> block_coursefeedback/course_event_slot_table }}
