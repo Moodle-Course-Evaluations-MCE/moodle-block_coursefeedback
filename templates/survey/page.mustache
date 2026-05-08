@@ -53,7 +53,9 @@
 {{# items }}
     <div class="mb-5" data-surveyitemid="{{surveyitemid}}">
         {{# type_info }}
-            {{{ questiontext }}}
+            <div class="coursefeedback-questiontext">
+                {{{ questiontext }}}
+            </div>
         {{/type_info}}
         {{# type_text }}
             {{> block_coursefeedback/surveyitems/text }}

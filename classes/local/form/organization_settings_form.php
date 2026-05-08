@@ -51,7 +51,49 @@ class organization_settings_form extends \moodleform {
         );
         $mform->setType('can_teacher_edit_ssettings', PARAM_BOOL);
 
+        $mform->addElement(
+            'header',
+            'survey_created_message_header',
+            get_string('message_for_teachers_when_survey_created', 'block_coursefeedback')
+        );
+
+        $mform->addElement(
+            'static',
+            'survey_created_message_help',
+            '',
+            get_string('survey_created_message_help', 'block_coursefeedback')
+        );
+
+        $mform->addElement(
+            'text',
+            'survey_created_message_subject',
+            get_string('message_subject', 'block_coursefeedback'),
+            ['size' => 100]
+        );
+        $mform->setType('survey_created_message_subject', PARAM_TEXT);
+
+        $mform->addElement(
+            'editor',
+            'survey_created_message_body',
+            get_string('message_content', 'block_coursefeedback'),
+            '',
+            ['changeformat' => 0],
+        );
+        $mform->setType('survey_created_message_body', PARAM_RAW);
+
         $this->add_action_buttons();
+    }
+
+    #[\Override]
+    public function set_data($default_values) {
+        $default_values = (array) $default_values;
+        if ($default_values && ($default_values['survey_created_message_body'] ?? null)) {
+            $default_values['survey_created_message_body'] = [
+                'text' => $default_values['survey_created_message_body'],
+                'format' => FORMAT_HTML,
+            ];
+        }
+        parent::set_data($default_values);
     }
 
     #[\Override]
@@ -60,6 +102,7 @@ class organization_settings_form extends \moodleform {
         if ($data) {
             $data->can_teacher_edit_speriod ??= false;
             $data->can_teacher_edit_ssettings ??= false;
+            $data->survey_created_message_body = $data->survey_created_message_body['text'];
         }
         return $data;
     }

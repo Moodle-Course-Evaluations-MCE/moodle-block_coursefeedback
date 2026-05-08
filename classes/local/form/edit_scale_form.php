@@ -97,4 +97,13 @@ class edit_scale_form extends \moodleform {
 
         $this->add_action_buttons();
     }
+
+    #[\Override]
+    public function get_data() {
+        $data = parent::get_data();
+        if ($data) {
+            $data->hasnoansweroption ??= false;
+        }
+        return $data;
+    }
 }

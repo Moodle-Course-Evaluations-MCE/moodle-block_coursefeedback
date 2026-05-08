@@ -17,6 +17,7 @@
 namespace block_coursefeedback\local\default_survey_creation_method;
 
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\survey_execution;
 
 /**
  * Abstract default survey creation method.
@@ -39,9 +40,9 @@ abstract class default_survey_creation_method {
      * @param array $courseids
      * @param organization $organization
      * @param int $semester
-     * @return void
+     * @return survey_execution[] all created survey_executions.
      */
-    abstract public static function create_survey_execution(array $courseids, organization $organization, int $semester);
+    abstract public static function create_survey_execution(array $courseids, organization $organization, int $semester): array;
 
     /**
      * Returns the correct default survey creation method based on the setting.

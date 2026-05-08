@@ -33,7 +33,7 @@ use block_coursefeedback\local\persistent\teaching_event;
 class rub_survey_creation_method extends default_survey_creation_method {
 
     #[\Override]
-    public static function create_survey_execution(array $courseids, organization $organization, int $semester) {
+    public static function create_survey_execution(array $courseids, organization $organization, int $semester): array {
         global $DB;
 
         [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
@@ -47,6 +47,8 @@ class rub_survey_creation_method extends default_survey_creation_method {
                 ON rem.organizationid = :organizationid AND rem.rub_coursetype = ce.coursetype
             WHERE c.id $insql
          ", array_merge(['organizationid' => $organization->get('id'), 'semester' => $semester], $inparams));
+
+        $ses = [];
 
         foreach ($courseids as $courseid) {
             $se = new survey_execution(0, (object) [
@@ -76,6 +78,8 @@ class rub_survey_creation_method extends default_survey_creation_method {
                 ]);
                 $speo->create();
             }
+            $ses[] = $se;
         }
+        return $ses;
     }
 }

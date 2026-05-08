@@ -14,35 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace block_coursefeedback\local\default_survey_creation_method;
+namespace block_coursefeedback\local\persistent;
 
-use block_coursefeedback\local\persistent\organization;
-use block_coursefeedback\local\persistent\survey_execution;
+use core\persistent;
 
 /**
- * Empty default survey creation method.
+ * Organization_texts persistent class.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class empty_survey_creation_method extends default_survey_creation_method {
+class organization_texts extends persistent {
 
-    #[\Override]
-    public static function create_survey_execution(array $courseids, organization $organization, int $semester): array {
-        $ses = [];
-        foreach ($courseids as $courseid) {
-            $se = new survey_execution(0, (object) [
-                'starttime' => null,
-                'endtime' => null,
-                'courseid' => $courseid,
-                'organizationid' => $organization->get('id'),
-                'status' => 0,
-            ]);
-            $se->save();
-            $ses[] = $se;
-        }
-        return $ses;
+    /** Table name for the persistent. */
+    public const TABLE = 'block_coursefeedback_organization_texts';
+
+    /**
+     * Return the definition of the properties of this model.
+     * @return array
+     */
+    protected static function define_properties() {
+        return [
+            'organizationid' => [
+                'type' => PARAM_INT,
+            ],
+            'survey_created_message_body' => [
+                'type' => PARAM_RAW,
+            ],
+            'survey_created_message_subject' => [
+                'type' => PARAM_RAW,
+            ],
+        ];
     }
 }

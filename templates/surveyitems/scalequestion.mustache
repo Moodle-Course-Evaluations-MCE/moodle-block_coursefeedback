@@ -59,7 +59,8 @@
 <form>
     {{# show_scale }}
         <div class="d-none d-md-flex" style="margin-left: 25%" aria-hidden="true">
-            <div class="d-flex flex-grow-1 justify-content-between align-items-start px-3 mb-2">
+            <div class="flex-grow-1 align-items-center mb-2 text-center"
+                 style="display: grid; grid-template-columns: repeat({{optionamount}}, 1fr);">
                 {{# options }}
                     <span>{{text}}</span>
                 {{/ options }}
@@ -72,19 +73,19 @@
         </div>
     {{/ show_scale }}
     <div class="d-flex flex-wrap flex-md-nowrap {{^show_scale}}coursefeedback-no-show-scale{{/show_scale}}">
-        <div class="coursefeedback-scale-questiontext coursefeedback-small-flex-basis-100">{{{ questiontext }}}</div>
+        <div class="coursefeedback-scale-questiontext coursefeedback-questiontext coursefeedback-small-flex-basis-100">{{{ questiontext }}}</div>
         <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap ms-3 mt-2 m-md-0">
             <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap coursefeedback-small-flex-basis-100 justify-content-around align-items-center md-px-3">
                 {{# options }}
-                    <label class="block_coursefeedback-scaleoption coursefeedback-small-flex-basis-100 mt-1 mb-0">
-                        <input class="" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
+                    <label class="block_coursefeedback-scaleoption coursefeedback-small-flex-basis-100 mb-0">
+                        <input class="text-center" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
                         <span class="ms-1 d-md-none">{{{ text }}}</span>
                     </label>
                 {{/ options }}
             </div>
             {{# has_na_option }}
-                <div class="d-flex text-md-center align-items-center justify-content-around coursefeedback-small-flex-basis-100 mt-2 mt-md-2" style="flex-basis: calc(100% / {{ optionamount }})">
-                    <label class="block_coursefeedback-scaleoption mt-1 mb-0">
+                <div class="d-flex text-md-center align-items-center justify-content-around coursefeedback-small-flex-basis-100 mt-2 mt-md-0" style="flex-basis: calc(100% / {{ optionamount }})">
+                    <label class="block_coursefeedback-scaleoption mb-0">
                         <input class="" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{ na_option }}}" value="-1">
                         <span class="ms-1 d-md-none">{{{ na_option }}}</span>
                     </label>
