@@ -39,20 +39,19 @@ require_once($CFG->libdir . '/tablelib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class scales_table extends \table_sql {
-
-    /**
-     * @var int The surveypartid.
-     */
-    private int $surveypartid;
-
     /**
      * Constructor for the scales_table.
+     *
      * @param int $surveypartid
+     * @param bool $editable
      */
-    public function __construct(int $surveypartid) {
+    public function __construct(
+        /** @var int $surveypartid */
+        private readonly int $surveypartid,
+        bool $editable
+    ) {
         global $PAGE;
         parent::__construct('block_coursefeedback-scales_table');
-        $this->surveypartid = $surveypartid;
         $this->define_baseurl($PAGE->url);
         // I need a subquery because it conflicts with the sqltables COUNT(1) query otherwise.
         $this->set_sql(
@@ -66,12 +65,20 @@ class scales_table extends \table_sql {
             ['surveypartid' => $this->surveypartid]
         );
         $this->column_nosort = ['tools'];
-        $this->define_columns(['name', 'uses', 'tools']);
-        $this->define_headers([
+
+        $columns = ['name', 'uses'];
+        $headers = [
             get_string('name', 'block_coursefeedback'),
             get_string('uses', 'block_coursefeedback'),
-            get_string('tools', 'block_coursefeedback'),
-        ]);
+        ];
+        // Only add tool column if editable.
+        if ($editable) {
+            $columns[] = 'tools';
+            $headers[] = get_string('tools', 'block_coursefeedback');
+        }
+
+        $this->define_columns($columns);
+        $this->define_headers($headers);
     }
 
     /**

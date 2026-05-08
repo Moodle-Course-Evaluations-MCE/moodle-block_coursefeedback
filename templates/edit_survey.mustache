@@ -581,10 +581,9 @@
 }}
 
 {{#info_message}}
-    <div class="alert alert-info d-flex align-items-center" role="alert">
-        {{#pix}} i/circleinfo {{/pix}}
-        <span class="ml-2">{{.}}</span>
-    </div>
+    {{< block_coursefeedback/info_box }}
+        {{$message}}{{.}}{{/message}}
+    {{/ block_coursefeedback/info_box }}
 {{/info_message}}
 
 <section>
@@ -623,12 +622,12 @@
     </div>
 
     {{#show_save_button}}
-    <form class="mt-2" id="coursefeedback-save-ordering-form" method="post" action="{{{ action_url }}}">
-        <input type="hidden" name="id" value="{{id}}">
-        <input type="hidden" name="sesskey" value="{{sesskey}}">
-        <input type="hidden" name="action" value="reorder">
-        <input type="hidden" name="ordering">
-        <input type="submit" value="{{# str }} save {{/ str }}" class="btn btn-primary">
-    </form>
+        <form class="mt-2" id="coursefeedback-save-ordering-form" method="post" action="{{{ action_url }}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="action" value="reorder">
+            <input type="hidden" name="ordering">
+            <input type="submit" value="{{# str }} save {{/ str }}" class="btn btn-primary">
+        </form>
     {{/show_save_button}}
 </section>

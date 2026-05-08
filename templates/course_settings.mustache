@@ -142,10 +142,9 @@
 }}
 
 {{#info_message}}
-    <div class="alert alert-info d-flex align-items-center my-3" role="alert">
-        {{#pix}} i/circleinfo {{/pix}}
-        <span class="ml-2">{{.}}</span>
-    </div>
+    {{< block_coursefeedback/info_box }}
+        {{$message}}{{.}}{{/message}}
+    {{/ block_coursefeedback/info_box }}
 {{/info_message}}
 
 <div class="row my-3 gx-3">
