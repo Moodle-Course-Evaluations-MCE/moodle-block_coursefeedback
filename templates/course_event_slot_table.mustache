@@ -26,6 +26,58 @@
         "id": 1,
         "shortname": "ABCEFG"
       },
+      "slot_name_help_icon_context": {
+        "heading": "Untergruppen",
+        "text": "<div class=\"no-overflow\"><p>Untergruppen k\u00f6nnen verwendet werden, um beispielsweise das besuchte Tutorium abzufragen. Wenn es mehrere gibt, muss eine ausgew\u00e4hlt werden, bevor der Fragebogen beantwortet werden kann.<\/p>\n<\/div>",
+        "alt": "Hilfe f\u00fcr Untergruppen",
+        "icon": {
+          "attributes": [
+            {
+              "name": "alt",
+              "value": "Hilfe f\u00fcr Untergruppen"
+            },
+            {
+              "name": "title",
+              "value": "Hilfe f\u00fcr Untergruppen"
+            },
+            {
+              "name": "src",
+              "value": "http:\/\/localhost:8000\/theme\/image.php\/boost\/core\/1778160883\/help"
+            }
+          ],
+          "extraclasses": ""
+        },
+        "linktext": null,
+        "title": "Hilfe f\u00fcr Untergruppen",
+        "url": "http:\/\/localhost:8000\/help.php?component=block_coursefeedback&identifier=slots&lang=de",
+        "ltr": true
+      },
+      "slot_users_help_icon_context": {
+        "heading": "Untergruppen-Lehrende",
+        "text": "<div class=\"no-overflow\"><p>Hier k\u00f6nnen Nutzer\/innen (z.B. Tutor\/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, k\u00f6nnen alle Trainer\/innen die Ergebnisse sehen. Teilnehmer\/innen sehen nur den Namen der Untergruppe.<\/p>\n<\/div>",
+        "alt": "Hilfe f\u00fcr Untergruppen-Lehrende",
+        "icon": {
+          "attributes": [
+            {
+              "name": "alt",
+              "value": "Hilfe f\u00fcr Untergruppen-Lehrende"
+            },
+            {
+              "name": "title",
+              "value": "Hilfe f\u00fcr Untergruppen-Lehrende"
+            },
+            {
+              "name": "src",
+              "value": "http:\/\/localhost:8000\/theme\/image.php\/boost\/core\/1778160883\/help"
+            }
+          ],
+          "extraclasses": ""
+        },
+        "linktext": null,
+        "title": "Hilfe f\u00fcr Untergruppen-Lehrende",
+        "url": "http:\/\/localhost:8000\/help.php?component=block_coursefeedback&identifier=slot_users&lang=de",
+        "ltr": true
+      },
       "show_add_event": true,
       "events": [
         {
@@ -136,8 +188,14 @@
             <th scope="col">{{#str}} teaching_event, block_coursefeedback {{/str}}</th>
             <th scope="col">{{#str}} event_type, block_coursefeedback {{/str}}</th>
             <th scope="col">{{! Event actions. }}</th>
-            <th scope="col">{{#str}} slot_name, block_coursefeedback {{/str}}</th>
-            <th scope="col">{{#str}} slot_users, block_coursefeedback {{/str}}</th>
+            <th scope="col">
+                {{#str}} slot_name, block_coursefeedback {{/str}}
+                {{#slot_name_help_icon_context}}{{>core/help_icon}}{{/slot_name_help_icon_context}}
+            </th>
+            <th scope="col">
+                {{#str}} slot_users, block_coursefeedback {{/str}}
+                {{#slot_users_help_icon_context}}{{>core/help_icon}}{{/slot_users_help_icon_context}}
+            </th>
             <th scope="col">{{! Slot delete button. }}</th>
         </tr>
         </thead>

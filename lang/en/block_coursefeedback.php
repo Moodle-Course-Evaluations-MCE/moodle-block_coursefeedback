@@ -41,6 +41,19 @@ $string['confirm_event_deletion'] = 'Are you sure you want to delete the teachin
 $string['confirm_slot_deletion'] = 'Are you sure you want to delete the slot <q><b>{$a}</b></q>?';
 $string['course_event_slot_table_heading'] = 'Teaching Events and Response Slots';
 $string['course_settings'] = 'Survey settings';
+$string['course_settings_explanation_events'] =
+    'If, for instance, your course contains both a lecture and an exercise, you can add both here. ' .
+    'The evaluation coordinators configure the questionnaires that are used for each event type, which are then shown to the user one after the other.';
+$string['course_settings_explanation_general'] = 'Here, you may make the survey for your course more fine-grained by configuring teaching events and response slots.';
+$string['course_settings_explanation_slot_users'] =
+    'By default, the responses to a slot are visible to all teachers of the course. ' .
+    'Instead, you can select particular users who may view them. If you do, other teacher will no longer be able to. ' .
+    'Evaluation coordinators as well as administrators can always see responses, regardless of this setting. ' .
+    'Participants do not see the slot users when filling out the survey, only its name.';
+$string['course_settings_explanation_slots'] =
+    'Furthermore, you can define slots for each teaching event, in order to distinguish between exercise groups, assignment topics, or similar. ' .
+    'Students then select a slot, but all slots use the same questionnaire. If there is only one slot (<q>-</q>, by default), there is no selection by the student.';
+$string['course_settings_explanation_title'] = 'Concepts';
 $string['course_settings_of'] = 'Survey settings: {$a->shortname}';
 $string['course_survey_status'] = 'Current survey status';
 $string['coursecategories'] = 'Course categories';
@@ -167,7 +180,10 @@ $string['slot_choice_text'] = 'Which slot did you visit?';
 $string['slot_name'] = 'Slot name';
 $string['slot_name_placeholder'] = 'My response slot';
 $string['slot_users'] = 'Slot users';
+$string['slot_users_help'] = 'You can add the users responsible for this slot here, so only they will be able to see its responses. If this is empty, all teachers may see the results. Students will only ever see the slot name.';
 $string['slot_users_of'] = 'Users assigned to slot {$a}';
+$string['slots'] = 'Response slots';
+$string['slots_help'] = 'Slots can be used to group user responses, such as for different tutorials. If there is more than one slot, users must select one before the questionnaire is shown.';
 $string['start'] = 'Start';
 $string['survey_created_message_help'] = '<p>In the following texts, these <i>placeholders</i> can be used:</p>
 <p>
@@ -203,6 +219,7 @@ $string['surveypart_preview'] = 'Preview';
 $string['surveypart_preview_error'] = 'The questionnaire could not be displayed due to the following error: {$a}';
 $string['task:start_surveys'] = 'Start surveys and apply defaults from organization';
 $string['teaching_event'] = 'Teaching event';
+$string['teaching_events'] = 'Teaching events';
 $string['text'] = 'Text';
 $string['text_in_lang'] = 'Text ({$a})';
 $string['tools'] = 'Tools';

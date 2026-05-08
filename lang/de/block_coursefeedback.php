@@ -41,6 +41,19 @@ $string['confirm_event_deletion'] = 'Möchten Sie wirklich die Lehrveranstaltung
 $string['confirm_slot_deletion'] = 'Möchten Sie wirklich die Untergruppe <q><b>{$a}</b></q> aus der Evaluation löschen?';
 $string['course_event_slot_table_heading'] = 'Lehrveranstaltungen und Untergruppen';
 $string['course_settings'] = 'Evaluationseinstellungen';
+$string['course_settings_explanation_events'] =
+    'Enthält Ihr Kurs beispielsweise eine Vorlesung und eine Übung, können Sie beide hier hinterlegen. ' .
+    'Anhand der von Ihnen angegebenen Veranstaltungsart werden durch die Evaluationsverantwortlichen verschiedene Fragebögen zugewiesen, die dann nacheinander abgefragt werden.';
+$string['course_settings_explanation_general'] = 'Hier können Sie optional die Lehrevaluation für ihren Kurs granularer gestalten, mithilfe von Lehrveranstaltungen und Untergruppen.';
+$string['course_settings_explanation_slot_users'] =
+    'Standardmäßig sind die Ergebnisse einer Untergruppe für alle Trainer/innen einsehbar. ' .
+    'Stattdessen können optional aber Nutzer/innen hinterlegt werden, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
+    'Die Evaluationsverantwortlichen sowie Administrator/innen können die Antworten unabhängig davon immer sehen. ' .
+    'Teilnehmer/innen sehen nicht die Namen dieser Nutzer/innen, sondern nur den Namen der Untergruppe.';
+$string['course_settings_explanation_slots'] =
+    'Außerdem können Sie innerhalb einer Lehrveranstaltung nach Untergruppen (wie z.&nbsp;B. Tutoriumsterminen oder Arbeitsthemen) aufschlüsseln. ' .
+    'Dann wählen Teilnehmer/innen genau eine Gruppe aus, alle Gruppen teilen aber denselben Fragebogen. Gibt es nur eine Untergruppe (standardmäßig <q>-</q>), ist keine Auswahl durch die Teilnehmer/innen nötig.';
+$string['course_settings_explanation_title'] = 'Erläuterungen';
 $string['course_settings_of'] = 'Evaluationseinstellungen: {$a->shortname}';
 $string['course_survey_status'] = 'Aktueller Status';
 $string['coursecategories'] = 'Kursbereiche';
@@ -163,7 +176,10 @@ $string['slot_choice_text'] = 'Welche Gruppe hast du besucht?';
 $string['slot_name'] = 'Untergruppen-Name';
 $string['slot_name_placeholder'] = 'Meine Untergruppe';
 $string['slot_users'] = 'Untergruppen-Lehrende';
+$string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen nur den Namen der Untergruppe.';
 $string['slot_users_of'] = 'Der Untergruppe {$a} zugewiesene Lehrende';
+$string['slots'] = 'Untergruppen';
+$string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise das besuchte Tutorium abzufragen. Wenn es mehrere gibt, muss eine ausgewählt werden, bevor der Fragebogen beantwortet werden kann.';
 $string['start'] = 'Start';
 $string['survey_execution_endtime'] = 'Endzeitpunkt der Evaluation in diesem Kurs';
 $string['survey_execution_frozen_long'] = 'Die Evaluation hat in diesem Kurs bereits begonnen oder steht kurz bevor. ' .
@@ -188,6 +204,7 @@ $string['surveypart_preview'] = 'Vorschau';
 $string['surveypart_preview_error'] = 'Der Fragebogen konnte Aufgrund folgenden Fehlers nicht angezeigt werden: {$a}';
 $string['task:start_surveys'] = 'Evaluationen starten und Organisations-Standards anwenden';
 $string['teaching_event'] = 'Lehrveranstaltung';
+$string['teaching_events'] = 'Lehrveranstaltungen';
 $string['text'] = 'Freitext';
 $string['text_in_lang'] = 'Text ({$a})';
 $string['tools'] = 'Tools';
