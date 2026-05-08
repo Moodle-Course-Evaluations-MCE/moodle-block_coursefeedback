@@ -182,7 +182,7 @@ class course_event_slot_table implements named_templatable, renderable {
             'type' => [
                 'name' => $event->get('eventtypeid') ?
                     $this->survey_data->types_by_event_id[$id]->get('name') :
-                    get_string('default', 'block_coursefeedback'),
+                    get_string('default_event_type', 'block_coursefeedback'),
             ],
             'allow_deletion' => !$this->is_frozen,
             'deletion_tooltip' => $this->is_frozen
