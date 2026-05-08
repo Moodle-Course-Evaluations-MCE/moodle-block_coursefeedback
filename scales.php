@@ -26,6 +26,9 @@
 use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey_freezer;
+use block_coursefeedback\local\table\scales_table;
+use core\di;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
@@ -36,6 +39,8 @@ $surveypart = surveypart::get_record(['id' => $surveypartid]);
 
 permission_manager::require_permission_for_editing_surveypart($surveypart);
 breadcrumbs_manager::setup_survey_scales($surveypart);
+
+$freezer = di::get(survey_freezer::class);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/scales.php', ['surveypartid' => $surveypartid]));
@@ -48,6 +53,8 @@ if ($action) {
     require_sesskey();
     if ($action === 'delete') {
         $scaleid = required_param('id', PARAM_INT);
+        $freezer->check_survey_part_action($surveypart, "delete scale '$scaleid'");
+
         $uses = $DB->count_records('block_coursefeedback_surveyitemscalequestion', ['scaleid' => $scaleid]);
         if ($uses > 0) {
             throw new \core\exception\coding_exception('Could not delete scale, because it is used somewhere.');
@@ -57,9 +64,16 @@ if ($action) {
     redirect($PAGE->url);
 }
 
-$table = new \block_coursefeedback\local\table\scales_table($surveypartid);
+$is_frozen = $freezer->is_survey_part_frozen($surveypart);
+$table = new scales_table($surveypartid, editable: !$is_frozen);
 
 echo $OUTPUT->header();
+
+if ($is_frozen) {
+    echo $OUTPUT->render_from_template('block_coursefeedback/info_box', [
+        'message' => get_string('surveypart_frozen', 'block_coursefeedback'),
+    ]);
+}
 
 $table->out(48, false);
 

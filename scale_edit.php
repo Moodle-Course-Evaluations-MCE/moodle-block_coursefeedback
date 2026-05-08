@@ -27,20 +27,23 @@ use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\scale;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey_freezer;
+use core\di;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE;
 
 require_login();
 
-// TODO: Prevent changes when frozen.
-
 $surveypartid = required_param('surveypartid', PARAM_INT);
 $surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 permission_manager::require_permission_for_editing_surveypart($surveypart);
 
-$params = ['surveypartid' => $surveypartid];
 $id = optional_param('id', null, PARAM_INT);
+di::get(survey_freezer::class)
+    ->check_survey_part_action($surveypart, $id ? "edit scale '$id'" : "add scale");
+
+$params = ['surveypartid' => $surveypartid];
 $scale = null;
 if ($id) {
     $scale = scale::get_record(['id' => $id], MUST_EXIST);
