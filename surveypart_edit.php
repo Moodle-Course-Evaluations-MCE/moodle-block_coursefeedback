@@ -99,7 +99,13 @@ if ($mform->is_cancelled()) {
 // Else display form.
 
 echo $OUTPUT->header();
+
+if ($is_frozen) {
+    echo $OUTPUT->render_from_template('block_coursefeedback/info_box', [
+        'message' => get_string('surveypart_frozen', 'block_coursefeedback'),
+    ]);
+}
+
 $mform->display();
 
-echo html_writer::div('', '', ['id' => 'block_coursefeedback-surveyanchor']);
 echo $OUTPUT->footer();
