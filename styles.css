@@ -24,6 +24,11 @@
     flex-basis: 25%;
 }
 
+.coursefeedback-questiontext > p:last-child {
+    /* stylelint-disable-next-line declaration-no-important */
+    margin-bottom: 0 !important;
+}
+
 .block_coursefeedback-surveypart-preview {
     margin-top: 1rem;
 }
@@ -41,7 +46,7 @@
 
 @media (min-width: 768px) {
     .coursefeedback-no-show-scale {
-        /* margin-top: -20px; */
+        margin-top: -20px;
     }
 }
 
