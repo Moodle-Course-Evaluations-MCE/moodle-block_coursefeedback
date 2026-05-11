@@ -16,6 +16,7 @@
 
 namespace block_coursefeedback\output;
 
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
@@ -94,24 +95,27 @@ class slot_users_editable extends inplace_editable {
         $userids = json_decode($newvalue, depth: 2, flags: JSON_THROW_ON_ERROR);
 
         $slot_fields = response_slot::get_sql_fields('rs', 'rs_');
+        $se_fields = survey_execution::get_sql_fields('se', 'se_');
         $record = $DB->get_record_sql("
-            SELECT se.courseid, $slot_fields
+            SELECT $slot_fields, $se_fields
             FROM {" . response_slot::TABLE . "} rs
             JOIN {" . survey_part_execution::TABLE . "} spe ON spe.id = rs.surveypartexecutionid
             JOIN {" . survey_execution::TABLE . "} se ON se.id = spe.surveyexecutionid
             WHERE rs.id = :slotid
         ", ['slotid' => $slotid], MUST_EXIST);
 
-        $courseid = $record->courseid;
-        $slot = new response_slot(record: response_slot::extract_record($record, 'rs_'));
+        $slot = response_slot::extract($record, 'rs_');
+        $survey_execution = survey_execution::extract($record, 'se_');
+
+        $course = get_course($survey_execution->get('courseid'));
 
         /** @var context_course $context */
-        $context = context_course::instance($courseid);
+        $context = context_course::instance($course->id);
         $PAGE->set_context($context);
-        require_capability('block/coursefeedback:changecoursesettings', $context);
+        permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
 
         // Users are returned by enrol_get_course_users index by enrolment ID, we want to index by user ID.
-        $enrolledusers = array_column(enrol_get_course_users($courseid), null, 'id');
+        $enrolledusers = array_column(enrol_get_course_users($course->id), null, 'id');
 
         /** @var array<int, object> $filtered_users */
         $filtered_users = [];
@@ -121,7 +125,7 @@ class slot_users_editable extends inplace_editable {
             if ($user) {
                 $filtered_users[$userid] = $user;
             } else {
-                debugging("User '$userid' is not enrolled in course '$courseid', ignoring", DEBUG_DEVELOPER);
+                debugging("User '$userid' is not enrolled in course '$course->id', ignoring", DEBUG_DEVELOPER);
             }
         }
 
