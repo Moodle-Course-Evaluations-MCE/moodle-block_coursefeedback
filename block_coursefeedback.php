@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\survey_execution;
 
 /**
@@ -60,6 +61,10 @@ class block_coursefeedback extends block_base {
         $mapper = course_organization_mapping::get_instance();
         $organization = $mapper::get_organization_for_course($this->page->course);
         if (!$organization) {
+            return '';
+        }
+
+        if (!permission_manager::can_edit_course_surveysettings($this->page->course, $organization)) {
             return '';
         }
 
