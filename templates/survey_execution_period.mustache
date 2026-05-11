@@ -65,35 +65,37 @@
         </span>
     {{/editable}}
     {{#editable}}
-        <div class="input-group" x-show="editing" x-cloak>
-            <input type="datetime-local"
-                   class="form-control"
-                   x-model="starttime"
-                   @keyup.enter="save"
-                   aria-label="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}"
-                   title="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}">
-            <span class="input-group-text">{{#pix}} t/right {{/pix}}</span>
-            <input id="block_coursefeedback-endtime-{{itemid}}-{{uniqid}}"
-                   type="datetime-local"
-                   class="form-control"
-                   x-model="endtime"
-                   @keyup.enter="save"
-                   aria-label="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}"
-                   title="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}">
+        <div class="scroll-container">
+            <div class="input-group" x-show="editing" x-cloak>
+                <input type="datetime-local"
+                       class="form-control"
+                       x-model="starttime"
+                       @keyup.enter="save"
+                       aria-label="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}"
+                       title="{{#str}} survey_execution_starttime, block_coursefeedback {{/str}}">
+                <span class="input-group-text">{{#pix}} t/right {{/pix}}</span>
+                <input id="block_coursefeedback-endtime-{{itemid}}-{{uniqid}}"
+                       type="datetime-local"
+                       class="form-control"
+                       x-model="endtime"
+                       @keyup.enter="save"
+                       aria-label="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}"
+                       title="{{#str}} survey_execution_endtime, block_coursefeedback {{/str}}">
 
-            <button type="button"
-                    class="btn btn-outline-secondary text-success"
-                    title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}"
-                    x-ref="submitButton"
-                    @click="save">
-                {{#pix}}t/check{{/pix}}
-            </button>
-            <button type="button"
-                    class="btn btn-outline-secondary text-danger"
-                    title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
-                    @click="cancel">
-                {{#pix}}e/cancel{{/pix}}
-            </button>
+                <button type="button"
+                        class="btn btn-outline-secondary text-success"
+                        title="{{#str}} submit {{/str}}" aria-label="{{#str}} submit {{/str}}"
+                        x-ref="submitButton"
+                        @click="save">
+                    {{#pix}}t/check{{/pix}}
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary text-danger"
+                        title="{{#str}} cancel {{/str}}" aria-label="{{#str}} cancel {{/str}}"
+                        @click="cancel">
+                    {{#pix}}e/cancel{{/pix}}
+                </button>
+            </div>
         </div>
     {{/editable}}
     <div class="form-text" x-cloak x-show="isDefault">

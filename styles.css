@@ -98,7 +98,7 @@
 }
 
 .block_coursefeedback-course-event-slot-table {
-    min-width: var(--bs-breakpoint-lg, 992px);
+    min-width: 50rem;
 
     .btn-link {
         padding: .1em;
@@ -175,6 +175,10 @@
 }
 
 .block_coursefeedback-survey-execution-period {
+    .icon {
+        margin: 0;
+    }
+
     > a {
         /* Don't make the link blue. */
         color: inherit;
@@ -184,7 +188,11 @@
         margin: 0;
     }
 
+    .scroll-container {
+        overflow-x: scroll;
+    }
+
     .input-group {
-        width: fit-content;
+        width: max-content;
     }
 }
