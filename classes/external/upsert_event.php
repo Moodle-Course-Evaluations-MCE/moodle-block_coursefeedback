@@ -100,11 +100,6 @@ class upsert_event extends external_api {
 
         $eventtype = eventtype::get_record(['id' => $eventtypeid], MUST_EXIST);
 
-        $surveypartid = $eventtype->get('surveypartid');
-        if ($surveypartid && !surveypart::record_exists($surveypartid)) {
-            throw new coding_exception("Survey part '$surveypartid' does not exist");
-        }
-
         if ($eventid) {
             self::update_event($courseid, $survey_execution, $eventtype, $name, $eventid);
         } else {
@@ -150,7 +145,6 @@ class upsert_event extends external_api {
         $spe->set_many([
             'surveyexecutionid' => $survey_execution->get('id'),
             'eventid' => $event->get('id'),
-            'surveypartid' => $eventtype->get('surveypartid'),
         ]);
         $spe->save();
 
@@ -197,7 +191,7 @@ class upsert_event extends external_api {
 
         $spe = survey_part_execution::get_record(['eventid' => $eventid]);
 
-        if ($spe->get('surveypartid') !== $eventtype->get('surveypartid')) {
+        if ($spe && $spe->get('surveypartid') && $spe->get('surveypartid') !== $eventtype->get('surveypartid')) {
             // This _should_ only happen if the event type is changed, but we check to be sure.
             di::get(survey_freezer::class)
                 ->check_se_action($survey_execution, "update survey part of SPE '{$spe->get('id')}'");
