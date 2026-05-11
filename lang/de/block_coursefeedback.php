@@ -33,8 +33,8 @@ $string['amount_options'] = 'Anzahl von Antwortmöglichkeiten';
 $string['answer_i'] = 'Antwort #{$a}';
 $string['answer_i_in_lang'] = 'Antwort #{$a->i} in {$a->lang}';
 $string['answers_section'] = 'Antwortmöglichkeiten';
-$string['answers_section_help'] = 'Stelle hier die möglichen Antworten auf diese Frage ein. Die unterstützten Sprachen werden in den Fragebogen-Einstellungen verwaltet. Alle Antworten sollten in alle unterstützten Sprachen übersetzt werden, bevor der Fragebogen verwendet wird.';
-$string['at_least_one_translation_required'] = 'Bitte gib mindestens eine Sprache an.';
+$string['answers_section_help'] = 'Stellen Sie hier die möglichen Antworten auf diese Frage ein. Die unterstützten Sprachen werden in den Fragebogen-Einstellungen verwaltet. Alle Antworten sollten in alle unterstützten Sprachen übersetzt werden, bevor der Fragebogen verwendet wird.';
+$string['at_least_one_translation_required'] = 'Geben Sie bitte mindestens eine Sprache an.';
 $string['can_teacher_edit_surveyperiod'] = 'Trainer/innen können den Evaluationszeitraum ihrer Kurse anpassen';
 $string['can_teacher_edit_surveysettings'] = 'Trainer/innen können Lehrveranstaltungen und Untergruppen ihrer Kurse anpassen.';
 $string['confirm_event_deletion'] = 'Möchten Sie wirklich die Lehrveranstaltung <q><b>{$a}</b></q> aus der Evaluation löschen?';
@@ -48,10 +48,10 @@ $string['course_settings_explanation_general'] = 'Hier können Sie optional die 
 $string['course_settings_explanation_slot_users'] =
     'Standardmäßig sind die Ergebnisse einer Untergruppe für alle Trainer/innen einsehbar. ' .
     'Stattdessen können optional aber Nutzer/innen hinterlegt werden, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
-    'Die Evaluationsverantwortlichen sowie Administrator/innen können die Antworten unabhängig davon immer sehen. ' .
+    'Die Evaluationsverantwortlichen können die Antworten unabhängig davon immer sehen. ' .
     'Teilnehmer/innen sehen nicht die Namen dieser Nutzer/innen, sondern nur den Namen der Untergruppe.';
 $string['course_settings_explanation_slots'] =
-    'Außerdem können Sie innerhalb einer Lehrveranstaltung nach Untergruppen (wie z.&nbsp;B. Tutoriumsterminen oder Arbeitsthemen) aufschlüsseln. ' .
+    'Außerdem können Sie innerhalb einer Lehrveranstaltung nach Untergruppen (wie z.&nbsp;B. Tutoriumsterminen oder Arbeitsthemen) aufschlüsseln, um diese getrennt evaluieren zu können. ' .
     'Dann wählen Teilnehmer/innen genau eine Gruppe aus, alle Gruppen teilen aber denselben Fragebogen. Gibt es nur eine Untergruppe (standardmäßig <q>-</q>), ist keine Auswahl durch die Teilnehmer/innen nötig.';
 $string['course_settings_explanation_title'] = 'Erläuterungen';
 $string['course_settings_of'] = 'Evaluationseinstellungen: {$a->shortname}';
@@ -59,10 +59,10 @@ $string['course_survey_status'] = 'Aktueller Status';
 $string['coursecategories'] = 'Kursbereiche';
 $string['coursefeedback:addinstance'] = 'Eine Instanz von block_coursefeedback hinzufügen';
 $string['coursefeedback:filloutsurvey'] = 'Lehrevaluationen ausfüllen';
-$string['coursefeedback:isevaluationteacher'] = 'Im Rahmen der Evaluation als Lehrer behandelt werden. Kann, je nach Organisations-Einstellungen, Kurs-Evaluationseinstellungen und -Evaluationszeitraum anpassen.';
+$string['coursefeedback:isevaluationteacher'] = 'Im Rahmen der Evaluation als Lehrende/r behandelt werden. Kann, je nach Organisations-Einstellungen, Kurs-Evaluationseinstellungen und -Evaluationszeitraum anpassen.';
 $string['coursefeedback:manageorganizations'] = 'Lehrevaluations-Organisationseinheiten verwalten';
 $string['coursefeedback:managesurveysglobally'] = 'Systemweite Fragebögen verwalten';
-$string['coursefeedback:viewcourseresults'] = 'Evaluationsergebnisse sehen, wenn diese nicht in den Einstellungen auf bestimmte NUtzer/innen eingeschränkt sind';
+$string['coursefeedback:viewcourseresults'] = 'Evaluationsergebnisse sehen, wenn diese nicht in den Einstellungen auf bestimmte Nutzer/innen eingeschränkt sind';
 $string['coursefeedback:viewcoursesettings'] = 'Die Kurs-Evaluationseinstellungen einsehen';
 $string['coursetype_from_campus'] = 'Lehrveranstaltungsart aus RUB-Campus-Daten';
 $string['create_default'] = 'Mit Standardeinstellungen zur Evaluation hinzufügen';
@@ -77,7 +77,7 @@ $string['define_rub_eventtype_mapping'] = 'Verknüpfung von RUB-Campus-Veranstal
 $string['delete_event'] = 'Lehrveranstaltung entfernen';
 $string['delete_slot'] = 'Untergruppe entfernen';
 $string['delete_survey_responses'] = 'Antworten löschen';
-$string['delete_survey_responses_confirm'] = 'Möchten Sie wirklich alle Antworten von <b>{$a->num}</b> Nutzer/innen auf die Evaluation im Kurs <q><b>{$a->coursename}</b></q> löschen? Das kann nicht rückgängig gemacht werden.';
+$string['delete_survey_responses_confirm'] = 'Möchten Sie wirklich alle Antworten von <b>{$a->num}</b> Nutzer/innen auf die Evaluation im Kurs <q><b>{$a->coursename}</b></q> löschen? Dies kann nicht rückgängig gemacht werden.';
 $string['edit_default_survey_period'] = 'Standard-Evaluationszeitraum anpassen';
 $string['edit_event'] = 'Lehrveranstaltung bearbeiten';
 $string['edit_organization'] = 'Organisation bearbeiten';
@@ -127,9 +127,9 @@ $string['for_selected'] = 'Für Ausgewählte';
 $string['forceshowscale'] = 'Skala anzeigen, auch wenn eine vorhergehende Frage dieselbe Skala benutzt.';
 $string['general_settings_and_permissions'] = 'Allgemeine Einstellungen und Berechtigungen';
 $string['has_no_answer'] = '<abbr title="nicht zutreffend">n.z.</abbr>-Option anzeigen?';
-$string['inconsistent_editor_formats'] = 'Bitte verwende das gleiche Text-Format für alle Übersetzungen dieses Feldes.';
+$string['inconsistent_editor_formats'] = 'Bitte verwenden Sie das gleiche Text-Format für alle Übersetzungen dieses Feldes.';
 $string['infotext'] = 'Statischer Info-Text';
-$string['last_slot_deletion_disabled'] = 'Eine Lehrveranstaltung muss min. einen Untergruppe haben, also kann dieser nicht gelöscht werden.';
+$string['last_slot_deletion_disabled'] = 'Eine Lehrveranstaltung muss min. einen Untergruppe haben, also kann diese nicht gelöscht werden.';
 $string['list_of_courses_without_evaluation'] = 'Liste von Kursen ohne Evaluation';
 $string['list_of_evaluations'] = 'Liste von Kursen mit Evaluation';
 $string['max_option_text'] = 'Beschriftung das max. Pols';
@@ -142,7 +142,7 @@ $string['new_surveyitem'] = 'Neues Fragebogen-Element';
 $string['new_surveypart'] = 'Neuer Fragebogen';
 $string['no_answer_option_text'] = 'Text für die <abbr title="nicht zutreffend">n.z.</abbr>-Option';
 $string['no_default_survey_period_set'] = 'Der Evaluationszeitraum ist noch nicht gesetzt. Er muss gesetzt werden, bevor Kurse zur Evaluation hinzugefügt werden können.';
-$string['no_scale_selected'] = 'Bitte wähle eine Skala';
+$string['no_scale_selected'] = 'Bitten wählen Sie eine Skala';
 $string['no_survey_execution'] = 'Der Kurs {$a->fullname} ist nicht Teil einer vergangenen, laufenden oder zukünftigen Evaluation.';
 $string['not_translated'] = 'nicht übersetzt';
 $string['num_responses'] = 'Anzahl von Antworten';
@@ -152,7 +152,7 @@ $string['organization'] = 'Organisation';
 $string['organizations'] = 'Organisationen';
 $string['pagebreak'] = 'Seitenumbruch';
 $string['planned'] = 'Geplant';
-$string['pluginname'] = 'Kurs-Feedback';
+$string['pluginname'] = 'Evaluation';
 $string['question_in_lang'] = 'Frage ({$a})';
 $string['questionnaire'] = 'Fragebogen';
 $string['questionnaires'] = 'Fragebögen';
@@ -179,7 +179,7 @@ $string['slot_users'] = 'Untergruppen-Lehrende';
 $string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen nur den Namen der Untergruppe.';
 $string['slot_users_of'] = 'Der Untergruppe {$a} zugewiesene Lehrende';
 $string['slots'] = 'Untergruppen';
-$string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise das besuchte Tutorium abzufragen. Wenn es mehrere gibt, muss eine ausgewählt werden, bevor der Fragebogen beantwortet werden kann.';
+$string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise Tutorien verschiedener Gruppenleitenden getrennt zu evaluieren. Wenn es mehrere gibt, muss beim Beantworten des Fragebogens eine ausgewählt werden.';
 $string['start'] = 'Start';
 $string['survey_execution_endtime'] = 'Endzeitpunkt der Evaluation in diesem Kurs';
 $string['survey_execution_frozen_long'] = 'Die Evaluation hat in diesem Kurs bereits begonnen oder steht kurz bevor. ' .
@@ -195,7 +195,7 @@ $string['survey_execution_starttime'] = 'Startzeitpunkt der Evaluation in diesem
 $string['survey_finished_thanks'] = 'Danke für dein Feedback!';
 $string['survey_languages'] = 'Unterstützte Sprachen';
 $string['survey_languages_help'] = 'Wähle die Sprachen aus, in denen der Fragebogen verfügbar sein soll. Beim Hinzufügen und Bearbeiten von Elementen können Übersetzungen in diese Sprachen angegeben werden. Nur Sprachen, die in {$a->sitename} installiert sind, können hier ausgewählt werden.';
-$string['survey_no_languages'] = 'Bitte gib mindestens eine Sprache an.';
+$string['survey_no_languages'] = 'Geben Sie mindestens eine Sprache an.';
 $string['survey_responses_deleted'] = 'Evaluations-Antworten gelöscht';
 $string['surveyitem'] = 'Fragebogen-Element';
 $string['surveyitems'] = 'Fragebogen-Elemente';
