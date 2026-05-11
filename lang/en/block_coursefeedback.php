@@ -47,8 +47,8 @@ $string['course_settings_explanation_events'] =
 $string['course_settings_explanation_general'] = 'Here, you may make the survey for your course more fine-grained by configuring teaching events and response slots.';
 $string['course_settings_explanation_slot_users'] =
     'By default, the responses to a slot are visible to all teachers of the course. ' .
-    'Instead, you can select particular users who may view them. If you do, other teacher will no longer be able to. ' .
-    'Evaluation coordinators as well as administrators can always see responses, regardless of this setting. ' .
+    'Instead, you can select particular users who may view them. If you do, other teachers will no longer be able to. ' .
+    'Evaluation coordinators can always see responses, regardless of this setting. ' .
     'Participants do not see the slot users when filling out the survey, only its name.';
 $string['course_settings_explanation_slots'] =
     'Furthermore, you can define slots for each teaching event, in order to distinguish between exercise groups, assignment topics, or similar. ' .
