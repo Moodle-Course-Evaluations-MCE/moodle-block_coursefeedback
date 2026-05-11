@@ -24,6 +24,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['add_block'] = 'Globalen Block hinzufügen, der in jedem Kurs mit einer Umfrage angezeigt wird.';
 $string['add_eventtype'] = 'Veranstaltungsart hinzufügen';
 $string['add_more_blanks'] = 'Mehr Leerfelder';
 $string['add_new_event_to'] = 'Lehrveranstaltung im Kurs <q>{$a}</q> hinzufügen';
@@ -115,6 +116,7 @@ $string['end_must_be_within_10_years'] = 'Start und Ende dürfen nicht mehr als 
 $string['end_must_be_within_1_year'] = 'Der Evaluationszeitraum darf nicht länger als 1 Jahr sein.';
 $string['evaluation_period'] = 'Evaluationszeitraum';
 $string['evaluation_settings'] = 'Evaluationseinstellungen';
+$string['evaluation_will_run_in_period'] = 'Die Umfrage wird im Zeitraum des {$a} laufen.';
 $string['evaluationadministration'] = 'Evaluationsverwaltung';
 $string['event_intro'] = 'Bitte bewerte die Lehrveranstaltung <q><b>{$a}</b></q>.';
 $string['event_name'] = 'Veranstaltungsname';
@@ -207,6 +209,7 @@ $string['teaching_event'] = 'Lehrveranstaltung';
 $string['teaching_events'] = 'Lehrveranstaltungen';
 $string['text'] = 'Freitext';
 $string['text_in_lang'] = 'Text ({$a})';
+$string['this_course_belongs_to'] = 'Dieser Kurs wird in der Organizationseinheit <q>{$a}</q> evaluiert.';
 $string['tools'] = 'Tools';
 $string['uses'] = 'Verwendungen';
 $string['view_scales'] = 'Skalen ansehen';

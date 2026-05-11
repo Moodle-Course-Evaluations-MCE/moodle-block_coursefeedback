@@ -106,4 +106,24 @@ class hook_callbacks {
             );
         }
     }
+
+    /**
+     * Callback for add_block setting.
+     */
+    public static function add_block_changed_callback() {
+        global $DB;
+        $add_block = get_config('block_coursefeedback', 'add_block');
+        $page = new \moodle_page();
+        $page->set_context(\context_system::instance());
+        if ($add_block) {
+            if (!$page->blocks->is_block_present('coursefeedback')) {
+                if (!$page->blocks->is_known_region(BLOCK_POS_LEFT)) {
+                    $page->blocks->add_region(BLOCK_POS_LEFT);
+                }
+                $page->blocks->add_block('coursefeedback', BLOCK_POS_LEFT, 0, true, 'course-view-*');
+            }
+        } else {
+            $DB->delete_records('block_instances', ['blockname' => 'coursefeedback', 'parentcontextid' => 1]);
+        }
+    }
 }

@@ -41,6 +41,15 @@ if ($hassiteconfig) {
     );
 
     if ($ADMIN->fulltree) {
+        $setting = new admin_setting_configcheckbox(
+            'block_coursefeedback/add_block',
+            get_string('add_block', 'block_coursefeedback'),
+            '',
+            0
+        );
+        $setting->set_updatedcallback('\block_coursefeedback\local\hook_callbacks::add_block_changed_callback');
+        $settings->add($setting);
+
         $settings->add(
             new admin_setting_configselect(
                 'block_coursefeedback/course_organization_method',

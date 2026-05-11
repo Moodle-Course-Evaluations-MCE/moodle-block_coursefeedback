@@ -24,6 +24,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['add_block'] = 'Add global block, which is shown in every course with a survey';
 $string['add_eventtype'] = 'Add new event type';
 $string['add_more_blanks'] = 'Add more blanks';
 $string['add_new_event_to'] = 'Add a new event to course <q>{$a}</q>';
@@ -115,6 +116,7 @@ $string['end_must_be_within_10_years'] = 'The start and the end must be no longe
 $string['end_must_be_within_1_year'] = 'The survey duration cannot be longer than 1 year.';
 $string['evaluation_period'] = 'Evaluation period';
 $string['evaluation_settings'] = 'Evaluation settings';
+$string['evaluation_will_run_in_period'] = 'The survey will run in the period of {$a}.';
 $string['evaluationadministration'] = 'Evaluation administration';
 $string['event_intro'] = 'Please rate the event <q><b>{$a}</b></q>.';
 $string['event_name'] = 'Event name';
@@ -222,6 +224,7 @@ $string['teaching_event'] = 'Teaching event';
 $string['teaching_events'] = 'Teaching events';
 $string['text'] = 'Text';
 $string['text_in_lang'] = 'Text ({$a})';
+$string['this_course_belongs_to'] = 'This course will be evaluated within the <q>{$a}</q>.';
 $string['tools'] = 'Tools';
 $string['uses'] = 'Uses';
 $string['view_scales'] = 'View scales';
