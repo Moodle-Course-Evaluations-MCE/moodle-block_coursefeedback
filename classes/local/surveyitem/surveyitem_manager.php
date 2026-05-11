@@ -140,18 +140,25 @@ class surveyitem_manager {
         $pages = [];
         $current_page_items = [];
 
-        $advance_page = function () use (&$pages, &$current_page_items, $spe, $event): void {
+        if ($event && $event->get('name') && $event->get('eventtypeid')) {
+            // If the SPE belongs to an event that isn't auto-created and has a name, we show it in a small heading.
+            $heading = html_writer::tag(
+                'h6',
+                get_string('event_intro', 'block_coursefeedback', s($event->get('name')))
+            );
+        } else {
+            $heading = null;
+        }
+
+        $advance_page = function () use (&$pages, &$current_page_items, $spe, $heading): void {
             if ($current_page_items) {
                 $pages[] = new survey_page(
                     items: $current_page_items,
                     spe_id: $spe->get('id'),
                 );
             }
-            $current_page_items = $event ? [
-                di::get(info::class)->export_auto_created(
-                    html_writer::tag('h6', get_string('event_intro', 'block_coursefeedback', s($event->get('name'))))
-                ),
-            ] : [];
+
+            $current_page_items = $heading ? [di::get(info::class)->export_auto_created($heading)] : [];
         };
 
         $advance_page();
