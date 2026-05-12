@@ -45,6 +45,7 @@ class hook_callbacks {
         if (
             $PAGE->context->contextlevel !== CONTEXT_COURSE
             || !$PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
+            || !has_capability('block/coursefeedback:filloutsurvey', $PAGE->context)
         ) {
             return;
         }
