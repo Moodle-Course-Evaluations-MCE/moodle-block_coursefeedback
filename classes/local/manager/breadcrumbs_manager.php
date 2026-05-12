@@ -46,7 +46,7 @@ class breadcrumbs_manager {
      */
     public static function create_root() {
         global $PAGE;
-        return $PAGE->navigation->add('1')->add('2');
+        return $PAGE->navbar;
     }
 
     /**

@@ -64,7 +64,7 @@ class block_coursefeedback extends block_base {
             return '';
         }
 
-        if (!permission_manager::can_edit_course_surveysettings($this->page->course, $organization)) {
+        if (!permission_manager::can_view_course_settings($this->page->course, $organization)) {
             return '';
         }
 

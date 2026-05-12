@@ -24,7 +24,6 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
-use context_course;
 use core\di;
 use core\exception\coding_exception;
 use core_external\external_api;
@@ -77,8 +76,7 @@ class delete_slot extends external_api {
         [ 'courseid' => $courseid, 'slotid' => $slotid ] =
             self::validate_parameters(self::execute_parameters(), [ 'courseid' => $courseid, 'slotid' => $slotid ]);
 
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
+        self::validate_context(\context_system::instance());
         $course = get_course($courseid);
         permission_manager::require_edit_course_surveysettings($course, null);
 

@@ -24,7 +24,6 @@ use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
-use context_course;
 use core\di;
 use core_external\external_api;
 use core_external\external_description;
@@ -98,8 +97,7 @@ class upsert_slot extends external_api {
 
         $courseid = $survey_execution->get('courseid');
 
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
+        self::validate_context(\context_system::instance());
         $course = get_course($courseid);
 
         permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
