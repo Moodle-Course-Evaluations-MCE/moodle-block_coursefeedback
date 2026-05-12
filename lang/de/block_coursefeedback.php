@@ -135,6 +135,10 @@ $string['last_slot_deletion_disabled'] = 'Eine Lehrveranstaltung muss min. einen
 $string['list_of_courses_without_evaluation'] = 'Liste von Kursen ohne Evaluation';
 $string['list_of_evaluations'] = 'Liste von Kursen mit Evaluation';
 $string['max_option_text'] = 'Beschriftung das max. Pols';
+$string['message_content'] = 'Inhalt';
+$string['message_for_teachers_when_survey_created'] = 'Nachricht an Lehrende, wenn Umfragen erstellt werden';
+$string['message_subject'] = 'Betreff';
+$string['messageprovider:teacher_survey_created'] = 'Nachricht an Lehrende, wenn Umfragen erstellt werden';
 $string['min_option_text'] = 'Beschriftung das min. Pols';
 $string['multiplechoice'] = 'Multiple Choice';
 $string['name'] = 'Name';
@@ -183,9 +187,22 @@ $string['slot_users_of'] = 'Der Untergruppe {$a} zugewiesene Lehrende';
 $string['slots'] = 'Untergruppen';
 $string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise Tutorien verschiedener Gruppenleitenden getrennt zu evaluieren. Wenn es mehrere gibt, muss beim Beantworten des Fragebogens eine ausgewählt werden.';
 $string['start'] = 'Start';
+$string['survey_created_message_help'] = '<p>In den folgenden Texten können diese <i>Platzhalter</i> benutzt werden:</p>
+<p>
+    ##NAME## für den ganzen Namen des/der Lehrenden<br>
+    ##COURSE_NAME## für den Kursnamen<br>
+    ##PERIOD## für den Evaluationszeitraum<br>
+    ##SETTINGS_URL## für die URL, wo die Lehrenden den Evaluationszeitraum oder die Evaluationseinstellungen anpassen können.
+</p>
+
+<p>
+Falls Lehrende den Evaluationszeitraum oder die Evaluationseinstellungen bearbeiten dürfen, inkludieren Sie bitte den entsprechenden Link.<br>
+Dies können Sie tun, indem Sie auf den Link-Button klicken, frei einen "Text zum Anzeigen" wählen, und in "URL eingeben" ##SETINGS_URL## angeben.
+</p>
+';
 $string['survey_execution_endtime'] = 'Endzeitpunkt der Evaluation in diesem Kurs';
 $string['survey_execution_frozen_long'] = 'Die Evaluation hat in diesem Kurs bereits begonnen oder steht kurz bevor. ' .
-    'Es können keine Veranstaltungen oder Untergruppen mehr angelegt oder entfernt werden, oder Veranstaltungsarten angepasst. ' .
+    'Es können keine Veranstaltungen oder Untergruppen mehr angelegt oder entfernt, oder Veranstaltungsarten angepasst werden. ' .
     'Veranstaltungen und Untergruppen können lediglich umbenannt werden, und nur Evaluationsbetreuer/innen können noch den Evaluationszeitraum anpassen.';
 $string['survey_execution_frozen_short'] = 'Die Evaluation hat in diesem Kurs bereits begonnen oder steht kurz bevor. Es können keine strukturellen Änderungen mehr gemacht werden.';
 $string['survey_execution_period'] = 'Evaluationszeitraum';
