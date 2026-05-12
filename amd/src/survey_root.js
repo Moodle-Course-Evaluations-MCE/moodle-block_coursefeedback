@@ -82,6 +82,13 @@ const surveyRoot = (
     isSubmitting: false,
 
     init() {
+        void Templates.prefetchTemplates([
+            'block_coursefeedback/survey/page', 'block_coursefeedback/survey/success',
+            'block_coursefeedback/surveyitems/emoji', 'block_coursefeedback/surveyitems/multiplechoice',
+            'block_coursefeedback/surveyitems/scalequestion', 'block_coursefeedback/surveyitems/singlechoice',
+            'block_coursefeedback/surveyitems/slot_choice', 'block_coursefeedback/surveyitems/text',
+        ]);
+
         const page = pages[this.currentPage0];
         for (const item of page?.items ?? []) {
             this.initHandlerFor(item, page);
