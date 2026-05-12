@@ -24,11 +24,13 @@
  */
 
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
+use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\survey_execution_manager;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\organization_category;
 use block_coursefeedback\local\persistent\survey_execution;
+use block_coursefeedback\local\table\evaluations_table;
 use core\di;
 
 require_once(__DIR__ . '/../../config.php');
@@ -40,7 +42,7 @@ $id = required_param('id', PARAM_INT);
 $organization = organization::get_record(['id' => $id], MUST_EXIST);
 
 permission_manager::require_manage_organization($organization);
-\block_coursefeedback\local\manager\breadcrumbs_manager::setup_organization_evaluations($organization);
+breadcrumbs_manager::setup_organization_evaluations($organization);
 
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/organization_evaluations.php', ['id' => $id]));
 $PAGE->set_context($context);
@@ -78,7 +80,7 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]);
 
-$table = new \block_coursefeedback\local\table\evaluations_table(course_semester_mapping::SELECTED_SEMESTER, $organization);
+$table = new evaluations_table(course_semester_mapping::get_instance()->get_current_semester(), $organization);
 
 echo $OUTPUT->header();
 

@@ -29,11 +29,14 @@ use core\exception\coding_exception;
  */
 class course_semester_mapping_by_customfield extends course_semester_mapping {
 
+    /** @var int The currently selected semester. Which is of course always SoSe 2026. */
+    public const SELECTED_SEMESTER = 20260;
+
     /**
      * Gets the ids of the semester customfield.
      * @return int
      */
-    private static function get_customfield_id(): int {
+    private function get_customfield_id(): int {
         global $DB;
         $record = $DB->get_record('customfield_field', [
             'name' => 'semester',
@@ -46,8 +49,24 @@ class course_semester_mapping_by_customfield extends course_semester_mapping {
     }
 
     #[\Override]
-    public static function get_filter_sql_for_semester(int $semester, string $alias_course_table = 'c'): sql_join {
-        $customfield_id = self::get_customfield_id();
+    public function get_semesters(): array {
+        return [
+            $this->get_current_semester(),
+        ];
+    }
+
+    #[\Override]
+    public function get_current_semester(): evaluation_semester {
+        return new evaluation_semester(
+            self::SELECTED_SEMESTER,
+            'SoSe 2026',
+            self::SELECTED_SEMESTER
+        );
+    }
+
+    #[\Override]
+    public function get_filter_sql_for_semester(evaluation_semester $semester, string $alias_course_table = 'c'): sql_join {
+        $customfield_id = $this->get_customfield_id();
         return new sql_join(
             "JOIN {customfield_data} cfd_semester ON cfd_semester.fieldid = :fieldid
                 AND cfd_semester.value = :semester
@@ -55,7 +74,7 @@ class course_semester_mapping_by_customfield extends course_semester_mapping {
             'TRUE',
             [
                 'fieldid' => $customfield_id,
-                'semester' => $semester,
+                'semester' => $semester->id,
             ]
         );
     }

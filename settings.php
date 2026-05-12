@@ -26,6 +26,7 @@
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\default_survey_creation_method\default_survey_creation_method;
+use block_coursefeedback\local\hook_callbacks;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -47,7 +48,7 @@ if ($hassiteconfig) {
             '',
             0
         );
-        $setting->set_updatedcallback('\block_coursefeedback\local\hook_callbacks::add_block_changed_callback');
+        $setting->set_updatedcallback(hook_callbacks::add_block_changed_callback(...));
         $settings->add($setting);
 
         $settings->add(
@@ -63,20 +64,22 @@ if ($hassiteconfig) {
             )
         );
 
-        $settings->add(
-            new admin_setting_configselect(
-                'block_coursefeedback/course_semester_method',
-                new lang_string('settings:course_semester_method', 'block_coursefeedback'),
-                '',
-                course_semester_mapping::MAP_BY_CUSTOMFIELD,
-                [
-                    course_semester_mapping::MAP_BY_CUSTOMFIELD =>
-                        new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
-                    course_semester_mapping::MAP_MATCH_ALL =>
-                        new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
-                ],
-            )
+        $semester_mapping_setting = new admin_setting_configselect(
+            'block_coursefeedback/course_semester_method',
+            new lang_string('settings:course_semester_method', 'block_coursefeedback'),
+            '',
+            course_semester_mapping::MAP_MATCH_ALL,
+            [
+                course_semester_mapping::MAP_BY_CUSTOMFIELD =>
+                    new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
+                course_semester_mapping::MAP_MOSES =>
+                    new lang_string('settings:course_semester_method:moses', 'block_coursefeedback'),
+                course_semester_mapping::MAP_MATCH_ALL =>
+                    new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
+            ],
         );
+        $semester_mapping_setting->set_validate_function(course_semester_mapping::validate_method(...));
+        $settings->add($semester_mapping_setting);
 
         $settings->add(
             new admin_setting_configselect(
