@@ -1,0 +1,41 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/block_content
+
+    This template renders the block_content.
+
+    Example context (json):
+    {
+    }
+
+}}
+
+<p>
+    {{#str}}this_course_belongs_to, block_coursefeedback, {{organization_name}}{{/str}}
+</p>
+
+<p>
+    {{#str}}
+        evaluation_will_run_in_period,
+        block_coursefeedback,
+        {{#userdate}} {{starttime}}, {{#str}} strftimedatetimeshort, core_langconfig {{/str}} {{/userdate}} -
+        {{#userdate}} {{endtime}}, {{#str}} strftimedatetimeshort, core_langconfig {{/str}} {{/userdate}}
+    {{/str}}
+</p>
+
+<a href="{{{evaluation_settings_url}}}">{{#str}}evaluation_settings, block_coursefeedback{{/str}}</a>
