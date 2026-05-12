@@ -26,8 +26,10 @@ namespace block_coursefeedback\local\table;
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
+use block_coursefeedback\local\course_semester_mapping\evaluation_semester;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
+use core\exception\coding_exception;
 use core\output\html_writer;
 
 defined('MOODLE_INTERNAL') || die;
@@ -49,12 +51,15 @@ class courses_without_evaluation_table extends no_pagination_table {
 
     /**
      * Constructor.
+     *
+     * @param evaluation_semester $semester
+     * @param organization $organization
      */
-    public function __construct(int $semester, organization $organization) {
+    public function __construct(evaluation_semester $semester, organization $organization) {
         global $OUTPUT, $PAGE;
         parent::__construct('block_coursefeedback-courses_without_evaluation');
         $this->define_baseurl($PAGE->url);
-        $semester_join = course_semester_mapping::get_instance()::get_filter_sql_for_semester($semester);
+        $semester_join = course_semester_mapping::get_instance()->get_filter_sql_for_semester($semester);
         $organization_join = course_organization_mapping::get_instance()::get_filter_sql_for_organization($organization);
         $this->set_sql(
             "c.id, fullname as name, shortname",

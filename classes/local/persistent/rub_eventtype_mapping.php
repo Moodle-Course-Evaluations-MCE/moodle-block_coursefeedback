@@ -74,9 +74,9 @@ class rub_eventtype_mapping extends persistent {
      */
     public static function get_used_coursetypes_for_organization(organization $organization): array {
         global $DB;
-        $semester = course_semester_mapping::SELECTED_SEMESTER;
+        $semester = course_semester_mapping::get_instance()->get_current_semester();
         $organizationfilter = course_organization_mapping::get_instance()::get_filter_sql_for_organization($organization);
-        $semesterfilter = course_semester_mapping::get_instance()::get_filter_sql_for_semester($semester);
+        $semesterfilter = course_semester_mapping::get_instance()->get_filter_sql_for_semester($semester);
         return $DB->get_fieldset_sql(
             "SELECT DISTINCT coursetype
                 FROM {local_campusdatapull_rub_campus_event} WHERE semester = :semester2 AND coursenumber IN (

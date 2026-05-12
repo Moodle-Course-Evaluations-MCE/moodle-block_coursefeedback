@@ -16,7 +16,10 @@
 
 namespace block_coursefeedback\local\course_semester_mapping;
 
+use core\di;
 use core\dml\sql_join;
+use core\exception\coding_exception;
+use moodle_exception;
 
 /**
  * Abstract course semester mapping stuff.
@@ -31,31 +34,66 @@ abstract class course_semester_mapping {
     /** @var string Map course to semesters by course custom field. */
     public const MAP_BY_CUSTOMFIELD = 'customfield';
 
+    /** @var string Map course to semester by using Moses MTS data provided by the local_moses plugin. */
+    public const MAP_MOSES = 'moses';
+
     /** @var string Map course to semesters matching all courses to all semesters. */
     public const MAP_MATCH_ALL = 'match-all';
 
+    /**
+     * Returns all available semesters.
+     *
+     * @return evaluation_semester[]
+     */
+    abstract public function get_semesters(): array;
 
-    /** @var int The currently selected semester. Which is of course always SoSe 2026. */
-    public const SELECTED_SEMESTER = 20260;
+    /**
+     * Returns the current semester.
+     *
+     * @return evaluation_semester
+     */
+    abstract public function get_current_semester(): evaluation_semester;
 
     /**
      * Return sql to filter courses by this semester.
-     * @param int $semester $year * 10 + $iswinterterm ? 1 : 0.   20260 means SoSe 2026, 20261 means WiSe 2026/27.
-     * @param string $alias_course_table What the course table is called.
+     * @param evaluation_semester $semester
+     * @param string $alias_course_table What the course table is aliased to in the query.
      * @return sql_join
      */
-    abstract public static function get_filter_sql_for_semester(int $semester, string $alias_course_table = 'c'): sql_join;
+    abstract public function get_filter_sql_for_semester(evaluation_semester $semester, string $alias_course_table = 'c'): sql_join;
+
+    /**
+     * Validates that the given method can be used in the current environment.
+     *
+     * @param string $method
+     * @return string Error message if the method is invalid, empty string otherwise.
+     */
+    final public static function validate_method(string $method): string {
+        try {
+            // Instantiate the mapper to allow it to do some validation.
+            self::get_instance($method);
+        } catch (moodle_exception $e) {
+            return $e->getMessage();
+        }
+        return '';
+    }
 
     /**
      * Returns the correct course_semester_mapping function based on the setting.
-     * @return class-string<course_semester_mapping>
+     *
+     * @param string|null $method
+     * @return self
      */
-    public static function get_instance(): string {
-        $method = get_config('block_coursefeedback', 'course_semester_method');
-        static $instances = [
-            self::MAP_BY_CUSTOMFIELD => course_semester_mapping_by_customfield::class,
-            self::MAP_MATCH_ALL => course_semester_mapping_match_all::class,
-        ];
-        return $instances[$method];
+    final public static function get_instance(?string $method = null): self {
+        if (!$method) {
+             $method = get_config('block_coursefeedback', 'course_semester_method');
+        }
+
+        return match ($method) {
+            self::MAP_BY_CUSTOMFIELD => di::get(course_semester_mapping_by_customfield::class),
+            self::MAP_MOSES => di::get(course_semester_mapping_moses::class),
+            self::MAP_MATCH_ALL => di::get(course_semester_mapping_match_all::class),
+            default => throw new coding_exception("Invalid course semester mapping method: $method")
+        };
     }
 }

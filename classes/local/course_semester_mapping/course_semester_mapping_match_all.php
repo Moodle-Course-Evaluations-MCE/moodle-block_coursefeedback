@@ -17,9 +17,10 @@
 namespace block_coursefeedback\local\course_semester_mapping;
 
 use core\dml\sql_join;
+use core\lang_string;
 
 /**
- * Semester mapping which just matches all courses.
+ * Semester mapping that just matches all courses.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin
@@ -28,8 +29,32 @@ use core\dml\sql_join;
  */
 class course_semester_mapping_match_all extends course_semester_mapping {
 
+    /** @var evaluation_semester */
+    private readonly evaluation_semester $semester;
+
+    /**
+     * Constructor.
+     */
+    public function __construct() {
+        $this->semester = new evaluation_semester(
+            id: 1,
+            name: new lang_string('all_courses', 'block_coursefeedback'),
+            sort_index: 0
+        );
+    }
+
     #[\Override]
-    public static function get_filter_sql_for_semester(int $semester, string $alias_course_table = 'c'): sql_join {
+    public function get_semesters(): array {
+        return [ $this->semester ];
+    }
+
+    #[\Override]
+    public function get_current_semester(): evaluation_semester {
+        return $this->semester;
+    }
+
+    #[\Override]
+    public function get_filter_sql_for_semester(evaluation_semester $semester, string $alias_course_table = 'c'): sql_join {
         return new sql_join(
             wheres: '1=1',
         );

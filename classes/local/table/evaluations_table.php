@@ -26,11 +26,12 @@ namespace block_coursefeedback\local\table;
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
+use block_coursefeedback\local\course_semester_mapping\evaluation_semester;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
 use context_system;
+use core\exception\coding_exception;
 use core\output\html_writer;
-use core\output\pix_icon;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -56,17 +57,18 @@ class evaluations_table extends no_pagination_table {
 
     /**
      * Constructs the table of evaluations.
-     * @var int $semester Semester as described in course_semester_mapping to filter by.
-     * @param organization $organization Organization to filter by.
+     *
+     * @var evaluation_semester $semester Semester as described in course_semester_mapping to filter by.
+     * @var organization $organization Organization to filter by.
      */
     public function __construct(
-        public readonly int $semester,
+        public readonly evaluation_semester $semester,
         private readonly organization $organization,
     ) {
         global $OUTPUT, $PAGE;
         parent::__construct('block_coursefeedback-evaluations');
         $this->define_baseurl($PAGE->url);
-        $semester_join = course_semester_mapping::get_instance()::get_filter_sql_for_semester($this->semester);
+        $semester_join = course_semester_mapping::get_instance()->get_filter_sql_for_semester($this->semester);
         $organization_join = course_organization_mapping::get_instance()::get_filter_sql_for_organization($this->organization);
         $this->set_sql(
             "c.id as courseid, c.fullname as name, se.starttime, se.endtime, se.status ",

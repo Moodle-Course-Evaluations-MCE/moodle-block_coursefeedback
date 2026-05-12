@@ -65,7 +65,7 @@ if ($action) {
             $surveyexecutions = default_survey_creation_method::get_instance()::create_survey_execution(
                 $courseids,
                 $organization,
-                course_semester_mapping::SELECTED_SEMESTER,
+                course_semester_mapping::get_instance()->get_current_semester()->id,
             );
             $surveyexecutionids = array_map(fn (survey_execution $se) => $se->get('id'), $surveyexecutions);
             \core\task\manager::queue_adhoc_task(
@@ -81,7 +81,7 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/organization.php', ['id' => $id]);
 
-$table = new courses_without_evaluation_table(course_semester_mapping::SELECTED_SEMESTER, $organization);
+$table = new courses_without_evaluation_table(course_semester_mapping::get_instance()->get_current_semester(), $organization);
 
 echo $OUTPUT->header();
 
