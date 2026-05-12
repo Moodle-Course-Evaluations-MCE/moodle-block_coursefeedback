@@ -131,6 +131,26 @@ abstract class persistent_with_bulk_actions extends persistent {
     }
 
     /**
+     * Like {@see \moodle_database::get_records_list()}, but for a persistent.
+     *
+     * @param string $property
+     * @param array $values
+     * @return array<int, static>
+     */
+    public static function get_records_list(string $property, array $values): array {
+        if (!static::has_property($property)) {
+            throw new coding_exception('Unexpected property \'' . s($property) . '\' requested.');
+        }
+        if (!$values) {
+            return [];
+        }
+
+        global $DB;
+        [$insql, $params] = $DB->get_in_or_equal($values);
+        return self::get_records_select("$property $insql", $params);
+    }
+
+    /**
      * Shorthand for {@see record_extractor::maybe_extract()} and {@see persistent::__construct()}.
      *
      * @param object $record

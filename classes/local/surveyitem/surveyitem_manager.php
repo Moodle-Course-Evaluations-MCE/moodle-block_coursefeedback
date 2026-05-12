@@ -88,15 +88,17 @@ class surveyitem_manager {
      * Fetches the surveyitems for the surveyparts.
      *
      * @param surveypart[] $surveyparts
-     * @return array [int $surveypartid => [surveyitem $surveyitem]]
+     * @return array<int, surveyitem[]> [int $surveypartid => [surveyitem $surveyitem]]
      */
     private static function get_surveyitems_for_surveyparts(array $surveyparts): array {
-        // TODO improve performance.
-        $surveyitems = [];
-        foreach ($surveyparts as $surveypart) {
-            $surveyitems[$surveypart->get('id')] = $surveypart->get_surveyitems();
+        $all_items = surveyitem::get_records_list('surveypartid', array_map(fn($sp) => $sp->get('id'), $surveyparts));
+
+        $items_by_surveypartid = [];
+        foreach ($all_items as $item) {
+            $items_by_surveypartid[$item->get('surveypartid')][] = $item;
         }
-        return $surveyitems;
+
+        return $items_by_surveypartid;
     }
 
     /**
