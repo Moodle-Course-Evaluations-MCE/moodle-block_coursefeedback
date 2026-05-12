@@ -25,7 +25,6 @@ use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
-use context_course;
 use core\di;
 use core\exception\coding_exception;
 use core_external\external_api;
@@ -107,8 +106,7 @@ class delete_event extends external_api {
         [ 'courseid' => $courseid, 'eventid' => $eventid ] =
             self::validate_parameters(self::execute_parameters(), [ 'courseid' => $courseid, 'eventid' => $eventid ]);
 
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
+        self::validate_context(\context_system::instance());
         $course = get_course($courseid);
 
         permission_manager::require_edit_course_surveysettings($course, null);

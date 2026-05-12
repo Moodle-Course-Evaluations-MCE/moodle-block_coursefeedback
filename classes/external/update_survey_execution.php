@@ -22,7 +22,6 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\survey_execution_period;
 use coding_exception;
-use context_course;
 use core\di;
 use core\exception\moodle_exception;
 use core_date;
@@ -144,8 +143,7 @@ class update_survey_execution extends external_api {
 
         $courseid = $survey_execution->get('courseid');
 
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
+        self::validate_context(\context_system::instance());
         $course = get_course($courseid);
 
         if (

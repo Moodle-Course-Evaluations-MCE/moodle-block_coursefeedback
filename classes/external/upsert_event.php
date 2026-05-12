@@ -21,13 +21,11 @@ use block_coursefeedback\local\persistent\eventtype;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
-use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use coding_exception;
-use context_course;
 use core\di;
 use core_external\external_api;
 use core_external\external_description;
@@ -87,8 +85,7 @@ class upsert_event extends external_api {
         $survey_execution = survey_execution::get_record(['id' => $surveyexecutionid], MUST_EXIST);
         $courseid = $survey_execution->get('courseid');
 
-        $context = context_course::instance($courseid);
-        self::validate_context($context);
+        self::validate_context(\context_system::instance());
         $course = get_course($courseid);
 
         permission_manager::require_edit_course_surveysettings($course, $survey_execution->get('organizationid'));
