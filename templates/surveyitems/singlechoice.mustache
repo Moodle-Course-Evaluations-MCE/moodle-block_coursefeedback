@@ -77,10 +77,10 @@
 
 <div class="coursefeedback-questiontext">
     {{{ questiontext }}}
+    {{#required}}
+        <span class="text-danger" title="{{#str}}required{{/str}}" aria-hidden="true">{{#pix}}req{{/pix}}</span>
+    {{/required}}
 </div>
-{{#required}}
-    <span class="text-danger" title="{{#str}}required{{/str}}" aria-hidden="true">{{#pix}}req{{/pix}}</span>
-{{/required}}
 <div class="mt-2 ms-3">
     <form>
         {{# options }}
