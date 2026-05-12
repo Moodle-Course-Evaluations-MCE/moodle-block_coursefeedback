@@ -169,4 +169,16 @@ class permission_manager {
             return self::check_teacher_organization_capability($course, $organization_or_id, 'can_teacher_edit_speriod');
         }
     }
+
+    /**
+     * Whether the user can view the course settings.
+     * @param stdClass $course
+     * @param organization $organization
+     * @return bool
+     */
+    public static function can_view_course_settings(stdClass $course, organization $organization): bool {
+        $context = \context_course::instance($course->id);
+        return has_capability('block/coursefeedback:viewcoursesettings', $context)
+            || self::can_manage_organization($organization);
+    }
 }

@@ -23,17 +23,16 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\manager\permission_manager;
-use block_coursefeedback\local\survey_execution_data;
-use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\persistent\survey_execution_user;
+use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
 use block_coursefeedback\output\survey_execution_period;
 use core\di;
 use core\exception\coding_exception;
-use core\output\notification;
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $PAGE;
@@ -43,7 +42,6 @@ $id = required_param('id', PARAM_INT);
 
 $course = get_course($id);
 $context = context_course::instance($course->id);
-require_capability('block/coursefeedback:viewcoursesettings', $context);
 
 $PAGE->set_url('/blocks/coursefeedback/course.php', ['id' => $id]);
 $PAGE->set_context($context);
@@ -52,7 +50,11 @@ $PAGE->set_course($course);
 $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
 
 if (!$organization) {
-    throw new \core\exception\coding_exception('Course does not belong to an evaluation organization');
+    throw new coding_exception('Course does not belong to an evaluation organization');
+}
+
+if (!permission_manager::can_view_course_settings($course, $organization)) {
+    throw new coding_exception('You are not allowed to view this page.');
 }
 
 $model = survey_execution_data::load_from_course_required($course, $organization->get('id'));
@@ -61,7 +63,7 @@ $action = optional_param('action', false, PARAM_ALPHANUMEXT);
 if ($action === 'delete_responses') {
     require_sesskey();
 
-    if (!permission_manager::can_delete_responses($organization)) {
+    if (!permission_manager::can_delete_responses()) {
         throw new coding_exception('You do not have permission to do this.');
     }
 
