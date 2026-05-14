@@ -197,7 +197,7 @@ $string['survey_created_message_help'] = '<p>In den folgenden Texten können die
 
 <p>
 Falls Lehrende den Evaluationszeitraum oder die Evaluationseinstellungen bearbeiten dürfen, inkludieren Sie bitte den entsprechenden Link.<br>
-Dies können Sie tun, indem Sie auf den Link-Button klicken, frei einen "Text zum Anzeigen" wählen, und in "URL eingeben" ##SETINGS_URL## angeben.
+Dies können Sie tun, indem Sie im Editor auf den Link-Button klicken, frei einen "Text zum Anzeigen" wählen, und in "URL eingeben" ##SETTINGS_URL## angeben.
 </p>
 ';
 $string['survey_execution_endtime'] = 'Endzeitpunkt der Evaluation in diesem Kurs';
