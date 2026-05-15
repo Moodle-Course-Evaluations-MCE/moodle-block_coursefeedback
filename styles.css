@@ -91,6 +91,18 @@
     outline: .2rem solid #000102;
 }
 
+.block_coursefeedback-survey {
+    input[type="radio"],
+    input[type="checkbox"] {
+        width: 1.4rem;
+        height: 1.4rem;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
+
 .block_coursefeedback-survey-success {
     /* For Moodle 4/5 compatibility. */
     /* stylelint-disable-next-line declaration-no-important */
