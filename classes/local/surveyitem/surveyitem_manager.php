@@ -91,7 +91,11 @@ class surveyitem_manager {
      * @return array<int, surveyitem[]> [int $surveypartid => [surveyitem $surveyitem]]
      */
     private static function get_surveyitems_for_surveyparts(array $surveyparts): array {
-        $all_items = surveyitem::get_records_list('surveypartid', array_map(fn($sp) => $sp->get('id'), $surveyparts));
+        $all_items = surveyitem::get_records_list(
+            'surveypartid',
+            array_map(fn($sp) => $sp->get('id'), $surveyparts),
+            sort: 'sortindex ASC'
+        );
 
         $items_by_surveypartid = [];
         foreach ($all_items as $item) {
