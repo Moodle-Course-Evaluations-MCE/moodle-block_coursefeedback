@@ -78,7 +78,7 @@
             <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap coursefeedback-small-flex-basis-100 justify-content-around align-items-center md-px-3">
                 {{# options }}
                     <label class="block_coursefeedback-scaleoption coursefeedback-small-flex-basis-100 mb-0">
-                        <input class="text-center" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
+                        <input class="form-check-input" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
                         <span class="ms-1 d-md-none">{{{ text }}}</span>
                     </label>
                 {{/ options }}
@@ -86,7 +86,7 @@
             {{# has_na_option }}
                 <div class="d-flex text-md-center align-items-center justify-content-around coursefeedback-small-flex-basis-100 mt-2 mt-md-0" style="flex-basis: calc(100% / {{ optionamount }})">
                     <label class="block_coursefeedback-scaleoption mb-0">
-                        <input class="" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{ na_option }}}" value="-1">
+                        <input class="form-check-input" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{ na_option }}}" value="-1">
                         <span class="ms-1 d-md-none">{{{ na_option }}}</span>
                     </label>
                 </div>
