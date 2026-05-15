@@ -42,49 +42,53 @@ class hook_callbacks {
      */
     public static function after_standard_main_region_html_generation(after_standard_main_region_html_generation $hook) {
         global $PAGE;
-        if (
-            $PAGE->context->contextlevel !== CONTEXT_COURSE
-            || !$PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
-            || !has_capability('block/coursefeedback:filloutsurvey', $PAGE->context)
-        ) {
-            return;
+        try {
+            if (
+                $PAGE->context->contextlevel !== CONTEXT_COURSE
+                || !$PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
+                || !has_capability('block/coursefeedback:filloutsurvey', $PAGE->context)
+            ) {
+                return;
+            }
+
+            // TODO: Probably cache the result of this rather large query.
+            $course_data = survey_execution_data::load_from_course($PAGE->course);
+            if (!$course_data) {
+                return;
+            }
+
+            $now = time();
+            $is_active = $course_data->survey_execution->get('status') === survey_execution::STATUS_STARTED
+                && $course_data->survey_execution->get('starttime') <= $now
+                && $now < $course_data->survey_execution->get('endtime');
+            if (!$is_active) {
+                return;
+            }
+
+            global $USER;
+            if (
+                survey_execution_user::record_exists_cond([
+                    'surveyexecutionid' => $course_data->survey_execution->get('id'),
+                    'userid' => $USER->id,
+                ])
+            ) {
+                // The user has already filled out this survey.
+                return;
+            }
+
+            $survey = survey::for_course($course_data);
+            if ($survey->is_empty()) {
+                debugging("There is an active survey, but it's empty.");
+                return;
+            }
+
+            $renderer = $PAGE->get_renderer('block_coursefeedback');
+
+            // We add the survey HTML to the end of the page, it'll move itself to the notification area.
+            $hook->add_html($renderer->render($survey));
+        } catch (\Exception $e) {
+            debugging($e);
         }
-
-        // TODO: Probably cache the result of this rather large query.
-        $course_data = survey_execution_data::load_from_course($PAGE->course);
-        if (!$course_data) {
-            return;
-        }
-
-        $now = time();
-        $is_active = $course_data->survey_execution->get('status') === survey_execution::STATUS_STARTED
-            && $course_data->survey_execution->get('starttime') <= $now
-            && $now < $course_data->survey_execution->get('endtime');
-        if (!$is_active) {
-            return;
-        }
-
-        global $USER;
-        if (
-            survey_execution_user::record_exists_cond([
-                'surveyexecutionid' => $course_data->survey_execution->get('id'),
-                'userid' => $USER->id,
-            ])
-        ) {
-            // The user has already filled out this survey.
-            return;
-        }
-
-        $survey = survey::for_course($course_data);
-        if ($survey->is_empty()) {
-            debugging("There is an active survey, but it's empty.");
-            return;
-        }
-
-        $renderer = $PAGE->get_renderer('block_coursefeedback');
-
-        // We add the survey HTML to the end of the page, it'll move itself to the notification area.
-        $hook->add_html($renderer->render($survey));
     }
 
     /**
@@ -92,19 +96,23 @@ class hook_callbacks {
      * @param primary_extend $hook
      */
     public static function primary_extend(primary_extend $hook) {
-        if (has_capability('moodle/site:config', \context_system::instance())) {
-            return;
-        }
-        if (permission_manager::can_do_any_evaluation_administration()) {
-            $hook->primaryview->add(
-                get_string('evaluationadministration', 'block_coursefeedback'),
-                new moodle_url('/blocks/coursefeedback/overview.php'),
-            );
-        } else if (user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator_anywhere()) {
-            $hook->primaryview->add(
-                get_string('evaluationadministration', 'block_coursefeedback'),
-                new moodle_url('/blocks/coursefeedback/organizations.php'),
-            );
+        try {
+            if (has_capability('moodle/site:config', \context_system::instance())) {
+                return;
+            }
+            if (permission_manager::can_do_any_evaluation_administration()) {
+                $hook->primaryview->add(
+                    get_string('evaluationadministration', 'block_coursefeedback'),
+                    new moodle_url('/blocks/coursefeedback/overview.php'),
+                );
+            } else if (user_organization_cache_manager::get_instance()->is_user_evaluation_coordinator_anywhere()) {
+                $hook->primaryview->add(
+                    get_string('evaluationadministration', 'block_coursefeedback'),
+                    new moodle_url('/blocks/coursefeedback/organizations.php'),
+                );
+            }
+        } catch (\Exception $e) {
+            debugging($e);
         }
     }
 

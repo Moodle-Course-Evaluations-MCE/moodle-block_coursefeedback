@@ -59,15 +59,19 @@ function block_coursefeedback_extend_navigation_course(
     context $context,
 ): void {
     global $DB;
-    if (
-        has_capability('block/coursefeedback:viewcoursesettings', $context)
-        && ($organization = course_organization_mapping::get_instance()::get_organization_for_course($course))
-        && $DB->record_exists(
-            survey_execution::TABLE,
-            ['courseid' => $course->id, 'organizationid' => $organization->get('id')]
-        )
-    ) {
-        $url = new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]);
-        $parentnode->add(get_string("course_settings", "block_coursefeedback"), $url, key: "coursefeedback");
+    try {
+        if (
+            has_capability('block/coursefeedback:viewcoursesettings', $context)
+            && ($organization = course_organization_mapping::get_instance()::get_organization_for_course($course))
+            && $DB->record_exists(
+                survey_execution::TABLE,
+                ['courseid' => $course->id, 'organizationid' => $organization->get('id')]
+            )
+        ) {
+            $url = new moodle_url('/blocks/coursefeedback/course.php', ['id' => $course->id]);
+            $parentnode->add(get_string("course_settings", "block_coursefeedback"), $url, key: "coursefeedback");
+        }
+    } catch (\Exception $e) {
+        debugging($e);
     }
 }
