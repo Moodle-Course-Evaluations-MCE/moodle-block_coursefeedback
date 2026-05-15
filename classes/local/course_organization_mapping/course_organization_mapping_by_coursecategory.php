@@ -42,7 +42,11 @@ class course_organization_mapping_by_coursecategory extends course_organization_
             return null;
         }
 
-        $category = \core_course_category::get($course->category);
+        $category = \core_course_category::get($course->category, IGNORE_MISSING, true);
+        if (!$category) {
+            return null;
+        }
+
         $organizationid = organization_category::get_organizationid_for_category($category);
         if (!$organizationid) {
             return null;
