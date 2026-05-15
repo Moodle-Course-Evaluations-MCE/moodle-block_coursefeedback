@@ -135,9 +135,10 @@ abstract class persistent_with_bulk_actions extends persistent {
      *
      * @param string $property
      * @param array $values
+     * @param string $sort
      * @return array<int, static>
      */
-    public static function get_records_list(string $property, array $values): array {
+    public static function get_records_list(string $property, array $values, string $sort = ''): array {
         if (!static::has_property($property)) {
             throw new coding_exception('Unexpected property \'' . s($property) . '\' requested.');
         }
@@ -147,7 +148,7 @@ abstract class persistent_with_bulk_actions extends persistent {
 
         global $DB;
         [$insql, $params] = $DB->get_in_or_equal($values);
-        return self::get_records_select("$property $insql", $params);
+        return self::get_records_select("$property $insql", $params, $sort);
     }
 
     /**
