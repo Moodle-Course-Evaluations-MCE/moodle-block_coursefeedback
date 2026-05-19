@@ -95,7 +95,10 @@ class upsert_event extends external_api {
         global $DB, $OUTPUT;
         $transaction = $DB->start_delegated_transaction();
 
-        $eventtype = eventtype::get_record(['id' => $eventtypeid], MUST_EXIST);
+        $eventtype = eventtype::get_record([
+            'id' => $eventtypeid,
+            'organizationid' => $survey_execution->get('organizationid'),
+        ], MUST_EXIST);
 
         if ($eventid) {
             self::update_event($courseid, $survey_execution, $eventtype, $name, $eventid);

@@ -180,7 +180,7 @@
 }}
 
 <div class="overflow-auto">
-    <table class="table block_coursefeedback-course-event-slot-table"
+    <table class="table block_coursefeedback-course-event-slot-table" style="margin-bottom: 100px"
            x-data="table({{course.id}})"
            x-ref="courseMappingTable">
         <thead>
@@ -380,3 +380,6 @@
     </table>
 </div>
 {{#register_alpine_js_module}} block_coursefeedback/course_event_slot_table {{/register_alpine_js_module}}
+{{#js}}
+    require(['core/inplace_editable']);
+{{/js}}

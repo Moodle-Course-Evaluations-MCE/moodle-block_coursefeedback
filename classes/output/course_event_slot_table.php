@@ -137,7 +137,10 @@ class course_event_slot_table implements named_templatable, renderable {
      */
     private function export_available_event_types(?int $selectedid = null): array {
         if ($this->availableeventtypes === null) {
-            $this->availableeventtypes = eventtype::get_records(['active' => true]);
+            $this->availableeventtypes = eventtype::get_records([
+                'active' => true,
+                'organizationid' => $this->survey_data->organization->get('id'),
+            ]);
         }
 
         return array_map(fn($type) => [

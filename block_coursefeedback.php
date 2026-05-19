@@ -57,33 +57,37 @@ class block_coursefeedback extends block_base {
      */
     private function generate_content(): string {
         global $OUTPUT;
+        try {
+            $mapper = course_organization_mapping::get_instance();
+            $organization = $mapper::get_organization_for_course($this->page->course);
+            if (!$organization) {
+                return '';
+            }
 
-        $mapper = course_organization_mapping::get_instance();
-        $organization = $mapper::get_organization_for_course($this->page->course);
-        if (!$organization) {
-            return '';
+            if (!permission_manager::can_view_course_settings($this->page->course, $organization)) {
+                return '';
+            }
+
+            $survey_execution = survey_execution::get_record([
+                'organizationid' => $organization->get('id'),
+                'courseid' => $this->page->course->id,
+            ]);
+            if (!$survey_execution) {
+                return '';
+            }
+
+            $context = [
+                'organization_name' => $organization->get('name'),
+                'evaluation_settings_url' => new moodle_url('/blocks/coursefeedback/course.php', ['id' => $this->page->course->id]),
+                'starttime' => $survey_execution->get('starttime') ?? $organization->get('default_evaluation_starttime'),
+                'endtime' => $survey_execution->get('endtime') ?? $organization->get('default_evaluation_endtime'),
+            ];
+
+            return $OUTPUT->render_from_template('block_coursefeedback/block_content', $context);
+        } catch (Exception $e) {
+            debugging($e);
         }
-
-        if (!permission_manager::can_view_course_settings($this->page->course, $organization)) {
-            return '';
-        }
-
-        $survey_execution = survey_execution::get_record([
-            'organizationid' => $organization->get('id'),
-            'courseid' => $this->page->course->id,
-        ]);
-        if (!$survey_execution) {
-            return '';
-        }
-
-        $context = [
-            'organization_name' => $organization->get('name'),
-            'evaluation_settings_url' => new moodle_url('/blocks/coursefeedback/course.php', ['id' => $this->page->course->id]),
-            'starttime' => $survey_execution->get('starttime') ?? $organization->get('default_evaluation_starttime'),
-            'endtime' => $survey_execution->get('endtime') ?? $organization->get('default_evaluation_endtime'),
-        ];
-
-        return $OUTPUT->render_from_template('block_coursefeedback/block_content', $context);
+        return '';
     }
 
     /**
