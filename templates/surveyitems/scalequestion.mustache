@@ -56,41 +56,39 @@
     }
 
 }}
-<form>
-    {{# show_scale }}
-        <div class="d-none d-md-flex" style="margin-left: 25%" aria-hidden="true">
-            <div class="flex-grow-1 align-items-center mb-2 text-center"
-                 style="display: grid; grid-template-columns: repeat({{optionamount}}, 1fr);">
-                {{# options }}
-                    <span>{{text}}</span>
-                {{/ options }}
-            </div>
-            {{# has_na_option }}
-                <div class="text-center" style="flex-basis: calc(100% / {{optionamount}})">
-                    {{ na_option }}
-                </div>
-            {{/ has_na_option }}
-        </div>
-    {{/ show_scale }}
-    <div class="d-flex flex-wrap flex-md-nowrap {{^show_scale}}coursefeedback-no-show-scale{{/show_scale}}">
-        <div class="coursefeedback-scale-questiontext coursefeedback-questiontext coursefeedback-small-flex-basis-100">{{{ questiontext }}}</div>
-        <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap ms-3 mt-2 m-md-0">
-            <div class="d-flex flex-grow-1 flex-wrap flex-md-nowrap coursefeedback-small-flex-basis-100 justify-content-around align-items-center md-px-3">
-                {{# options }}
-                    <label class="block_coursefeedback-scaleoption coursefeedback-small-flex-basis-100 mb-0">
-                        <input class="form-check-input" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{text}}}, option {{id}} / {{ optionamount }}" value="{{id}}">
-                        <span class="ms-1 d-md-none">{{{ text }}}</span>
-                    </label>
-                {{/ options }}
-            </div>
-            {{# has_na_option }}
-                <div class="d-flex text-md-center align-items-center justify-content-around coursefeedback-small-flex-basis-100 mt-2 mt-md-0" style="flex-basis: calc(100% / {{ optionamount }})">
-                    <label class="block_coursefeedback-scaleoption mb-0">
-                        <input class="form-check-input" type="radio" name="surveyitem-{{ surveyitemid }}" aria-label="{{{ na_option }}}" value="0">
-                        <span class="ms-1 d-md-none">{{{ na_option }}}</span>
-                    </label>
-                </div>
-            {{/ has_na_option }}
-        </div>
-    </div>
-</form>
+{{< block_coursefeedback/surveyitems/base }}
+    {{$layout}}2-columns{{/layout}}
+    {{$extra_classes}}{{#show_scale}}always-show-scale{{/show_scale}}{{/extra_classes}}
+    {{$answer_area_content}}
+        {{# options }}
+            <label class="option-label" for="block_coursefeedback-surveyitem-{{ surveyitemid }}-option-{{id}}"
+                   aria-hidden="true">
+                {{{ text }}}
+            </label>
+            {{! We wrap the input in an empty label so the entire cell is clickable. }}
+            <label class="option-input-container"
+                {{#text}} title="{{text}}" {{/text}}>
+                <input class="form-check-input"
+                       type="radio"
+                       name="surveyitem-{{ surveyitemid }}"
+                       value="{{id}}"
+                       id="block_coursefeedback-surveyitem-{{ surveyitemid }}-option-{{id}}"
+                       aria-label="{{text}}, option {{id}} / {{ optionamount }}">
+            </label>
+        {{/ options }}
+        {{# has_na_option }}
+            <label class="option-label" for="block_coursefeedback-surveyitem-{{ surveyitemid }}-option-na"
+                   aria-hidden="true">
+                {{{ na_option }}}
+            </label>
+            <label class="option-input-container" title="{{ na_option }}">
+                <input class="form-check-input"
+                       type="radio"
+                       name="surveyitem-{{ surveyitemid }}"
+                       value="0"
+                       id="block_coursefeedback-surveyitem-{{ surveyitemid }}-option-na"
+                       aria-label="{{ na_option }}">
+            </label>
+        {{/ has_na_option }}
+    {{/answer_area_content}}
+{{/ block_coursefeedback/surveyitems/base }}

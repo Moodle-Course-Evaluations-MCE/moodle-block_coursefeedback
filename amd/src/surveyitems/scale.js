@@ -26,16 +26,14 @@ import { toArray } from "block_coursefeedback/util";
 
 export class Scale extends SurveyItem {
 
-    form = this.surveyItemRootElement.querySelector('form');
-
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     getValue() {
-        return new FormData(this.form).get(this.inputName);
+        return new FormData(this.surveyItemRootElement).get(this.inputName);
     }
 
     setValue(value) {
-        toArray(this.form.elements[this.inputName])
+        toArray(this.surveyItemRootElement.elements[this.inputName])
             .filter(input => input.value === value)
             .forEach(input => void (input.checked = true));
     }

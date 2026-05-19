@@ -26,17 +26,14 @@ import { toArray } from "block_coursefeedback/util";
 
 export class MultipleChoice extends SurveyItem {
 
-    /** @type HTMLFormElement */
-    form = this.surveyItemRootElement.querySelector('form');
-
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     getValue() {
-        return new FormData(this.form).getAll(this.inputName);
+        return new FormData(this.surveyItemRootElement).getAll(this.inputName);
     }
 
     setValue(value) {
-        toArray(this.form.elements[this.inputName])
+        toArray(this.surveyItemRootElement.elements[this.inputName])
             .filter(input => value.includes(input.value))
             .forEach(input => void (input.checked = true));
     }

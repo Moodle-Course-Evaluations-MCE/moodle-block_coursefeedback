@@ -35,17 +35,15 @@
     }
 
 }}
-<div class="coursefeedback-questiontext">
-    {{{ questiontext }}}
-</div>
-<div class="mt-2 ms-3">
-    <form class="coursefeedback-surveyitem-emoji">
+{{< block_coursefeedback/surveyitems/base }}
+    {{$answer_area_content}}
         {{#choices}}
-            <input type="radio" class="block_coursefeedback-btn-check" name="surveyitem-{{surveyitemid}}" id="block_coursefeedback-surveyitem-{{surveyitemid}}-{{value}}" value="{{value}}">
+            <input type="radio" class="block_coursefeedback-btn-check" name="surveyitem-{{surveyitemid}}"
+                   id="block_coursefeedback-surveyitem-{{surveyitemid}}-{{value}}" value="{{value}}">
             <label class="btn btn-outline-primary" for="block_coursefeedback-surveyitem-{{surveyitemid}}-{{value}}">
                 <span class="coursefeedback-choice-emoji">{{emoji}}</span>
                 {{{text}}}
             </label>
         {{/choices}}
-    </form>
-</div>
+    {{/answer_area_content}}
+{{/ block_coursefeedback/surveyitems/base }}

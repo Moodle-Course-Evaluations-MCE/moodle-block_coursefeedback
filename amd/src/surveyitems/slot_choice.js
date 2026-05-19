@@ -25,25 +25,22 @@ import { toArray } from "block_coursefeedback/util";
  */
 export class SlotChoiceSurveyItem extends SurveyItem {
 
-    /** @type HTMLFormElement */
-    form = this.surveyItemRootElement.querySelector('form');
-
     inputName = `surveyitem-${this.surveyItemData.surveyitemid}`;
 
     initialize() {
-        toArray(this.form.elements[this.inputName])
+        toArray(this.surveyItemRootElement.elements[this.inputName])
             .filter(input => input.value === this.surveyContext.slotId)
             .forEach(input => void (input.checked = true));
 
-        this.form.addEventListener('change', (e) => {
+        this.surveyItemRootElement.addEventListener('change', (e) => {
             this.surveyContext.slotId = parseInt(e.target.value);
         });
     }
 
     async beforeNext({prevent}) {
         // The slot choice is the one time we want to force users to give an answer.
-        if (!this.form.checkValidity()) {
-            this.form.reportValidity();
+        if (!this.surveyItemRootElement.checkValidity()) {
+            this.surveyItemRootElement.reportValidity();
             prevent();
         }
     }
