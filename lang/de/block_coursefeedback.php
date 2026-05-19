@@ -80,6 +80,7 @@ $string['delete_event'] = 'Lehrveranstaltung entfernen';
 $string['delete_slot'] = 'Untergruppe entfernen';
 $string['delete_survey_responses'] = 'Antworten löschen';
 $string['delete_survey_responses_confirm'] = 'Möchten Sie wirklich alle Antworten von <b>{$a->num}</b> Nutzer/innen auf die Evaluation im Kurs <q><b>{$a->coursename}</b></q> löschen? Dies kann nicht rückgängig gemacht werden.';
+$string['dropdown'] = 'Dropdown-Liste';
 $string['edit_default_survey_period'] = 'Standard-Evaluationszeitraum anpassen';
 $string['edit_event'] = 'Lehrveranstaltung bearbeiten';
 $string['edit_organization'] = 'Organisation bearbeiten';

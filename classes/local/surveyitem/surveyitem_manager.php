@@ -30,6 +30,7 @@ use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\surveyitem\dropdown\dropdown;
 use block_coursefeedback\local\surveyitem\emoji\emoji_surveyitem;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
@@ -59,6 +60,7 @@ class surveyitem_manager {
      */
     public static function get_all_surveyitemtypes(): array {
         static $surveyitemtypes = [
+            'dropdown' => new dropdown(),
             'singlechoice' => new singlechoice(),
             'multiplechoice' => new multiplechoice(),
             'text' => new text(),
