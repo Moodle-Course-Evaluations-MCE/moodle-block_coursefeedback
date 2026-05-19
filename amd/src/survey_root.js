@@ -22,10 +22,12 @@ import { Scale } from "./surveyitems/scale";
 import { EmojiSurveyItem } from "./surveyitems/emoji";
 import { SlotChoiceSurveyItem } from "./surveyitems/slot_choice";
 import { ajaxAndHandleError } from "./util";
+import { DropdownList } from "./surveyitems/dropdown";
 
 const surveyItemClasses = {
     'multiplechoice': MultipleChoice,
     'singlechoice': SingleChoice,
+    'dropdown': DropdownList,
     'text': Text,
     'scalequestion': Scale,
     'emoji': EmojiSurveyItem,
@@ -87,6 +89,7 @@ const surveyRoot = (
             'block_coursefeedback/surveyitems/emoji', 'block_coursefeedback/surveyitems/multiplechoice',
             'block_coursefeedback/surveyitems/scalequestion', 'block_coursefeedback/surveyitems/singlechoice',
             'block_coursefeedback/surveyitems/slot_choice', 'block_coursefeedback/surveyitems/text',
+            'block_coursefeedback/surveyitems/dropdown',
         ]);
 
         const page = pages[this.currentPage0];

@@ -82,6 +82,7 @@ $string['delete_event'] = 'Delete this event';
 $string['delete_slot'] = 'Delete this slot';
 $string['delete_survey_responses'] = 'Delete responses';
 $string['delete_survey_responses_confirm'] = 'Are you sure you want to delete responses from <b>{$a->num}</b> users to the survey in the course <q><b>{$a->coursename}</b></q>? This cannot be undone.';
+$string['dropdown'] = 'Drop-down list';
 $string['edit_default_survey_period'] = 'Edit default survey period';
 $string['edit_event'] = 'Edit this event';
 $string['edit_organization'] = 'Edit organization';
