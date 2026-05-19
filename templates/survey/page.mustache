@@ -50,12 +50,12 @@
     }
 }}
 
-{{# items }}
-    <div class="mb-5" data-surveyitemid="{{surveyitemid}}">
+<div class="block_coursefeedback-survey-page">
+    {{# items }}
         {{# type_info }}
-            <div class="coursefeedback-questiontext">
-                {{{ questiontext }}}
-            </div>
+            {{< block_coursefeedback/surveyitems/base }}
+                {{$answer_area}}{{/answer_area}}
+            {{/ block_coursefeedback/surveyitems/base }}
         {{/type_info}}
         {{# type_text }}
             {{> block_coursefeedback/surveyitems/text }}
@@ -69,11 +69,14 @@
         {{# type_scalequestion }}
             {{> block_coursefeedback/surveyitems/scalequestion }}
         {{/ type_scalequestion }}
+        {{# type_dropdown }}
+            {{> block_coursefeedback/surveyitems/dropdown }}
+        {{/ type_dropdown }}
         {{# type_emoji }}
             {{> block_coursefeedback/surveyitems/emoji }}
         {{/ type_emoji }}
         {{# type_slot_choice }}
             {{> block_coursefeedback/surveyitems/slot_choice }}
         {{/ type_slot_choice}}
-    </div>
-{{/ items }}
+    {{/ items }}
+</div>
