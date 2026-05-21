@@ -252,4 +252,83 @@ class surveyitem_manager {
 
         return $alladditionaldata;
     }
+
+    /**
+     * Get template data for rendering report for given reponse_slot.
+     * @param response_slot $response_slot
+     * @return array
+     */
+    public static function export_report_for_slot(response_slot $response_slot): array {
+        $surveypartexecution = survey_part_execution::get_record(
+            ['id' => $response_slot->get('surveypartexecutionid')],
+            MUST_EXIST
+        );
+        $surveypart = surveypart::get_record(['id' => $surveypartexecution->get('surveypartid')], MUST_EXIST);
+        $surveyitems = $surveypart->get_surveyitems();
+
+        $surveyitems_by_type = self::group_surveyitems_by_type([$surveyitems]);
+        $allresponsedata = [];
+        foreach ($surveyitems_by_type as $surveyitemtype => $surveyitemsoftype) {
+            $additionaldata = self::get_surveyitemtype($surveyitemtype)
+                ->load_additional_data_for($surveyitemsoftype);
+
+            $allresponsedata[$surveyitemtype] = self::get_surveyitemtype($surveyitemtype)
+                ->load_and_export_report_data($response_slot, $surveyitemsoftype, $additionaldata);
+        }
+
+        $return = [];
+        foreach ($surveyitems as $surveyitem) {
+            if (isset($allresponsedata[$surveyitem->get('surveyitemtype')][$surveyitem->get('id')])) {
+                $return[] = $allresponsedata[$surveyitem->get('surveyitemtype')][$surveyitem->get('id')];
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Fetch aggregated int responses for the given reponse_slot.
+     * @param response_slot $response_slot
+     * @return array
+     */
+    protected static function fetch_aggregated_int_responses(response_slot $response_slot): array {
+        global $DB;
+
+        // Use record set to avoid having a unique first column.
+        $recordset = $DB->get_recordset_sql(
+            "SELECT siir.surveyitemid, siir.value, count(siir.id) as count
+            FROM {block_coursefeedback_surveyitemintresponse} siir
+            JOIN {block_coursefeedback_surveypartexecutionoptionresp} speor
+                ON siir.surveypartexecutionoptionresponseid = speor.id
+            WHERE speor.surveypartexecutionoptionid = :slotid
+            GROUP BY siir.value, siir.surveyitemid",
+            ['slotid' => $response_slot->get('id')]
+        );
+
+        $responses = [];
+
+        foreach ($recordset as $record) {
+            $responses[$record->surveyitemid] ??= [];
+            $responses[$record->surveyitemid][$record->value] = (int) $record->count;
+        }
+
+        $recordset->close();
+
+        return $responses;
+    }
+
+    /**
+     * Get (statically cached) aggregated int responses for the given response_slot.
+     * @param response_slot $response_slot
+     * @return array
+     */
+    public static function get_aggregated_int_responses(response_slot $response_slot): array {
+        static $cache = [];
+
+        if (!isset($cache[$response_slot->get('id')])) {
+            $cache[$response_slot->get('id')] = self::fetch_aggregated_int_responses($response_slot);
+        }
+
+        return $cache[$response_slot->get('id')];
+    }
 }

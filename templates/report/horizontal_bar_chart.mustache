@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/survey/page
+
+    Render a survey page. The context should be an instance of survey_page.
+
+    Example context (json):
+    {
+    "type_singlechoice": true,
+    "type": "singlechoice",
+    "surveyitemid": 1,
+    "questiontext": "<p>Im Rahmen welches Studiengangs besuchen Sie diese Lehrveranstaltung?</p>",
+    "options": [
+      {
+        "optiontext": "1-Fach-Bachelor",
+        "optionid": "1",
+        "responses": 3
+      },
+      {
+        "optiontext": "2-Fach-Bachelor",
+        "optionid": "2",
+        "responses": 3
+      },
+      {
+        "optiontext": "1-Fach-Master",
+        "optionid": "3",
+        "responses": 1
+      },
+      {
+        "optiontext": "2-Fach-Master",
+        "optionid": "4",
+        "responses": 1
+      },
+      {
+        "optiontext": "Master of Education",
+        "optionid": "5",
+        "responses": 0
+      },
+      {
+        "optiontext": "Anderer",
+        "optionid": "6",
+        "responses": 0
+      }
+    ],
+    "n": 8
+    }
+}}
+<div style="display: grid; grid-template-columns: 2fr min(200px, 50%) 1fr; grid-column-gap: 10px; grid-row-gap: 4px; align-items: center">
+    {{#options}}
+        <span class="text-right">{{optiontext}}</span>
+        <span style="display: inline-block; width: 100%; position: relative; background: #eee; height: 25px; print-color-adjust: exact; border-radius: 4px">
+            {{#responses}}
+                <span style="display: inline-block; width: calc({{responses}} / {{n}} * 100%); background: #8eac00; height: 100%; border-radius: 4px"></span>
+            {{/responses}}
+        </span>
+        <span>{{percent_rounded}}</span>
+    {{/options}}
+</div>

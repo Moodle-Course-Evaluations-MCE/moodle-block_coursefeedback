@@ -1,0 +1,83 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coursefeedback/survey/page
+
+    Render a survey page. The context should be an instance of survey_page.
+
+    Example context (json):
+    {
+      "questions": []
+    }
+}}
+<div class="">
+    {{#questions}}
+        <div class="card-body" style="border-bottom: 1px solid #ddd">
+            <h6 class="coursefeedback-questiontext mb-3">{{{questiontext}}}</h6>
+            {{#type_scalequestion}}
+                <div class="row no-gutters align-items-center justify-content-center">
+                    <div class="d-flex align-items-center">
+                        <span class="small flex-shrink-1">{{min_pole}}</span>
+                        <div class="" style="width: 350px" {{#chartdata}}data-coursefeedback-chartdata='{{{chartdata}}}'{{/chartdata}}></div>
+                        <span class="small flex-shrink-1">{{max_pole}}</span>
+                    </div>
+                    <div class="p-3 small">
+                        {{#response_stats}}
+                            <p class="mb-0"><abbr title="{{#str}}amount_of_answers, block_coursefeedback{{/str}}">n</abbr>=<strong>{{n}}</strong></p>
+                            <p class="mb-0 text-danger"><abbr title="{{#str}}mean, block_coursefeedback{{/str}}">&mu;</abbr>=<strong>{{mean_rounded}}</strong></p>
+                            <p class="mb-0"><abbr title="{{#str}}standard_deviation, block_coursefeedback{{/str}}">&sigma;</abbr>=<strong>{{stddev_rounded}}</strong></p>
+                            <p class="mb-0 text-primary"><abbr title="{{#str}}median, block_coursefeedback{{/str}}">x&#771;</abbr>=<strong>{{median_rounded}}</strong></p>
+                        {{/response_stats}}
+                    </div>
+                </div>
+            {{/type_scalequestion}}
+            {{#type_emoji}}
+                <div class="row no-gutters align-items-center justify-content-center">
+                    <div class="d-flex align-items-center">
+                        <div class="" style="width: 350px" {{#chartdata}}data-coursefeedback-chartdata='{{{chartdata}}}'{{/chartdata}}></div>
+                    </div>
+                    <div class="p-3 small">
+                        {{#response_stats}}
+                            <p class="mb-0"><abbr title="{{#str}}amount_of_answers, block_coursefeedback{{/str}}">n</abbr>=<strong>{{n}}</strong></p>
+                            <p class="mb-0 text-danger"><abbr title="{{#str}}mean, block_coursefeedback{{/str}}">&mu;</abbr>=<strong>{{mean_rounded}}</strong></p>
+                            <p class="mb-0"><abbr title="{{#str}}standard_deviation, block_coursefeedback{{/str}}">&sigma;</abbr>=<strong>{{stddev_rounded}}</strong></p>
+                            <p class="mb-0 text-primary"><abbr title="{{#str}}median, block_coursefeedback{{/str}}">x&#771;</abbr>=<strong>{{median_rounded}}</strong></p>
+                        {{/response_stats}}
+                    </div>
+                </div>
+            {{/type_emoji}}
+            {{#type_multiplechoice}}
+                {{>block_coursefeedback/report/horizontal_bar_chart}}
+            {{/type_multiplechoice}}
+            {{#type_singlechoice}}
+                {{>block_coursefeedback/report/horizontal_bar_chart}}
+            {{/type_singlechoice}}
+            {{#type_text}}
+                {{^has_responses}}
+                    <i class="text-muted small ms-3">Keine Antworten vorhanden.</i>
+                {{/has_responses}}
+                {{#has_responses}}
+                    <ul>
+                        {{#responses}}
+                            <li class="" style="font-size: 0.9rem;">{{.}}</li>
+                        {{/responses}}
+                    </ul>
+                {{/has_responses}}
+            {{/type_text}}
+        </div>
+    {{/questions}}
+</div>
