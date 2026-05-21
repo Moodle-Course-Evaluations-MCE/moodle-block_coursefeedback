@@ -24,6 +24,7 @@
  */
 namespace block_coursefeedback\local\surveyitem\text;
 
+use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
@@ -65,5 +66,35 @@ class text extends surveyitemtype_with_settings {
             ];
         }
         $DB->insert_records('block_coursefeedback_surveyitemtextresponse', $to_insert);
+    }
+
+    #[\Override]
+    public function load_and_export_report_data(
+        response_slot $response_slot,
+        array $surveyitemsoftype,
+        array $additional_data
+    ): array {
+        global $DB;
+
+        $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
+
+        $recordset = $DB->get_recordset_sql("SELECT sitr.surveyitemid, sitr.value
+            FROM {block_coursefeedback_surveyitemtextresponse} sitr
+            JOIN {block_coursefeedback_surveypartexecutionoptionresp} speor
+                ON sitr.surveypartexecutionoptionresponseid = speor.id
+            WHERE speor.surveypartexecutionoptionid = :slotid", ['slotid' => $response_slot->get('id')]);
+
+        foreach ($recordset as $record) {
+            $template_data[$record->surveyitemid] ??= ['responses' => []];
+            $template_data[$record->surveyitemid]['responses'][] = $record->value;
+        }
+
+        foreach ($template_data as &$surveyitemdata) {
+            $surveyitemdata['has_responses'] = count($surveyitemdata['responses']) > 0;
+        }
+
+        $recordset->close();
+
+        return $template_data;
     }
 }

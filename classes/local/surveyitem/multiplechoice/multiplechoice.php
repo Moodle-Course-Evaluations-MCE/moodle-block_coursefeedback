@@ -24,7 +24,9 @@
  */
 namespace block_coursefeedback\local\surveyitem\multiplechoice;
 
+use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
+use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use core\lang_string;
 use moodle_exception;
 
@@ -73,5 +75,65 @@ class multiplechoice extends ms_choice {
             }
         }
         $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
+    }
+
+    /**
+     * For the given response_slot and surveyitems, return the amount of given answersets
+     * (Where a selection of one or more multiple choice options counts as one answerset).
+     * @param response_slot $response_slot
+     * @param array $surveyitems
+     * @return array<int, int> [$surveyitemid => $countofanswers]
+     */
+    protected function get_amount_of_answersets(response_slot $response_slot, array $surveyitems): array {
+        global $DB;
+
+        $surveyitemids = array_map(fn ($s) => $s->get('id'), $surveyitems);
+
+        if (!$surveyitemids) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($surveyitemids, SQL_PARAMS_NAMED);
+
+        // Use record set to avoid having a unique first column.
+        $recordset = $DB->get_recordset_sql(
+            "SELECT siir.surveyitemid, count(DISTINCT speor.id) as count
+            FROM {block_coursefeedback_surveyitemintresponse} siir
+            JOIN {block_coursefeedback_surveypartexecutionoptionresp} speor
+                ON siir.surveypartexecutionoptionresponseid = speor.id
+            WHERE speor.surveypartexecutionoptionid = :slotid AND siir.surveyitemid $insql
+            GROUP BY siir.surveyitemid",
+            ['slotid' => $response_slot->get('id'), ...$inparams]
+        );
+
+        $responses = [];
+
+        foreach ($recordset as $record) {
+            $responses[$record->surveyitemid] = $record->count;
+        }
+
+        return $responses;
+    }
+
+    #[\Override]
+    public function load_and_export_report_data(
+        response_slot $response_slot,
+        array $surveyitemsoftype,
+        array $additional_data
+    ): array {
+        $responses = surveyitem_manager::get_aggregated_int_responses($response_slot);
+        $amount_of_answersets = $this->get_amount_of_answersets($response_slot, $surveyitemsoftype);
+
+        $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
+        foreach ($template_data as $surveyitemid => &$surveyitemdata) {
+            $n = $amount_of_answersets[$surveyitemid];
+            foreach ($surveyitemdata['options'] as &$optiondata) {
+                $optiondata['responses'] = $responses[$surveyitemid][$optiondata['optionid']] ?? 0;
+                $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+            }
+            $surveyitemdata['n'] = $n;
+        }
+
+        return $template_data;
     }
 }

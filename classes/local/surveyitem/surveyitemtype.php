@@ -24,6 +24,8 @@
  */
 namespace block_coursefeedback\local\surveyitem;
 
+use block_coursefeedback\local\persistent\response_slot;
+use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\surveyitemtype_answerdata;
 use core\lang_string;
@@ -97,5 +99,76 @@ abstract class surveyitemtype {
             ];
         }
         return $template_data;
+    }
+
+    /**
+     * Return template data for rendering report for given $response_slot.
+     * @param response_slot $response_slot
+     * @param surveyitem[] $surveyitemsoftype
+     * @param array<int, mixed> $additional_data
+     * @return array<int, mixed>
+     */
+    public function load_and_export_report_data(
+        response_slot $response_slot,
+        array $surveyitemsoftype,
+        array $additional_data
+    ): array {
+        return [];
+    }
+
+    /**
+     * Calculate the statistic properties mean, median and stddev for the given aggregated counts.
+     * @param array $counts
+     * @return array
+     */
+    protected function calculate_statistic_properties(array $counts) {
+        ksort($counts);
+        // Mean.
+        $n = 0;
+        $sum = 0;
+        foreach ($counts as $value => $count) {
+            $n += $count;
+            $sum += $count * $value;
+        }
+        $mean = $sum / $n;
+
+        // Stddev.
+        $variance_sum = 0;
+        foreach ($counts as $value => $count) {
+            $variance_sum += pow($value - $mean, 2) * $count;
+        }
+        $stddev = sqrt($variance_sum / ($n - 1));
+
+        // Median.
+        $acc = 0;
+        $target = intdiv($n, 2);
+        $average_with_next_value = null;
+        foreach ($counts as $value => $count) {
+            if ($average_with_next_value !== null) {
+                $median = ($average_with_next_value + $value) / 2;
+                break;
+            }
+            $acc += $count;
+            if ($acc > $target) {
+                $median = $value;
+                break;
+            } else if ($acc == $target) {
+                if ($n % 2 == 0) {
+                    $average_with_next_value = $value;
+                } else {
+                    $median = $value;
+                    break;
+                }
+            }
+        }
+        return [
+            'n' => $n,
+            'mean' => $mean,
+            'mean_rounded' => round($mean, 2),
+            'stddev' => $stddev,
+            'stddev_rounded' => round($stddev, 2),
+            'median' => $median,
+            'median_rounded' => round($median, 2),
+        ];
     }
 }

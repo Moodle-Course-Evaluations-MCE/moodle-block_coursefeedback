@@ -24,7 +24,9 @@
  */
 namespace block_coursefeedback\local\surveyitem\singlechoice;
 
+use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
+use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use core\lang_string;
 use moodle_exception;
 
@@ -58,5 +60,26 @@ class singlechoice extends ms_choice {
             ];
         }
         $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
+    }
+
+    #[\Override]
+    public function load_and_export_report_data(
+        response_slot $response_slot,
+        array $surveyitemsoftype,
+        array $additional_data
+    ): array {
+        $responses = surveyitem_manager::get_aggregated_int_responses($response_slot);
+
+        $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
+        foreach ($template_data as $surveyitemid => &$surveyitemdata) {
+            $n = array_sum($responses[$surveyitemid] ?? []);
+            foreach ($surveyitemdata['options'] as &$optiondata) {
+                $optiondata['responses'] = $responses[$surveyitemid][$optiondata['optionid']] ?? 0;
+                $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+            }
+            $surveyitemdata['n'] = $n;
+        }
+
+        return $template_data;
     }
 }
