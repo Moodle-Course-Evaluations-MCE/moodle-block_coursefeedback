@@ -24,11 +24,12 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-global $CFG, $DB, $OUTPUT, $PAGE;
+global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 use block_coursefeedback\local\js_util;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\response_slot;
+use block_coursefeedback\local\persistent\response_slot_user;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
@@ -39,14 +40,29 @@ $slot = response_slot::get_record(['id' => $surveypartexecutionoptionid], MUST_E
 $surveypartexecution = survey_part_execution::get_record(['id' => $slot->get('surveypartexecutionid')], MUST_EXIST);
 $surveyexecution = survey_execution::get_record(['id' => $surveypartexecution->get('surveyexecutionid')], MUST_EXIST);
 
+$slot_users = response_slot_user::get_records(['surveypartexecutionoptionid' => $slot->get('id')]);
+$amount_of_slots = response_slot::count_records(['surveypartexecutionid' => $surveypartexecution->get('id')]);
+
 $context = context_course::instance($surveyexecution->get('courseid'));
 $organization = organization::get_record(['id' => $surveyexecution->get('organizationid')], MUST_EXIST);
 
-require_admin();
+if ($slot_users || $amount_of_slots >= 2) {
+    // Require user to be in $slot_users.
+    if (
+        !in_array(
+            $USER->id,
+            array_map(fn ($slot_user) => $slot_user->get('userid'), $slot_users)
+        )
+    ) {
+        throw new \core\exception\coding_exception('You are not on the allowed list of users to see this report.');
+    }
+} else {
+    require_capability('block/coursefeedback:viewcourseresults', $context);
+}
 
 $PAGE->set_context($context);
 
-$title = get_string('reporting', 'block_coursefeedback');
+$title = get_string('report', 'block_coursefeedback');
 
 $PAGE->set_url(new moodle_url('/blocks/coursefeedback/report.php'), ['id' => $surveypartexecutionoptionid]);
 $PAGE->set_pagelayout('standard');

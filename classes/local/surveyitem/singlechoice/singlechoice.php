@@ -75,7 +75,9 @@ class singlechoice extends ms_choice {
             $n = array_sum($responses[$surveyitemid] ?? []);
             foreach ($surveyitemdata['options'] as &$optiondata) {
                 $optiondata['responses'] = $responses[$surveyitemid][$optiondata['optionid']] ?? 0;
-                $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+                if ($n > 0) {
+                    $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+                }
             }
             $surveyitemdata['n'] = $n;
         }

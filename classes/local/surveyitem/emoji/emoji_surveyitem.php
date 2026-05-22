@@ -269,7 +269,7 @@ class emoji_surveyitem extends surveyitemtype_with_settings {
             foreach ($surveyitemdata['choices'] as &$optiondata) {
                 $optiondata['responses'] = $responses[$surveyitemid][$optiondata['value']] ?? 0;
             }
-            $surveyitemdata['response_stats'] = $this->calculate_statistic_properties($responses[$surveyitemid]);
+            $surveyitemdata['response_stats'] = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
             $surveyitemdata['chartdata'] = json_encode($surveyitemdata, JSON_HEX_APOS | JSON_HEX_QUOT);
         }
 
