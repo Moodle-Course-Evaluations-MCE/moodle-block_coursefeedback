@@ -130,6 +130,19 @@ abstract class surveyitemtype {
             $n += $count;
             $sum += $count * $value;
         }
+
+        if ($n == 0) {
+            return [
+                'n' => $n,
+                'mean' => "-",
+                'mean_rounded' => "-",
+                'stddev' => "-",
+                'stddev_rounded' => "-",
+                'median' => "-",
+                'median_rounded' => "-",
+            ];
+        }
+
         $mean = $sum / $n;
 
         // Stddev.

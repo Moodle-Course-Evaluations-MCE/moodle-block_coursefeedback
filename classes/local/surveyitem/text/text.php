@@ -90,7 +90,7 @@ class text extends surveyitemtype_with_settings {
         }
 
         foreach ($template_data as &$surveyitemdata) {
-            $surveyitemdata['has_responses'] = count($surveyitemdata['responses']) > 0;
+            $surveyitemdata['has_responses'] = count($surveyitemdata['responses'] ?? []) > 0;
         }
 
         $recordset->close();

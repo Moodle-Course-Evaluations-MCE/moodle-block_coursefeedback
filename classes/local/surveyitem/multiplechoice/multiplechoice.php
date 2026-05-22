@@ -126,10 +126,12 @@ class multiplechoice extends ms_choice {
 
         $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
         foreach ($template_data as $surveyitemid => &$surveyitemdata) {
-            $n = $amount_of_answersets[$surveyitemid];
+            $n = $amount_of_answersets[$surveyitemid] ?? 0;
             foreach ($surveyitemdata['options'] as &$optiondata) {
                 $optiondata['responses'] = $responses[$surveyitemid][$optiondata['optionid']] ?? 0;
-                $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+                if ($n > 0) {
+                    $optiondata['percent_rounded'] = round($optiondata['responses'] * 100 / $n, 1) . '%';
+                }
             }
             $surveyitemdata['n'] = $n;
         }
