@@ -120,6 +120,7 @@ $string['evaluation_settings'] = 'Evaluation settings';
 $string['evaluation_will_run_in_period'] = 'The survey will run in the period of {$a}.';
 $string['evaluationadministration'] = 'Evaluation administration';
 $string['event_intro'] = 'Please rate the event <q><b>{$a}</b></q>.';
+$string['event_intro_without_name'] = 'Please rate this course.';
 $string['event_name'] = 'Event name';
 $string['event_name_placeholder'] = 'My teaching event';
 $string['event_type'] = 'Event type';

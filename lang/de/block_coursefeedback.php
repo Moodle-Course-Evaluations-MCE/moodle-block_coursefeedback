@@ -120,6 +120,7 @@ $string['evaluation_settings'] = 'Evaluationseinstellungen';
 $string['evaluation_will_run_in_period'] = 'Die Umfrage wird im Zeitraum des {$a} laufen.';
 $string['evaluationadministration'] = 'Evaluationsverwaltung';
 $string['event_intro'] = 'Bewerten Sie bitte die Lehrveranstaltung <q><b>{$a}</b></q>.';
+$string['event_intro_without_name'] = 'Bitte bewerten Sie diese Lehrveranstaltung.';
 $string['event_name'] = 'Veranstaltungsname';
 $string['event_name_placeholder'] = 'Meine Lehrveranstaltung';
 $string['event_type'] = 'Veranstaltungsart';
