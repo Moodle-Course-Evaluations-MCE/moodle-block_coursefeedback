@@ -108,7 +108,7 @@ class evaluations_table extends no_pagination_table {
             ])
         );
 
-        $this->candelete = has_capability('moodle/site:config', context_system::instance());
+        $this->candelete = has_capability('block/coursefeedback:manageorganizations', context_system::instance());
 
         $PAGE->requires->js_call_amd('block_coursefeedback/bulkactions_post', 'init');
     }
