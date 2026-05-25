@@ -95,6 +95,26 @@ if ($hassiteconfig) {
                 ]
             )
         );
+
+        $settings->add(
+            new admin_setting_configtext(
+                'block_coursefeedback/report_min_responses_overall',
+                new lang_string('settings:report_min_responses_overall', 'block_coursefeedback'),
+                '',
+                3,
+                PARAM_INT,
+            )
+        );
+
+        $settings->add(
+            new admin_setting_configtext(
+                'block_coursefeedback/report_min_responses_per_item',
+                new lang_string('settings:report_min_responses_per_item', 'block_coursefeedback'),
+                '',
+                3,
+                PARAM_INT,
+            )
+        );
     }
 
     $ADMIN->add('block_coursefeedback_category', $settings);

@@ -66,6 +66,7 @@ class block_coursefeedback extends block_base {
         global $USER;
 
         $template_events = [];
+        $can_manage_organization = permission_manager::can_manage_organization($survey_execution_data->organization);
         foreach ($survey_execution_data->events_by_id as $event) {
             $spe = $survey_execution_data->spes_by_event_id[$event->get('id')];
             $slots = $survey_execution_data->slots_by_spe_id[$spe->get('id')];
@@ -73,8 +74,10 @@ class block_coursefeedback extends block_base {
 
             $template_slots = [];
             foreach ($slots as $slot) {
-                $users = $survey_execution_data->users_by_slot_id[$slot->get('id')];
-                if ($multiple_slots || $users) {
+                $users = $survey_execution_data->users_by_slot_id[$slot->get('id')] ?? [];
+                if ($can_manage_organization) {
+                    $canseeslot = true;
+                } else if ($multiple_slots || $users) {
                     $canseeslot = false;
                     foreach ($users as $user) {
                         if ($user->id == $USER->id) {
