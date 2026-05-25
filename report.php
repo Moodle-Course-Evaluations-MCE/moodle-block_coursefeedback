@@ -27,6 +27,7 @@ require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 use block_coursefeedback\local\js_util;
+use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\response_slot_user;
@@ -46,18 +47,20 @@ $amount_of_slots = response_slot::count_records(['surveypartexecutionid' => $sur
 $context = context_course::instance($surveyexecution->get('courseid'));
 $organization = organization::get_record(['id' => $surveyexecution->get('organizationid')], MUST_EXIST);
 
-if ($slot_users || $amount_of_slots >= 2) {
-    // Require user to be in $slot_users.
-    if (
-        !in_array(
-            $USER->id,
-            array_map(fn ($slot_user) => $slot_user->get('userid'), $slot_users)
-        )
-    ) {
-        throw new \core\exception\coding_exception('You are not on the allowed list of users to see this report.');
+if (!permission_manager::can_manage_organization($organization)) {
+    if ($slot_users || $amount_of_slots >= 2) {
+        // Require user to be in $slot_users.
+        if (
+            !in_array(
+                $USER->id,
+                array_map(fn ($slot_user) => $slot_user->get('userid'), $slot_users)
+            )
+        ) {
+            throw new \core\exception\coding_exception('You are not on the allowed list of users to see this report.');
+        }
+    } else {
+        require_capability('block/coursefeedback:viewcourseresults', $context);
     }
-} else {
-    require_capability('block/coursefeedback:viewcourseresults', $context);
 }
 
 $PAGE->set_context($context);
@@ -70,12 +73,24 @@ $PAGE->set_heading($title);
 $PAGE->set_title($title);
 
 $data = surveyitem_manager::export_report_for_slot($slot);
-js_util::js_call_amd('block_coursefeedback/report', 'init', [$data]);
+
+if ($data !== null) {
+    js_util::js_call_amd('block_coursefeedback/report', 'init', [$data]);
+}
+
+$template = [
+    'coursename' => get_course($surveyexecution->get('courseid'))->fullname,
+    'username' => fullname($USER),
+];
+
+if ($data === null) {
+    $template['not_enough_responses'] = true;
+} else {
+    $template['questions'] = $data;
+}
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render_from_template('block_coursefeedback/report/report', [
-    'questions' => $data,
-]);
+echo $OUTPUT->render_from_template('block_coursefeedback/report/report', $template);
 
 echo $OUTPUT->footer();

@@ -60,14 +60,19 @@
     "n": 8
     }
 }}
-<div style="display: grid; grid-template-columns: 2fr min(200px, 50%) 1fr; grid-column-gap: 10px; grid-row-gap: 4px; align-items: center">
-    {{#options}}
-        <span class="text-right">{{optiontext}}</span>
-        <span style="display: inline-block; width: 100%; position: relative; background: #eee; height: 25px; print-color-adjust: exact; border-radius: 4px">
-            {{#responses}}
-                <span style="display: inline-block; width: calc({{responses}} / {{n}} * 100%); background: #8eac00; height: 100%; border-radius: 4px"></span>
-            {{/responses}}
-        </span>
-        <span>{{percent_rounded}}</span>
-    {{/options}}
+<div class="d-flex w-100">
+    <div class="flex-grow-1 align-items-center" style="display: grid; grid-template-columns: 2fr min(200px, 50%) 1fr; grid-column-gap: 10px; grid-row-gap: 4px;">
+        {{#options}}
+            <span class="text-right">{{optiontext}}</span>
+            <span style="display: inline-block; width: 100%; position: relative; background: #eee; height: 25px; print-color-adjust: exact; border-radius: 4px">
+                {{#responses}}
+                    <span style="display: inline-block; width: calc({{responses}} / {{n}} * 100%); background: #8eac00; height: 100%; border-radius: 4px"></span>
+                {{/responses}}
+            </span>
+            <span>{{percent_rounded}}</span>
+        {{/options}}
+    </div>
+    <span class="p-3 small align-content-center">
+        n=<strong>{{n}}</strong>
+    </span>
 </div>

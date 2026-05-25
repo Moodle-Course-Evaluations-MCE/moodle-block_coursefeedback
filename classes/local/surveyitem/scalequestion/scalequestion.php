@@ -175,12 +175,20 @@ class scalequestion extends surveyitemtype_with_settings {
 
         $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
         foreach ($template_data as $surveyitemid => &$surveyitemdata) {
+            // Do not use n/a-answers for statistics calculations.
+            $only_the_important_responses = $responses[$surveyitemid];
+            unset($only_the_important_responses[0]);
+            $response_stats = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
+            if ($response_stats['n'] < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
+                $surveyitemdata['not_enough_answers'] = true;
+                continue;
+            }
+
             foreach ($surveyitemdata['options'] as &$optiondata) {
                 $optiondata['responses'] = $responses[$surveyitemid][$optiondata['id']] ?? 0;
             }
-            // Do not use n/a-answers for statistics calculations.
-            unset($responses[$surveyitemid][0]);
-            $surveyitemdata['response_stats'] = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
+
+            $surveyitemdata['response_stats'] = $response_stats;
             $surveyitemdata['chartdata'] = json_encode($surveyitemdata, JSON_HEX_APOS | JSON_HEX_QUOT);
         }
 

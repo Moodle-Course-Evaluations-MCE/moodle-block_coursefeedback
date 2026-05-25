@@ -117,6 +117,11 @@ class multiplechoice extends ms_choice {
         $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
         foreach ($template_data as $surveyitemid => &$surveyitemdata) {
             $n = $amount_of_answersets[$surveyitemid] ?? 0;
+            if ($n < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
+                $surveyitemdata['not_enough_responses'] = true;
+                continue;
+            }
+
             foreach ($surveyitemdata['options'] as &$optiondata) {
                 $optiondata['responses'] = $responses[$surveyitemid][$optiondata['optionid']] ?? 0;
                 if ($n > 0) {
