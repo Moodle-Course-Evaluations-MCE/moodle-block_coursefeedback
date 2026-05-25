@@ -48,11 +48,10 @@ const renderPlot = (element, options, responseStats) => {
         const nMean = parseFloat(responseStats.mean);
         const nMedian = parseFloat(responseStats.median);
         const nStdDev = parseFloat(responseStats.stddev);
-        const nCount = counts.length;
         const xMean = x(nMean);
         const xMedian = x(nMedian);
-        const xStart = x(Math.max(0.5, nMean - nStdDev));
-        const xEnd = x(Math.min(nCount + 0.5, nMean + nStdDev));
+        const xStart = x(nMean - nStdDev);
+        const xEnd = x(nMean + nStdDev);
 
         const lineY = margin.top + 15;
         // Plot the standard deviation.

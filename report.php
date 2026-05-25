@@ -35,7 +35,6 @@ use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 
-require_login();
 $surveypartexecutionoptionid = required_param('id', PARAM_INT);
 $slot = response_slot::get_record(['id' => $surveypartexecutionoptionid], MUST_EXIST);
 $surveypartexecution = survey_part_execution::get_record(['id' => $slot->get('surveypartexecutionid')], MUST_EXIST);
@@ -46,6 +45,7 @@ $amount_of_slots = response_slot::count_records(['surveypartexecutionid' => $sur
 
 $context = context_course::instance($surveyexecution->get('courseid'));
 $organization = organization::get_record(['id' => $surveyexecution->get('organizationid')], MUST_EXIST);
+require_login($surveyexecution->get('courseid'));
 
 if (!permission_manager::can_manage_organization($organization)) {
     if ($slot_users || $amount_of_slots >= 2) {

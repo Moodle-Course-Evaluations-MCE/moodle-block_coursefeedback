@@ -180,7 +180,7 @@ class scalequestion extends surveyitemtype_with_settings {
             unset($only_the_important_responses[0]);
             $response_stats = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
             if ($response_stats['n'] < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
-                $surveyitemdata['not_enough_answers'] = true;
+                $surveyitemdata['not_enough_responses'] = true;
                 continue;
             }
 
