@@ -268,7 +268,7 @@ class emoji extends surveyitemtype_with_settings {
         foreach ($template_data as $surveyitemid => &$surveyitemdata) {
             $response_stats = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
             if ($response_stats['n'] < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
-                $surveyitemdata = ['not_enough_responses' => true];
+                $surveyitemdata['not_enough_responses'] = true;
                 continue;
             }
 
