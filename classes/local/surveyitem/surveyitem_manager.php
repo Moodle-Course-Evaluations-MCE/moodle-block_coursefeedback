@@ -153,7 +153,10 @@ class surveyitem_manager {
                 get_string('event_intro', 'block_coursefeedback', s($event->get('name')))
             );
         } else {
-            $heading = null;
+            $heading = html_writer::tag(
+                'h6',
+                get_string('event_intro_without_name', 'block_coursefeedback')
+            );
         }
 
         $advance_page = function () use (&$pages, &$current_page_items, $spe, $heading): void {
