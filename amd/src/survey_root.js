@@ -72,7 +72,7 @@ const surveyRoot = (
     totalPages: pages.length,
 
     /** @type {Object.<int, int>} Currently selected slots by survey part execution id. */
-    selectedSlots: structuredClone(default_slots),
+    selectedSlots: {...default_slots},
     /** @type {SavedSpes} Currently filled values by survey item id. */
     values: {},
 
