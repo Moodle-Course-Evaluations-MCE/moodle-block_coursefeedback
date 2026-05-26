@@ -146,11 +146,11 @@ class multilang_string implements JsonSerializable {
             }
         }
 
+        // English.
+        yield 'en';
+
         // Site-wide default language.
         global $CFG;
         yield $CFG->lang;
-
-        // English.
-        yield 'en';
     }
 }
