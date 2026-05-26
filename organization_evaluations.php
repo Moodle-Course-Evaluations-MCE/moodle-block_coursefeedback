@@ -50,7 +50,7 @@ if ($action) {
     require_sesskey();
     switch ($action) {
         case 'delete':
-            require_admin();
+            require_capability('block/coursefeedback:manageorganizations', $context);
             $courseids = required_param_array('selected', PARAM_INT);
 
             $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
