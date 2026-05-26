@@ -26,7 +26,7 @@
     margin-bottom: 0;
 }
 
-.coursefeedback-questiontext > p:last-child {
+.coursefeedback-questiontext > p:last-of-type {
     /* stylelint-disable-next-line declaration-no-important */
     margin-bottom: 0 !important;
 }

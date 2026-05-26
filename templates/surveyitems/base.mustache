@@ -30,11 +30,13 @@
 
 <form class="block_coursefeedback-surveyitem block_coursefeedback-{{type}} layout-{{$layout}}2-rows{{/layout}} {{$extra_classes}}{{/extra_classes}}"
       data-surveyitemid="{{surveyitemid}}">
-    <div class="question-area">
+    <div class="question-area coursefeedback-questiontext">
         {{$question_area_content}}
-            <span class="coursefeedback-questiontext">{{{ questiontext }}}</span>
+            {{{ questiontext }}}
             {{#required}}
-                <span class="text-danger" title="{{#str}}required{{/str}}" aria-hidden="true">{{#pix}}req{{/pix}}</span>
+                <span class="text-danger" title="{{#str}}required{{/str}}" aria-hidden="true">
+                    {{#pix}}req{{/pix}}
+                </span>
             {{/required}}
         {{/question_area_content}}
     </div>
