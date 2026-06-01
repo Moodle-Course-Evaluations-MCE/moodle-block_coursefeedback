@@ -1186,6 +1186,38 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026050600, 'coursefeedback');
     }
 
+    if ($oldversion < 2026060101) {
+        // Define field sortindex to be added to block_coursefeedback_course_eventtype.
+        $table = new xmldb_table('block_coursefeedback_course_eventtype');
+        $field = new xmldb_field('sortindex', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0, 'name');
+
+        // Conditionally launch add field sortindex.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field always_show_default_sp to be added to block_coursefeedback_organization.
+        $table = new xmldb_table('block_coursefeedback_organization');
+        $field = new xmldb_field(
+            'always_show_default_sp',
+            XMLDB_TYPE_INTEGER,
+            '1',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'can_teacher_edit_ssettings'
+        );
+
+        // Conditionally launch add field always_show_default_sp.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026060101, 'coursefeedback');
+    }
+
     return true;
 }
 

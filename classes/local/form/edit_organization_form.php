@@ -89,6 +89,10 @@ class edit_organization_form extends \moodleform {
         );
         $mform->setType('coursecatids', PARAM_SEQUENCE);
 
+        $mform->addElement('advcheckbox', 'always_show_default_sp', get_string('always_show_default_sp', 'block_coursefeedback'));
+        $mform->addHelpButton('always_show_default_sp', 'always_show_default_sp', 'block_coursefeedback');
+        $mform->setType('always_show_default_sp', PARAM_BOOL);
+
         $this->add_action_buttons();
     }
 }

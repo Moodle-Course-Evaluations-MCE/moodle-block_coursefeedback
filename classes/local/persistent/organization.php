@@ -71,6 +71,10 @@ class organization extends persistent {
                 'type' => PARAM_BOOL,
                 'default' => true,
             ],
+            'always_show_default_sp' => [
+                'type' => PARAM_BOOL,
+                'default' => false,
+            ],
         ];
     }
 }

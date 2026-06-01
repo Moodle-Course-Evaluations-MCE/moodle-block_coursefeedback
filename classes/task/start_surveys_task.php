@@ -16,8 +16,8 @@
 
 namespace block_coursefeedback\task;
 
-use block_coursefeedback\local\course_feedback_data;
 use block_coursefeedback\local\persistent\organization;
+use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
@@ -88,11 +88,15 @@ class start_surveys_task extends \core\task\scheduled_task {
                 }
             }
 
-            if (!$has_surveypart && $survey_execution_data->organization->get('default_surveypartid')) {
+            $always_show_default_sp = $survey_execution_data->organization->get('always_show_default_sp');
+            $org_has_default_surveypart = boolval($survey_execution_data->organization->get('default_surveypartid'));
+            if ($org_has_default_surveypart && (!$has_surveypart || $always_show_default_sp)) {
                 $teaching_event = new teaching_event(record: (object) [
                     'courseid' => $se->get('courseid'),
                     'eventtypeid' => null,
                     'name' => '',
+                    // Insert before all normal events, if any.
+                    'sortindex' => -1,
                 ]);
                 $teaching_event->create();
                 $spe = new survey_part_execution(record: (object) [
@@ -101,7 +105,7 @@ class start_surveys_task extends \core\task\scheduled_task {
                     'eventid' => $teaching_event->get('id'),
                 ]);
                 $spe->create();
-                $slot = new \block_coursefeedback\local\persistent\response_slot(record: (object) [
+                $slot = new response_slot(record: (object) [
                     'surveypartexecutionid' => $spe->get('id'),
                     'name' => '',
                     'externalid' => null,

@@ -51,6 +51,10 @@ class organization_settings_form extends \moodleform {
         );
         $mform->setType('can_teacher_edit_ssettings', PARAM_BOOL);
 
+        $mform->addElement('advcheckbox', 'always_show_default_sp', get_string('always_show_default_sp', 'block_coursefeedback'));
+        $mform->addHelpButton('always_show_default_sp', 'always_show_default_sp', 'block_coursefeedback');
+        $mform->setType('always_show_default_sp', PARAM_BOOL);
+
         $mform->addElement(
             'header',
             'survey_created_message_header',
