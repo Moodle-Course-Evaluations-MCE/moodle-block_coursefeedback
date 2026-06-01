@@ -70,12 +70,12 @@ if ($hassiteconfig) {
             '',
             course_semester_mapping::MAP_MATCH_ALL,
             [
+                course_semester_mapping::MAP_MATCH_ALL =>
+                    new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
                 course_semester_mapping::MAP_BY_CUSTOMFIELD =>
                     new lang_string('settings:course_semester_method:customfield', 'block_coursefeedback'),
                 course_semester_mapping::MAP_MOSES =>
                     new lang_string('settings:course_semester_method:moses', 'block_coursefeedback'),
-                course_semester_mapping::MAP_MATCH_ALL =>
-                    new lang_string('settings:course_semester_method:match_all', 'block_coursefeedback'),
             ],
         );
         $semester_mapping_setting->set_validate_function(course_semester_mapping::validate_method(...));

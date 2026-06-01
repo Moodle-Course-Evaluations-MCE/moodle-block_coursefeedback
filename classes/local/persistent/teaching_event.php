@@ -47,6 +47,10 @@ class teaching_event extends persistent_with_bulk_actions {
             'name' => [
                 'type' => PARAM_TEXT,
             ],
+            'sortindex' => [
+                'type' => PARAM_INT,
+                'default' => 0,
+            ],
         ];
     }
 }

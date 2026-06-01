@@ -108,7 +108,7 @@ class survey_execution_data {
             LEFT JOIN {user} u ON ru.userid = u.id
             $user_fields_sql->joins
             WHERE $where
-            ORDER BY se.id, te.id, spe.id, rs.id, ru.id
+            ORDER BY se.id, te.sortindex, te.id, spe.id, rs.id, ru.id
         ", [...$params, ...$user_fields_sql->params]);
 
         $datas = [];
