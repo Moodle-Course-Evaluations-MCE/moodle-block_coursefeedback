@@ -41,14 +41,14 @@ $surveypartexecution = survey_part_execution::get_record(['id' => $slot->get('su
 $surveyexecution = survey_execution::get_record(['id' => $surveypartexecution->get('surveyexecutionid')], MUST_EXIST);
 
 $slot_users = response_slot_user::get_records(['surveypartexecutionoptionid' => $slot->get('id')]);
-$amount_of_slots = response_slot::count_records(['surveypartexecutionid' => $surveypartexecution->get('id')]);
+$number_of_slots = response_slot::count_records(['surveypartexecutionid' => $surveypartexecution->get('id')]);
 
 $context = context_course::instance($surveyexecution->get('courseid'));
 $organization = organization::get_record(['id' => $surveyexecution->get('organizationid')], MUST_EXIST);
 require_login($surveyexecution->get('courseid'));
 
 if (!permission_manager::can_manage_organization($organization)) {
-    if ($slot_users || $amount_of_slots >= 2) {
+    if ($slot_users || $number_of_slots >= 2) {
         // Require user to be in $slot_users.
         if (
             !in_array(

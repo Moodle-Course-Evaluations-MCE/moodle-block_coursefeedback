@@ -78,13 +78,13 @@ class multiplechoice extends ms_choice {
     }
 
     /**
-     * For the given response_slot and surveyitems, return the amount of given answersets
+     * For the given response_slot and surveyitems, return the number of given answersets
      * (Where a selection of one or more multiple choice options counts as one answerset).
      * @param response_slot $response_slot
      * @param array $surveyitems
      * @return array<int, int> [$surveyitemid => $countofanswers]
      */
-    protected function get_amount_of_answersets(response_slot $response_slot, array $surveyitems): array {
+    protected function get_number_of_answersets(response_slot $response_slot, array $surveyitems): array {
         global $DB;
 
         $surveyitemids = array_map(fn ($s) => $s->get('id'), $surveyitems);
@@ -122,11 +122,11 @@ class multiplechoice extends ms_choice {
         array $additional_data
     ): array {
         $responses = surveyitem_manager::get_aggregated_int_responses($response_slot);
-        $amount_of_answersets = $this->get_amount_of_answersets($response_slot, $surveyitemsoftype);
+        $number_of_answersets = $this->get_number_of_answersets($response_slot, $surveyitemsoftype);
 
         $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
         foreach ($template_data as $surveyitemid => &$surveyitemdata) {
-            $n = $amount_of_answersets[$surveyitemid] ?? 0;
+            $n = $number_of_answersets[$surveyitemid] ?? 0;
             if ($n < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
                 $surveyitemdata['not_enough_responses'] = true;
                 continue;

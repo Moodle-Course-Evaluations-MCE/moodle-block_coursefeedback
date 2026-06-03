@@ -260,19 +260,19 @@ class surveyitem_manager {
     }
 
     /**
-     * Get template data for rendering report for given reponse_slot.
+     * Get the template data for rendering the report for the given {@see response_slot}.
      * @param response_slot $response_slot
      * @return ?array
      */
     public static function export_report_for_slot(response_slot $response_slot): ?array {
         global $DB;
 
-        $amount_of_responses = $DB->count_records(
+        $number_of_responses = $DB->count_records(
             'block_coursefeedback_surveypartexecutionoptionresp',
             ['surveypartexecutionoptionid' => $response_slot->get('id')]
         );
 
-        if ($amount_of_responses < get_config('block_coursefeedback', 'report_min_responses_overall')) {
+        if ($number_of_responses < get_config('block_coursefeedback', 'report_min_responses_overall')) {
             return null;
         }
 
