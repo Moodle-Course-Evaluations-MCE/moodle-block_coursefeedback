@@ -146,11 +146,15 @@ abstract class surveyitemtype {
         $mean = $sum / $n;
 
         // Stddev.
-        $variance_sum = 0;
-        foreach ($counts as $value => $count) {
-            $variance_sum += pow($value - $mean, 2) * $count;
+        if ($n == 1) {
+            $stddev = 0;
+        } else {
+            $variance_sum = 0;
+            foreach ($counts as $value => $count) {
+                $variance_sum += pow($value - $mean, 2) * $count;
+            }
+            $stddev = sqrt($variance_sum / ($n - 1));
         }
-        $stddev = sqrt($variance_sum / ($n - 1));
 
         // Median.
         $acc = 0;
