@@ -79,6 +79,17 @@ class edit_scale_form extends \moodleform {
         ))->require_at_least_one_translation();
 
         $mform->addElement(new multilang_input_element(
+            'centeroptiontext',
+            get_string('center_option_text', 'block_coursefeedback'),
+            $langs,
+        ));
+        $even_numbers = [];
+        for ($i = 0; $i <= 32; $i += 2) {
+            $even_numbers[] = $i;
+        }
+        $mform->hideIf('centeroptiontext', 'optionamount', 'in', $even_numbers);
+
+        $mform->addElement(new multilang_input_element(
             'maxoptiontext',
             get_string('max_option_text', 'block_coursefeedback'),
             $langs,
@@ -105,5 +116,19 @@ class edit_scale_form extends \moodleform {
             $data->hasnoansweroption ??= false;
         }
         return $data;
+    }
+
+    #[\Override]
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        if (
+            isset($data['optionamount']) &&
+            (!is_numeric($data['optionamount']) || $data['optionamount'] < 2 || $data['optionamount'] > 32)
+        ) {
+            $errors['optionamount'] = get_string('must_be_between', 'block_coursefeedback', ['min' => 2, 'max' => 32]);
+        }
+
+        return $errors;
     }
 }

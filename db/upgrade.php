@@ -1218,6 +1218,20 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026060101, 'coursefeedback');
     }
 
+    if ($oldversion < 2026061700) {
+        // Define field centeroptiontext to be added to block_coursefeedback_scale.
+        $table = new xmldb_table('block_coursefeedback_scale');
+        $field = new xmldb_field('centeroptiontext', XMLDB_TYPE_TEXT, null, null, null, null, null, 'noansweroptiontext');
+
+        // Conditionally launch add field centeroptiontext.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026061700, 'coursefeedback');
+    }
+
     return true;
 }
 

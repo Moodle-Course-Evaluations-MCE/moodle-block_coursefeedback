@@ -134,6 +134,13 @@ class scalequestion extends surveyitemtype_with_settings {
                     'text' => $text,
                 ];
             }
+
+            $centeroptiontext = $record->scale->get('centeroptiontext');
+            if ($centeroptiontext && $optionamount > 2 && $optionamount % 2 === 1) {
+                // The center option is ignored when the number of options is even.
+                $structure[$surveyitem->get('id')]['options'][($optionamount - 1) / 2]['text'] = $centeroptiontext->translate();
+            }
+
             $lastsurveyitem = $surveyitem;
         }
 

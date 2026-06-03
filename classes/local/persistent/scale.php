@@ -44,7 +44,7 @@ class scale extends persistent {
      * Return the definition of the properties of this model.
      * @return array
      */
-    protected static function define_properties() {
+    protected static function define_properties(): array {
         return [
             'surveypartid' => [
                 'type' => PARAM_INT,
@@ -66,6 +66,11 @@ class scale extends persistent {
                 'default' => false,
             ],
             'noansweroptiontext' => [
+                'type' => PARAM_RAW_TRIMMED,
+                'null' => NULL_ALLOWED,
+                'default' => null,
+            ],
+            'centeroptiontext' => [
                 'type' => PARAM_RAW_TRIMMED,
                 'null' => NULL_ALLOWED,
                 'default' => null,
@@ -95,7 +100,7 @@ class scale extends persistent {
     /**
      * Loads and deserializes 'minoptiontext'.
      *
-     * @return multilang_string|null
+     * @return multilang_string
      */
     protected function get_minoptiontext(): multilang_string {
         return multilang_string::deserialize($this->raw_get('minoptiontext'));
@@ -113,7 +118,7 @@ class scale extends persistent {
     /**
      * Loads and deserializes 'maxoptiontext'.
      *
-     * @return multilang_string|null
+     * @return multilang_string
      */
     protected function get_maxoptiontext(): multilang_string {
         return multilang_string::deserialize($this->raw_get('maxoptiontext'));
@@ -126,5 +131,24 @@ class scale extends persistent {
      */
     protected function set_maxoptiontext(multilang_string $text): void {
         $this->raw_set('maxoptiontext', $text->serialize());
+    }
+
+    /**
+     * Loads and deserializes 'centeroptiontext'.
+     *
+     * @return multilang_string|null
+     */
+    protected function get_centeroptiontext(): ?multilang_string {
+        $raw = $this->raw_get('centeroptiontext');
+        return $raw === null ? null : multilang_string::deserialize($raw);
+    }
+
+    /**
+     * Serializes and sets 'centeroptiontext'.
+     *
+     * @param multilang_string|null $text
+     */
+    protected function set_centeroptiontext(?multilang_string $text): void {
+        $this->raw_set('centeroptiontext', $text?->serialize());
     }
 }
