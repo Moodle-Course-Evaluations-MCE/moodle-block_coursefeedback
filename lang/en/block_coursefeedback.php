@@ -151,6 +151,7 @@ $string['new_scale'] = 'New scale';
 $string['new_surveyitem'] = 'New questionnaire element';
 $string['new_surveypart'] = 'New questionnaire';
 $string['no_answer_option_text'] = 'Text for the <abbr title="not applicable">n/a</abbr> option';
+$string['no_answers'] = 'No answers';
 $string['no_default_survey_period_set'] = 'No default evaluation period set. Please define an evaluation period before creating surveys.';
 $string['no_scale_selected'] = 'Please select a scale';
 $string['no_survey_execution'] = 'The course {$a->fullname} is not part of any past, current or future survey.';

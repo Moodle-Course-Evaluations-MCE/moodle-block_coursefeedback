@@ -151,6 +151,7 @@ $string['new_scale'] = 'Neue Skala';
 $string['new_surveyitem'] = 'Neues Fragebogen-Element';
 $string['new_surveypart'] = 'Neuer Fragebogen';
 $string['no_answer_option_text'] = 'Text für die <abbr title="nicht zutreffend">n.z.</abbr>-Option';
+$string['no_answers'] = 'Keine Antworten';
 $string['no_default_survey_period_set'] = 'Der Evaluationszeitraum ist noch nicht gesetzt. Er muss gesetzt werden, bevor Kurse zur Evaluation hinzugefügt werden können.';
 $string['no_scale_selected'] = 'Bitten wählen Sie eine Skala';
 $string['no_survey_execution'] = 'Der Kurs {$a->fullname} ist nicht Teil einer vergangenen, laufenden oder zukünftigen Evaluation.';
