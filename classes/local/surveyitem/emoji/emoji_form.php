@@ -35,7 +35,7 @@ use function array_map;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class emoji_surveyitem_form extends surveyitem_form {
+class emoji_form extends surveyitem_form {
 
     #[\Override]
     protected function definition(): void {
@@ -43,7 +43,7 @@ class emoji_surveyitem_form extends surveyitem_form {
 
         $mform = $this->_form;
 
-        $variants = array_map(fn($variant) => $variant['name'], emoji_surveyitem::get_available_variants());
+        $variants = array_map(fn($variant) => $variant['name'], emoji::get_available_variants());
         $mform->addElement('select', 'variant', get_string('emoji_variants_label', 'block_coursefeedback'), $variants);
         $mform->addRule('variant', get_string('required'), 'required', null, 'client');
     }
