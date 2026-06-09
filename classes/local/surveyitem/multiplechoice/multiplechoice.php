@@ -25,8 +25,8 @@
 namespace block_coursefeedback\local\surveyitem\multiplechoice;
 
 use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
-use core\exception\coding_exception;
 use core\lang_string;
+use moodle_exception;
 
 /**
  * Survey item type definition for a multiple choice question.
@@ -49,11 +49,21 @@ class multiplechoice extends ms_choice {
         $to_insert = [];
         foreach ($answers as $answer) {
             if (!is_array($answer->value)) {
-                throw new coding_exception('Answer ' . json_encode($answer->value) . ' must be an array');
+                throw new moodle_exception(
+                    'invalid_answer',
+                    'block_coursefeedback',
+                    a: json_encode($answer->value),
+                    debuginfo: 'not an array'
+                );
             }
             foreach ($answer->value as $one_answer) {
                 if (!is_number($one_answer) || !isset($answer->additionaldata[$one_answer])) {
-                    throw new coding_exception('Answer ' . json_encode($one_answer) . ' is not valid option.');
+                    throw new moodle_exception(
+                        'invalid_answer',
+                        'block_coursefeedback',
+                        a: json_encode($one_answer),
+                        debuginfo: 'not an option'
+                    );
                 }
                 $to_insert[] = [
                     'surveypartexecutionoptionresponseid' => $answer->response_set_id,

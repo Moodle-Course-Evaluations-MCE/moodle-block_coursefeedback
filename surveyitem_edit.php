@@ -50,7 +50,7 @@ di::get(survey_freezer::class)
 $type = required_param('type', PARAM_ALPHANUMEXT);
 $surveyitemtype = surveyitem_manager::get_surveyitemtype($type);
 if (!$surveyitemtype->can_be_added()) {
-    throw new coding_exception("Cannot manually add or edit survey items of type '$type'.");
+    throw new moodle_exception('cannot_manually_add', 'block_coursefeedback', a: $surveyitemtype->get_name());
 }
 
 $params = ['surveypartid' => $surveypartid, 'type' => $type];

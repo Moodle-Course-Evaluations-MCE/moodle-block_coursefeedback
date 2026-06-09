@@ -19,8 +19,8 @@ namespace block_coursefeedback\local\surveyitem\emoji;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
-use core\exception\coding_exception;
 use core\lang_string;
+use moodle_exception;
 
 /**
  * A survey item showing multiple emojis for students to "pick their mood" from.
@@ -170,12 +170,12 @@ class emoji_surveyitem extends surveyitemtype_with_settings {
             'surveyitemid' => $surveyitem->get('id'),
         ]);
 
-        if (!array_key_exists($formdata->variant, self::get_available_variants())) {
-            throw new \coding_exception("Invalid emoji scale variant: '$formdata->variant'");
+        if (empty($formdata->variant) || !array_key_exists($formdata->variant, self::get_available_variants())) {
+            throw new moodle_exception("emoji_unknown_variant", 'block_coursefeedback', a: $formdata->variant ?? '(missing)');
         }
 
         $record = [
-            ...((array)$existing_record ?: []),
+            ...((array) $existing_record ?: []),
             'surveyitemid' => $surveyitem->get('id'),
             'variant' => $formdata->variant,
         ];
@@ -237,12 +237,12 @@ class emoji_surveyitem extends surveyitemtype_with_settings {
             $metadata = $answer->additionaldata;
             $variant = self::get_available_variants()[$metadata->variant] ?? null;
             if (!$variant) {
-                throw new coding_exception("Invalid emoji scale variant: '$metadata->variant'");
+                throw new moodle_exception("emoji_unknown_variant", 'block_coursefeedback', a: $metadata->variant);
             }
             $possiblevalues = array_column($variant['choices'], 'value');
 
             if (!is_number($answer->value) || !in_array(intval($answer->value), $possiblevalues, true)) {
-                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a valid one');
+                throw new moodle_exception('invalid_answer', 'block_coursefeedback', a: json_encode($answer->value));
             }
 
             $to_insert[] = [

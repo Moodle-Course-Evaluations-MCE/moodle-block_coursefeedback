@@ -25,8 +25,8 @@
 namespace block_coursefeedback\local\surveyitem\singlechoice;
 
 use block_coursefeedback\local\surveyitem\ms_choice\ms_choice;
-use core\exception\coding_exception;
 use core\lang_string;
+use moodle_exception;
 
 /**
  * Survey item type definition for a single choice question.
@@ -49,7 +49,7 @@ class singlechoice extends ms_choice {
         $to_insert = [];
         foreach ($answers as $answer) {
             if (!is_number($answer->value) || !isset($answer->additionaldata[$answer->value])) {
-                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not valid option.');
+                throw new moodle_exception('invalid_answer', 'block_coursefeedback', a: json_encode($answer->value));
             }
             $to_insert[] = [
                 'surveypartexecutionoptionresponseid' => $answer->response_set_id,

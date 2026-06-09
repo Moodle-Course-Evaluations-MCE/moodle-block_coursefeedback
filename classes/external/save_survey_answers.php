@@ -27,6 +27,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use moodle_exception;
 
 /**
  * External api to save survey responses.
@@ -93,7 +94,7 @@ class save_survey_answers extends external_api {
                 'userid' => $USER->id,
             ])
         ) {
-            throw new coding_exception("The user has already filled out this survey.");
+            throw new moodle_exception("already_answered", 'block_coursefeedback');
         }
 
         $all_question_data = surveyitem_manager::get_questiondata_for_surveyparts(
