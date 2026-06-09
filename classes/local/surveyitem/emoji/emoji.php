@@ -30,7 +30,7 @@ use moodle_exception;
  * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class emoji_surveyitem extends surveyitemtype_with_settings {
+class emoji extends surveyitemtype_with_settings {
 
     /**
      * Returns the available emoji scale variants.

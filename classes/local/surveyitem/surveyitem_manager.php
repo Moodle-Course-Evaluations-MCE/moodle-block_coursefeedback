@@ -31,7 +31,7 @@ use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\surveyitem\dropdown\dropdown;
-use block_coursefeedback\local\surveyitem\emoji\emoji_surveyitem;
+use block_coursefeedback\local\surveyitem\emoji\emoji;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
@@ -66,7 +66,7 @@ class surveyitem_manager {
             'text' => new text(),
             'pagebreak' => new pagebreak(),
             'scalequestion' => new scalequestion(),
-            'emoji' => new emoji_surveyitem(),
+            'emoji' => new emoji(),
             'info' => new info(),
             'slot_choice' => new slot_choice(),
         ];
