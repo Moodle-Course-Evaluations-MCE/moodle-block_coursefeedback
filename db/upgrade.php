@@ -25,6 +25,10 @@
 
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__ . '/upgradelib.php');
+
 /**
  * Upgrade script for the Course Feedback block.
  *
@@ -1235,29 +1239,4 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
     }
 
     return true;
-}
-
-/**
- * Adds a new non-null field, setting it to the given default on all existing records. Xmldb can't do this natively.
- *
- * @param database_manager $dbman
- * @param xmldb_table $table
- * @param xmldb_field $field
- * @param mixed $default
- * @return void
- */
-function add_nonnull_field_with_default(database_manager $dbman, xmldb_table $table, xmldb_field $field, mixed $default): void {
-    global $DB;
-
-    // We can't add a new non-null field without a default, but TEXT fields can't have defaults (for some reason).
-    // So we add as nullable, then set our default and change to non-null.
-
-    $field->setNotNull(false);
-    $dbman->add_field($table, $field);
-    foreach ($DB->get_fieldset($table->getName(), 'id') as $id) {
-        $DB->update_record($table->getName(), ['id' => $id, $field->getName() => $default]);
-    }
-
-    $field->setNotNull(XMLDB_NOTNULL);
-    $dbman->change_field_notnull($table, $field);
 }
