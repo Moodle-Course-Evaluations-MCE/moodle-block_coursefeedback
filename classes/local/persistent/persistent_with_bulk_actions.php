@@ -123,9 +123,9 @@ abstract class persistent_with_bulk_actions extends persistent {
      * Like {@see \moodle_database::record_exists()}, but for a persistent.
      *
      * @param array<string, mixed> $conditions
-     * @return string
+     * @return bool
      */
-    public static function record_exists_cond(array $conditions): string {
+    public static function record_exists_cond(array $conditions): bool {
         global $DB;
         return $DB->record_exists(static::TABLE, $conditions);
     }
