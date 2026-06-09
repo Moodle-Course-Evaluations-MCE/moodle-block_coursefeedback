@@ -80,6 +80,7 @@ $PAGE->set_title($title);
 
 $returnurl = new moodle_url('/blocks/coursefeedback/surveypart.php', ['id' => $surveypartid]);
 
+
 if ($surveyitemtype instanceof surveyitemtype_with_settings) {
     $mform = $surveyitemtype->get_settings_form($PAGE->url, $surveypart);
 } else {
@@ -88,12 +89,14 @@ if ($surveyitemtype instanceof surveyitemtype_with_settings) {
     }
 
     require_sesskey();
+    $transaction = $DB->start_delegated_transaction();
     $sortindex = surveyitem::count_records(['surveypartid' => $surveypartid]);
     $surveyitem = new surveyitem();
     $surveyitem->set('surveypartid', $surveypartid);
     $surveyitem->set('surveyitemtype', $type);
     $surveyitem->set('sortindex', $sortindex);
     $surveyitem->save();
+    $transaction->allow_commit();
     redirect($returnurl);
 }
 
@@ -105,6 +108,7 @@ if ($surveyitem) {
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if (($data = $mform->get_data()) && !$mform->no_submit_button_pressed()) {
+    $transaction = $DB->start_delegated_transaction();
     if (!$surveyitem) {
         $sortindex = surveyitem::count_records(['surveypartid' => $surveypartid]);
         $surveyitem = new surveyitem();
@@ -121,6 +125,7 @@ if ($mform->is_cancelled()) {
 
     $surveyitem->save();
     $surveyitemtype->save_settings_form_data($surveyitem, $surveypart, $data);
+    $transaction->allow_commit();
     redirect($returnurl);
 } // Else display form.
 
