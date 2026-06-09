@@ -14,25 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Survey item persistent class.
- *
- * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_coursefeedback\local\persistent;
 
 use block_coursefeedback\local\multilang_string;
 use core\persistent;
 
 /**
- * Survey item persistent class.
+ * A single item of a questionnaire.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class surveyitem extends persistent_with_bulk_actions {

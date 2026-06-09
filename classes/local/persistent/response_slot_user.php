@@ -17,7 +17,7 @@
 namespace block_coursefeedback\local\persistent;
 
 /**
- * Response slot users (those who are allowed to see the results) persistent class.
+ * Maps response slots to users who are allowed to see the results.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin

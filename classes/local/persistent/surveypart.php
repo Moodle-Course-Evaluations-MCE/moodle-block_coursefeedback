@@ -19,7 +19,7 @@ namespace block_coursefeedback\local\persistent;
 use core\exception\coding_exception;
 
 /**
- * Surveypart persistent class.
+ * A questionnaire, also known as a survey part.
  *
  * @package     block_coursefeedback
  * @copyright   2025 innoCampus, Technische Universität Berlin

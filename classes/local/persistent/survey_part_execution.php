@@ -17,7 +17,7 @@
 namespace block_coursefeedback\local\persistent;
 
 /**
- * Survey part execution persistent class.
+ * Execution settings for a single questionnaire in a course.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin
