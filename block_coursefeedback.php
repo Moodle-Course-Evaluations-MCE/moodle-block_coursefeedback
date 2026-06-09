@@ -59,7 +59,7 @@ class block_coursefeedback extends block_base {
         global $OUTPUT;
         try {
             $mapper = course_organization_mapping::get_instance();
-            $organization = $mapper::get_organization_for_course($this->page->course);
+            $organization = $mapper->get_organization_for_course($this->page->course);
             if (!$organization) {
                 return '';
             }

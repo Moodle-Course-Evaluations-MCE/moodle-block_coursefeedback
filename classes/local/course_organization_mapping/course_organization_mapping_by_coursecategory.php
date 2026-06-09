@@ -31,7 +31,7 @@ use core\dml\sql_join;
 class course_organization_mapping_by_coursecategory extends course_organization_mapping {
 
     #[\Override]
-    public static function get_organization_for_course(int|object $courseorid): ?organization {
+    public function get_organization_for_course(int|object $courseorid): ?organization {
         if (is_object($courseorid)) {
             $course = $courseorid;
         } else {
@@ -55,7 +55,7 @@ class course_organization_mapping_by_coursecategory extends course_organization_
     }
 
     #[\Override]
-    public static function get_filter_sql_for_organization(organization $organization, string $alias_course_table = 'c'): sql_join {
+    public function get_filter_sql_for_organization(organization $organization, string $alias_course_table = 'c'): sql_join {
         global $DB;
         $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
         if (!$coursecatids) {

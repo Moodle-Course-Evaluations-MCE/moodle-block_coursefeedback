@@ -23,6 +23,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
+
 /**
  * Upgrade script for the Course Feedback block.
  *
@@ -1072,14 +1074,14 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         $table = new xmldb_table('block_coursefeedback_surveyexecution');
         $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
 
-        $mapping = \block_coursefeedback\local\course_organization_mapping\course_organization_mapping::get_instance();
+        $mapping = course_organization_mapping::get_instance();
         // Conditionally launch add field organizationid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
 
             // Set organization for survey_executions.
             foreach ($DB->get_records($table->getName()) as $record) {
-                $record->organizationid = $mapping::get_organization_for_course($record->courseid)->get('id');
+                $record->organizationid = $mapping->get_organization_for_course($record->courseid)->get('id');
                 $DB->update_record($table->getName(), $record);
             }
 

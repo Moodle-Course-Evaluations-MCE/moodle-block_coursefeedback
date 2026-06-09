@@ -108,7 +108,7 @@ class permission_manager {
         string $organization_property
     ): bool {
         if (!$organization_or_id) {
-            $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+            $organization = course_organization_mapping::get_instance()->get_organization_for_course($course);
         } else if (is_int($organization_or_id)) {
             $organization = organization::get_record(['id' => $organization_or_id], MUST_EXIST);
         } else {

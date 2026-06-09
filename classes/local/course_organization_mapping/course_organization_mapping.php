@@ -17,7 +17,9 @@
 namespace block_coursefeedback\local\course_organization_mapping;
 
 use block_coursefeedback\local\persistent\organization;
+use core\di;
 use core\dml\sql_join;
+use core\exception\coding_exception;
 
 /**
  * Abstract course organization mapping stuff.
@@ -39,7 +41,7 @@ abstract class course_organization_mapping {
      * @param int|object $courseorid course object or id.
      * @return organization|null
      */
-    abstract public static function get_organization_for_course(int|object $courseorid): ?organization;
+    abstract public function get_organization_for_course(int|object $courseorid): ?organization;
 
     /**
      * Return sql to filter courses by this organization.
@@ -47,21 +49,22 @@ abstract class course_organization_mapping {
      * @param string $alias_course_table What the course table is called.
      * @return sql_join
      */
-    abstract public static function get_filter_sql_for_organization(
+    abstract public function get_filter_sql_for_organization(
         organization $organization,
         string $alias_course_table = 'c'
     ): sql_join;
 
     /**
      * Returns the correct course_organization_mapping function based on the setting.
-     * @return class-string<course_organization_mapping>
+     *
+     * @return self
      */
-    public static function get_instance() {
+    public static function get_instance(): self {
         $method = get_config('block_coursefeedback', 'course_organization_method');
-        static $instances = [
-            self::MAP_BY_COURSECAT => course_organization_mapping_by_coursecategory::class,
-            self::MAP_BY_CUSTOMFIELD => null,
-        ];
-        return $instances[$method];
+        return match ($method) {
+            // TODO: Implement or remove MAP_BY_CUSTOMFIELD.
+            self::MAP_BY_COURSECAT => di::get(course_organization_mapping_by_coursecategory::class),
+            default => throw new coding_exception("Invalid course organization mapping method: $method")
+        };
     }
 }
