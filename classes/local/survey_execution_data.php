@@ -239,7 +239,7 @@ class survey_execution_data {
         $course = is_int($course_or_id) ? get_course($course_or_id) : $course_or_id;
 
         if (!$organizationid) {
-            $organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+            $organization = course_organization_mapping::get_instance()->get_organization_for_course($course);
             if (!$organization) {
                 return null;
             }

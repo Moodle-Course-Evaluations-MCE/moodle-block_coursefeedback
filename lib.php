@@ -62,7 +62,7 @@ function block_coursefeedback_extend_navigation_course(
     try {
         if (
             has_capability('block/coursefeedback:viewcoursesettings', $context)
-            && ($organization = course_organization_mapping::get_instance()::get_organization_for_course($course))
+            && ($organization = course_organization_mapping::get_instance()->get_organization_for_course($course))
             && $DB->record_exists(
                 survey_execution::TABLE,
                 ['courseid' => $course->id, 'organizationid' => $organization->get('id')]

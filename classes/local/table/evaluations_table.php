@@ -68,7 +68,7 @@ class evaluations_table extends no_pagination_table {
         parent::__construct('block_coursefeedback-evaluations');
         $this->define_baseurl($PAGE->url);
         $semester_join = course_semester_mapping::get_instance()->get_filter_sql_for_semester($this->semester);
-        $organization_join = course_organization_mapping::get_instance()::get_filter_sql_for_organization($this->organization);
+        $organization_join = course_organization_mapping::get_instance()->get_filter_sql_for_organization($this->organization);
         $this->set_sql(
             "c.id as courseid, c.fullname as name, se.starttime, se.endtime, se.status ",
             "{course} c

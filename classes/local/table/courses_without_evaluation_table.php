@@ -59,7 +59,7 @@ class courses_without_evaluation_table extends no_pagination_table {
         parent::__construct('block_coursefeedback-courses_without_evaluation');
         $this->define_baseurl($PAGE->url);
         $semester_join = course_semester_mapping::get_instance()->get_filter_sql_for_semester($semester);
-        $organization_join = course_organization_mapping::get_instance()::get_filter_sql_for_organization($organization);
+        $organization_join = course_organization_mapping::get_instance()->get_filter_sql_for_organization($organization);
         $this->set_sql(
             "c.id, fullname as name, shortname",
             "{course} c

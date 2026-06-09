@@ -139,7 +139,7 @@ class update_survey_execution extends external_api {
         $survey_execution = survey_execution::get_record(['id' => $surveyexecutionid], MUST_EXIST);
 
         $organization =
-            course_organization_mapping::get_instance()::get_organization_for_course($survey_execution->get('courseid'));
+            course_organization_mapping::get_instance()->get_organization_for_course($survey_execution->get('courseid'));
 
         $courseid = $survey_execution->get('courseid');
 

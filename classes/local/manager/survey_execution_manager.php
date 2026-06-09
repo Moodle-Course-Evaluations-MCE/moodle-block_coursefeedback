@@ -89,7 +89,7 @@ class survey_execution_manager {
         global $DB;
         $transaction = $DB->start_delegated_transaction();
 
-        $org = course_organization_mapping::get_instance()::get_organization_for_course($courseid);
+        $org = course_organization_mapping::get_instance()->get_organization_for_course($courseid);
 
         $surveypart = surveypart::get_record(['id' => $surveypartid], MUST_EXIST);
 

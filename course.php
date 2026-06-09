@@ -47,7 +47,7 @@ $PAGE->set_url('/blocks/coursefeedback/course.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_course($course);
 
-$organization = course_organization_mapping::get_instance()::get_organization_for_course($course);
+$organization = course_organization_mapping::get_instance()->get_organization_for_course($course);
 
 if (!$organization) {
     throw new coding_exception('Course does not belong to an evaluation organization');
