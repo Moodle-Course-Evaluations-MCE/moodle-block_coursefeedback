@@ -14,24 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Surveypart persistent class.
- *
- * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_coursefeedback\local\persistent;
 
 use core\persistent;
 
 /**
- * Surveypart persistent class.
+ * An organizational unit, such as a faculty, in which evaluations are conducted.
  *
  * @package     block_coursefeedback
- * @copyright   2025 innoCampus, Technische Universität Berlin
- * @copyright   2025 Moodle.NRW, Ruhr-Universität Bochum
+ * @copyright   2026 innoCampus, Technische Universität Berlin
+ * @copyright   2026 Moodle.NRW, Ruhr-Universität Bochum
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class organization extends persistent {

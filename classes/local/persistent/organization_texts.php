@@ -19,7 +19,7 @@ namespace block_coursefeedback\local\persistent;
 use core\persistent;
 
 /**
- * Organization_texts persistent class.
+ * Holds potentially large texts belonging to an organization.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin

@@ -17,7 +17,7 @@
 namespace block_coursefeedback\local\persistent;
 
 /**
- * Survey part execution persistent class.
+ * Maps survey executions to users who have submitted a response to that survey execution.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin

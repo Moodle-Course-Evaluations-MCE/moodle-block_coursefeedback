@@ -20,7 +20,7 @@ use core\exception\coding_exception;
 use core\lang_string;
 
 /**
- * Survey execution persistent class.
+ * Execution settings and status for a single course.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin

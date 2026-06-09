@@ -19,7 +19,7 @@ namespace block_coursefeedback\local\persistent;
 use core\exception\coding_exception;
 
 /**
- * Response slot persistent class.
+ * Response slot ("Untergruppe") persistent class.
  *
  * @package     block_coursefeedback
  * @copyright   2026 innoCampus, Technische Universität Berlin
