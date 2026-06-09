@@ -29,7 +29,6 @@ use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\course_semester_mapping\evaluation_semester;
 use block_coursefeedback\local\persistent\organization;
 use block_coursefeedback\local\persistent\survey_execution;
-use core\exception\coding_exception;
 use core\output\html_writer;
 
 defined('MOODLE_INTERNAL') || die;

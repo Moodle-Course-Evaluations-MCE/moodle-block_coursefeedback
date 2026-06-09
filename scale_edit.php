@@ -48,7 +48,7 @@ $scale = null;
 if ($id) {
     $scale = scale::get_record(['id' => $id], MUST_EXIST);
     if ($scale->get('surveypartid') != $surveypart->get('id')) {
-        throw new \core\exception\coding_exception('Scale does not belong to surveypart');
+        throw new coding_exception('Scale does not belong to surveypart');
     }
     $params['id'] = $id;
 }

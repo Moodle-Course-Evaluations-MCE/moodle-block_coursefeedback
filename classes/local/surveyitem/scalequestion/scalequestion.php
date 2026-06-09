@@ -29,8 +29,8 @@ use block_coursefeedback\local\persistent\scale;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
-use core\exception\coding_exception;
 use core\lang_string;
+use moodle_exception;
 
 /**
  * Survey item type definition for a scale question.
@@ -159,7 +159,7 @@ class scalequestion extends surveyitemtype_with_settings {
                 $answer->value < 0 ||
                 $answer->value > $metadata->scale->get('optionamount')
             ) {
-                throw new coding_exception('Answer ' . json_encode($answer->value) . ' is not a valid one');
+                throw new moodle_exception('invalid_answer', 'block_coursefeedback', a: json_encode($answer->value));
             }
             $to_insert[] = [
                 'surveypartexecutionoptionresponseid' => $answer->response_set_id,

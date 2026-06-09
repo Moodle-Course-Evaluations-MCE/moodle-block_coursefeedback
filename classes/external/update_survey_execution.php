@@ -153,7 +153,7 @@ class update_survey_execution extends external_api {
                 is_frozen: di::get(survey_freezer::class)->is_se_frozen($survey_execution)
             )
         ) {
-            throw new coding_exception('You are not allowed to edit the survey period.');
+            throw new coding_exception('no_edit_survey_period', 'block_coursefeedback');
         }
 
         $survey_execution->set('starttime', $starttime);

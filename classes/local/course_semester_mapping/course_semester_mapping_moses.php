@@ -92,7 +92,7 @@ class course_semester_mapping_moses extends course_semester_mapping {
             $current_semester = $this->semester_res->get_current();
         }
         if (!$current_semester) {
-            throw new coding_exception("There is no current semester in Moses");
+            throw new moodle_exception("local_moses_no_current_semester", 'block_coursefeedback');
         }
         return $this->from_moses_record($current_semester);
     }

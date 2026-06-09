@@ -45,5 +45,6 @@ class emoji_surveyitem_form extends surveyitem_form {
 
         $variants = array_map(fn($variant) => $variant['name'], emoji_surveyitem::get_available_variants());
         $mform->addElement('select', 'variant', get_string('emoji_variants_label', 'block_coursefeedback'), $variants);
+        $mform->addRule('variant', get_string('required'), 'required', null, 'client');
     }
 }

@@ -57,7 +57,7 @@ if ($action) {
 
         $uses = $DB->count_records('block_coursefeedback_surveyitemscalequestion', ['scaleid' => $scaleid]);
         if ($uses > 0) {
-            throw new \core\exception\coding_exception('Could not delete scale, because it is used somewhere.');
+            throw new moodle_exception('scale_delete_in_use', 'block_coursefeedback');
         }
         $DB->delete_records('block_coursefeedback_scale', ['id' => $scaleid]);
     }

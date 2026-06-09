@@ -59,7 +59,10 @@ if ($action) {
             foreach ($courseids as $courseid) {
                 $course = get_course($courseid);
                 if (!in_array($course->category, $coursecatids)) {
-                    throw new \core\exception\coding_exception('Try to create survey for course not in category');
+                    throw new moodle_exception('course_not_in_org', 'block_coursefeedback', a: [
+                        'course_name' => $course->fullname,
+                        'org_name' => $organization->get('name'),
+                    ]);
                 }
             }
 
