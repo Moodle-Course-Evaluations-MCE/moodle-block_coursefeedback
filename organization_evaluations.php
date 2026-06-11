@@ -55,10 +55,12 @@ if ($action) {
             require_capability('block/coursefeedback:manageorganizations', $context);
             $courseids = required_param_array('selected', PARAM_INT);
 
-            $coursecatids = organization_category::get_all_recursive_coursecatids($organization->get('id'));
-            foreach ($courseids as $courseid) {
-                $course = get_course($courseid);
-                if (!in_array($course->category, $coursecatids)) {
+            [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+            $surveyexecutions = survey_execution::get_records_select("courseid $insql", $inparams);
+
+            foreach ($surveyexecutions as $surveyexecution) {
+                if ($surveyexecution->get('organizationid') !== $organization->get('id')) {
+                    $course = get_course($surveyexecution->get('courseid'));
                     throw new moodle_exception('course_not_in_org', 'block_coursefeedback', a: [
                         'course_name' => $course->fullname,
                         'org_name' => $organization->get('name'),
@@ -67,12 +69,10 @@ if ($action) {
             }
 
             $se_manager = di::get(survey_execution_manager::class);
-
-            [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
-            $surveyexecutions = survey_execution::get_records_select("courseid $insql", $inparams);
             foreach ($surveyexecutions as $surveyexecution) {
                 $se_manager->delete_survey_execution($surveyexecution->get('id'));
             }
+
             redirect($PAGE->url);
     }
 }

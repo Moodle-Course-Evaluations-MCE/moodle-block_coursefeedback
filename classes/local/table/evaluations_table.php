@@ -68,15 +68,15 @@ class evaluations_table extends no_pagination_table {
         parent::__construct('block_coursefeedback-evaluations');
         $this->define_baseurl($PAGE->url);
         $semester_join = course_semester_mapping::get_instance()->get_filter_sql_for_semester($this->semester);
-        $organization_join = course_organization_mapping::get_instance()->get_filter_sql_for_organization($this->organization);
+        // We intentionally don't use course_organization_mapping here, since that would make it impossible to delete the survey
+        // execution. TODO: Mark courses that don't belong to this organization anymore.
         $this->set_sql(
             "c.id as courseid, c.fullname as name, se.starttime, se.endtime, se.status ",
             "{course} c
             $semester_join->joins
-            $organization_join->joins
             JOIN {" . survey_execution::TABLE . "} se ON se.courseid = c.id AND se.organizationid = :organizationid",
-            "$semester_join->wheres AND $organization_join->wheres",
-            ['organizationid' => $this->organization->get('id'), ...$semester_join->params, ...$organization_join->params],
+            $semester_join->wheres,
+            ['organizationid' => $this->organization->get('id'), ...$semester_join->params],
         );
         $this->column_nosort = ['checkbox', 'tools'];
         $this->define_columns(['checkbox', 'name', 'starttime', 'status', 'tools']);
