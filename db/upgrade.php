@@ -37,7 +37,7 @@ require_once(__DIR__ . '/upgradelib.php');
  * @throws moodle_exception If the installed version is too old or confirmation is missing.
  */
 function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
-    global $DB;
+    global $DB, $USER;
     $dbman = $DB->get_manager();
 
     // 1) Enforce minimum starting version.
@@ -926,26 +926,35 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
             $field->setNotNull(false);
             $dbman->add_field($table, $field);
 
-            // We initialize the eventids to the first event defined for that course.
-            $records = $DB->get_records_sql("
-                SELECT spe.id AS spe_id, c.id AS course_id, MIN(COALESCE(e.id, 2147483647)) AS event_id
-                FROM {block_coursefeedback_surveypartexecution} spe
-                INNER JOIN {block_coursefeedback_surveyexecution} se ON se.id = spe.surveyexecutionid
-                INNER JOIN {course} c ON c.id = se.courseid
-                LEFT JOIN {block_coursefeedback_course_eventtype} e ON e.courseid = c.id
-                GROUP BY spe.id, c.id
-            ");
-            foreach ($records as $spe_id => $record) {
-                if ($record->event_id === 2147483647) {
-                    throw new coding_exception("Can't upgrade to 2026041600: Course '$record->course_id' has a survey part "
-                        . "execution '$spe_id', but no events.");
-                }
-
-                $DB->update_record('block_coursefeedback_surveypartexecution', ['id' => $spe_id, 'eventid' => $record->event_id]);
+            // Associate existing events with SPEs and create new events where those aren't enough.
+            $eventids_by_courses = [];
+            foreach ($DB->get_records('block_coursefeedback_course_eventtype', fields: 'id, courseid') as $record) {
+                $eventids_by_courses[$record->courseid][] = $record->id;
             }
 
-            if ($DB->record_exists('block_coursefeedback_surveypartexecution', ['eventid' => null])) {
-                throw new coding_exception("Can't upgrade to 2026041600: There are still survey part executions without eventid.");
+            $spes = $DB->get_records_sql('
+                SELECT spe.id, se.courseid
+                FROM {block_coursefeedback_surveypartexecution} spe
+                INNER JOIN {block_coursefeedback_surveyexecution} se ON se.id = spe.surveyexecutionid
+            ');
+            foreach ($spes as $spe) {
+                $event_id = array_shift($eventids_by_courses[$spe->courseid]);
+                if (!$event_id) {
+                    $event_id = $DB->insert_record('block_coursefeedback_course_eventtype', [
+                        'courseid' => $spe->courseid,
+                        'eventtypeid' => null,
+                        'teacherid' => 0,
+                        'name' => '',
+                        'usermodified' => $USER->id,
+                        'timecreated' => time(),
+                        'timemodified' => time(),
+                    ]);
+                }
+
+                $DB->update_record('block_coursefeedback_surveypartexecution', [
+                    'id' => $spe->id,
+                    'eventid' => $event_id,
+                ]);
             }
 
             // Now that every SPE should have an eventid, make it non-null.
