@@ -1087,14 +1087,36 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         $table = new xmldb_table('block_coursefeedback_surveyexecution');
         $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
 
-        $mapping = course_organization_mapping::get_instance();
         // Conditionally launch add field organizationid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
 
+            try {
+                $mapping = course_organization_mapping::get_instance();
+            } catch (moodle_exception) {
+                // The setting might not have been set yet.
+                $mapping = null;
+            }
+
+            $fallback_org_id = null;
+
             // Set organization for survey_executions.
             foreach ($DB->get_records($table->getName()) as $record) {
-                $record->organizationid = $mapping->get_organization_for_course($record->courseid)->get('id');
+                $org_id = $mapping?->get_organization_for_course($record->courseid)?->get('id');
+                if (!$org_id) {
+                    // The course isn't part of an organization (anymore).
+                    // Assign the SE to an automatically created one.
+                    $org_id = $fallback_org_id ??= $DB->insert_record('block_coursefeedback_organization', [
+                        'name' => 'Orphaned survey executions',
+                        'can_teacher_edit_speriod' => false,
+                        'can_teacher_edit_ssettings' => false,
+                        'usermodified' => $USER->id,
+                        'timecreated' => time(),
+                        'timemodified' => time(),
+                    ]);
+                    mtrace("Assigning orphaned survey execution '$record->id' to organization '$org_id'.");
+                }
+                $record->organizationid = $org_id;
                 $DB->update_record($table->getName(), $record);
             }
 
