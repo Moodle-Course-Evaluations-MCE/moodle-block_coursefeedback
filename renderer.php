@@ -41,7 +41,7 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         }
 
         $deps_json = json_encode(
-            ['block_coursefeedback/alpinejs', ...self::$alpinejsdependencies],
+            ['block_coursefeedback/alpinejs-lazy', ...self::$alpinejsdependencies],
             JSON_THROW_ON_ERROR
         );
 
