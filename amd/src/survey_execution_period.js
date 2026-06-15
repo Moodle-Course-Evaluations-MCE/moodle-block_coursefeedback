@@ -15,7 +15,7 @@
  * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Alpine from './alpinejs';
+import Alpine from './alpinejs-lazy';
 import Ajax from 'core/ajax';
 
 document.addEventListener('alpine:init', () => {

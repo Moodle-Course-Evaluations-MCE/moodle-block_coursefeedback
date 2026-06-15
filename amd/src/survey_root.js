@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import Alpine from './alpinejs';
+import Alpine from './alpinejs-lazy';
 import Templates from "core/templates";
 import { MultipleChoice } from "./surveyitems/multiplechoice";
 import { SingleChoice } from "./surveyitems/singlechoice";

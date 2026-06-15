@@ -15,7 +15,7 @@
  * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Alpine from './alpinejs';
+import Alpine from './alpinejs-lazy';
 import ModalEvents from 'core/modal_events';
 import ModalDeleteCancel from 'core/modal_delete_cancel';
 import { get_string as getString } from 'core/str';
