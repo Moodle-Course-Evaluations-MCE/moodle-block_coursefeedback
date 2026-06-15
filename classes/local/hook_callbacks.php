@@ -19,7 +19,6 @@ namespace block_coursefeedback\local;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\output\survey;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
@@ -65,9 +64,9 @@ class hook_callbacks {
                 return;
             }
 
-            global $USER;
+            global $USER, $DB;
             if (
-                survey_execution_user::record_exists_cond([
+                $DB->record_exists('block_coursefeedback_surveyexecution_user', [
                     'surveyexecutionid' => $course_data->survey_execution->get('id'),
                     'userid' => $USER->id,
                 ])

@@ -26,7 +26,6 @@
 use block_coursefeedback\event\survey_responses_deleted;
 use block_coursefeedback\local\course_organization_mapping\course_organization_mapping;
 use block_coursefeedback\local\manager\permission_manager;
-use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
@@ -120,7 +119,11 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
 $show_event_table = count($model->events_by_id) > 0 || permission_manager::can_edit_course_surveysettings($course, $organization);
-$num_responses = survey_execution_user::count_records(['surveyexecutionid' => $model->survey_execution->get('id')]);
+global $DB;
+$num_responses = $DB->count_records(
+    'block_coursefeedback_surveyexecution_user',
+    ['surveyexecutionid' => $model->survey_execution->get('id')]
+);
 
 echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'info_message' => $is_frozen ? get_string('survey_execution_frozen_long', 'block_coursefeedback') : null,

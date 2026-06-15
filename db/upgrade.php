@@ -1269,5 +1269,51 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         upgrade_block_savepoint(true, 2026061700, 'coursefeedback');
     }
 
+    if ($oldversion < 2026061800) {
+        // Define key usermodified (foreign) to be dropped from block_coursefeedback_surveyexecution_user.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+        $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Launch drop key usermodified.
+        $dbman->drop_key($table, $key);
+
+        // Define field usermodified to be dropped from block_coursefeedback_surveyexecution_user.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+        $field = new xmldb_field('usermodified');
+
+        // Conditionally launch drop field usermodified.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field timecreated to be dropped from block_coursefeedback_surveyexecution_user.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+        $field = new xmldb_field('timecreated');
+
+        // Conditionally launch drop field timecreated.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field timemodified to be dropped from block_coursefeedback_surveyexecution_user.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+        $field = new xmldb_field('timemodified');
+
+        // Conditionally launch drop field timemodified.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define key userid (foreign) to be added to block_coursefeedback_surveyexecution_user.
+        $table = new xmldb_table('block_coursefeedback_surveyexecution_user');
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Launch add key userid.
+        $dbman->add_key($table, $key);
+
+        // Coursefeedback savepoint reached.
+        upgrade_block_savepoint(true, 2026061800, 'coursefeedback');
+    }
+
     return true;
 }
