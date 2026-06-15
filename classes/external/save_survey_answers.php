@@ -16,7 +16,6 @@
 
 namespace block_coursefeedback\external;
 
-use block_coursefeedback\local\persistent\survey_execution_user;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitemtype_answerdata;
@@ -89,7 +88,7 @@ class save_survey_answers extends external_api {
         $course_data = survey_execution_data::load_from_course_required($course);
 
         if (
-            survey_execution_user::record_exists_cond([
+            $DB->record_exists('block_coursefeedback_surveyexecution_user', [
                 'surveyexecutionid' => $course_data->survey_execution->get('id'),
                 'userid' => $USER->id,
             ])
@@ -158,10 +157,10 @@ class save_survey_answers extends external_api {
         }
 
         // Save the fact that the user completed this survey execution.
-        (new survey_execution_user())->set_many([
+        $DB->insert_record('block_coursefeedback_surveyexecution_user', [
             'surveyexecutionid' => $course_data->survey_execution->get('id'),
             'userid' => $USER->id,
-        ])->create();
+        ]);
 
         $transaction->allow_commit();
 
