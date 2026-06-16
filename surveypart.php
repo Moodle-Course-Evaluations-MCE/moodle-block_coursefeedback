@@ -27,11 +27,11 @@ use block_coursefeedback\local\manager\breadcrumbs_manager;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\survey;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitem\surveyitemtype;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
-use block_coursefeedback\output\survey;
 use core\di;
 use core\output\notification;
 
@@ -175,10 +175,11 @@ foreach ($surveyitems as $surveyitem) {
 
 echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context);
 
+/** @var block_coursefeedback_renderer $renderer */
 $renderer = $PAGE->get_renderer('block_coursefeedback');
 try {
     $survey = survey::for_testing_surveypart($surveypart);
-    $preview_content = $renderer->render($survey);
+    $preview_content = $renderer->render_survey($survey);
 } catch (moodle_exception $e) {
     // Show message and stacktrace instead.
     $preview_content = $renderer->render(new notification(

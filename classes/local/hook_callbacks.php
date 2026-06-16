@@ -19,7 +19,7 @@ namespace block_coursefeedback\local;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
 use block_coursefeedback\local\persistent\survey_execution;
-use block_coursefeedback\output\survey;
+use block_coursefeedback_renderer;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
 use moodle_url;
@@ -81,10 +81,11 @@ class hook_callbacks {
                 return;
             }
 
+            /** @var block_coursefeedback_renderer $renderer */
             $renderer = $PAGE->get_renderer('block_coursefeedback');
 
             // We add the survey HTML to the end of the page, it'll move itself to the notification area.
-            $hook->add_html($renderer->render($survey));
+            $hook->add_html($renderer->render_survey($survey, append_to_selector: '#user-notifications'));
         } catch (\Exception $e) {
             debugging($e);
         }
