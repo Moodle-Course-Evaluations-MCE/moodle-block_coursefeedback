@@ -63,7 +63,7 @@ class info extends surveyitemtype_with_settings {
     public function export_auto_created(string $text): array {
         static $id = PHP_INT_MIN;
         return [
-            'type_slot_choice' => true,
+            'type_info' => true,
             'type' => 'info',
             // Client-side code currently expects every item to have an ID. We use successive negative numbers.
             // TODO: Do better.
