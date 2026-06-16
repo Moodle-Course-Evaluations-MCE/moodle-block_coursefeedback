@@ -70,7 +70,7 @@ if ($action) {
 
             $se_manager = di::get(survey_execution_manager::class);
             foreach ($surveyexecutions as $surveyexecution) {
-                $se_manager->delete_survey_execution($surveyexecution->get('id'));
+                $se_manager->delete_survey_execution($surveyexecution);
             }
 
             redirect($PAGE->url);

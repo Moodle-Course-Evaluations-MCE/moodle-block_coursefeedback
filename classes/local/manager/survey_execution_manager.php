@@ -188,26 +188,20 @@ class survey_execution_manager {
     /**
      * Deletes a survey execution and all sub-resources.
      *
-     * @param int $surveyexecutionid
+     * @param survey_execution $survey_execution
      * @return void
      */
-    public function delete_survey_execution(int $surveyexecutionid): void {
+    public function delete_survey_execution(survey_execution $survey_execution): void {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
 
         $recordset = $DB->get_recordset_sql("
-            SELECT se.id AS se_id, spe.id AS spe_id, slot.id AS slot_id, spe.eventid as spe_eventid
-            FROM {" . survey_execution::TABLE . "} se
-            LEFT JOIN {" . survey_part_execution::TABLE . "} spe ON se.id = spe.surveyexecutionid
+            SELECT spe.id AS spe_id, slot.id AS slot_id, spe.eventid as spe_eventid
+            FROM {" . survey_part_execution::TABLE . "} spe
             LEFT JOIN {" . response_slot::TABLE . "} slot ON spe.id = slot.surveypartexecutionid
-            WHERE se.id = :surveyexecutionid
-        ", ['surveyexecutionid' => $surveyexecutionid]);
-
-        if (!$recordset || !$recordset->valid()) {
-            debugging("Tried to delete nonexistent survey execution with ID '$surveyexecutionid'");
-            return;
-        }
+            WHERE spe.surveyexecutionid = :surveyexecutionid
+        ", ['surveyexecutionid' => $survey_execution->get('id')]);
 
         $records = iterator_to_array($recordset, preserve_keys: false);
 
@@ -217,7 +211,7 @@ class survey_execution_manager {
         $DB->delete_records_list(response_slot::TABLE, 'id', array_column($records, 'slot_id'));
         $DB->delete_records_list(survey_part_execution::TABLE, 'id', array_column($records, 'spe_id'));
         $DB->delete_records_list(teaching_event::TABLE, 'id', array_column($records, 'spe_eventid'));
-        $DB->delete_records(survey_execution::TABLE, ['id' => $surveyexecutionid]);
+        $survey_execution->delete();
 
         $transaction->allow_commit();
     }
