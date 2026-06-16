@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use block_coursefeedback\local\survey;
 use core\output\plugin_renderer_base;
 
 /**
@@ -75,5 +76,37 @@ class block_coursefeedback_renderer extends plugin_renderer_base {
         $mustache = parent::get_mustache();
         $mustache->addHelper('register_alpine_js_module', fn($content) => $this->register_alpine_js_module(trim($content)) || "");
         return $mustache;
+    }
+
+    /**
+     * Render the given survey to a string. If `$append_to_selector` is set, the survey will be moved there by JS.
+     *
+     * @param survey $survey
+     * @param string|null $append_to_selector
+     * @return string
+     */
+    public function render_survey(survey $survey, ?string $append_to_selector = null): string {
+        // For all SPEs with only one slot, initialize the selected slot with it.
+        $default_slots = [];
+        foreach ($survey->slots_by_spe_id as $spe_id => $slots) {
+            if (count($slots) === 1) {
+                $default_slots[$spe_id] = $slots[0]->get('id');
+            }
+        }
+
+        $json_data = [
+            "pages" => $survey->pages,
+            "default_slots" => $default_slots,
+            "courseid" => $survey->survey_execution->get('courseid'),
+        ];
+
+        $context = [
+            'first_page' => $survey->pages[0] ?? null,
+            'amount_pages' => count($survey->pages),
+            'json_data' => json_encode($json_data),
+        ];
+        $context['append_to_selector'] = $append_to_selector;
+
+        return $this->render_from_template('block_coursefeedback/survey/root', $context);
     }
 }

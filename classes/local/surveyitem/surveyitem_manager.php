@@ -32,6 +32,7 @@ use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\persistent\teaching_event;
 use block_coursefeedback\local\surveyitem\dropdown\dropdown;
 use block_coursefeedback\local\surveyitem\emoji\emoji;
+use block_coursefeedback\local\survey_page;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
