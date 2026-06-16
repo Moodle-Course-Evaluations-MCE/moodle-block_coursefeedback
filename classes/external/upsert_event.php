@@ -22,6 +22,7 @@ use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback\local\persistent\survey_part_execution;
 use block_coursefeedback\local\persistent\teaching_event;
+use block_coursefeedback\local\survey_cache;
 use block_coursefeedback\local\survey_execution_data;
 use block_coursefeedback\local\survey_freezer;
 use block_coursefeedback\output\course_event_slot_table;
@@ -108,8 +109,10 @@ class upsert_event extends external_api {
 
         $transaction->allow_commit();
 
-        $model = survey_execution_data::load_from_course_required($course);
-        $table = new course_event_slot_table($model, $course, is_frozen: $freezer->is_se_frozen($model->survey_execution));
+        di::get(survey_cache::class)->evict_by_courseid($course->id);
+        $data = survey_execution_data::load_from_course_required($course);
+        $table = new course_event_slot_table($data, $course, is_frozen: $freezer->is_se_frozen($data->survey_execution));
+
         return [
             'new_table_html' => $OUTPUT->render($table),
         ];

@@ -58,17 +58,17 @@ class survey_execution_data {
         /** @var organization $organization */
         public readonly organization $organization,
         /** @var array<int, teaching_event> $events_by_id */
-        public readonly array $events_by_id,
+        public array $events_by_id,
         /** @var array<int, eventtype> $types_by_event_id */
         public readonly array $types_by_event_id,
         /** @var array<int, survey_part_execution> $spes_by_event_id */
-        public readonly array $spes_by_event_id,
+        public array $spes_by_event_id,
         /** @var array<int, surveypart> $survey_parts_by_spe_id */
-        public readonly array $survey_parts_by_spe_id,
+        public array $survey_parts_by_spe_id,
         /** @var array<int, response_slot[]> $slots_by_spe_id */
-        public readonly array $slots_by_spe_id,
+        public array $slots_by_spe_id,
         /** @var array<int, response_slot> $slots_by_id */
-        public readonly array $slots_by_id,
+        public array $slots_by_id,
         /** @var array<int, array<int, object>> $users_by_slot_id */
         public readonly array $users_by_slot_id,
     ) {
