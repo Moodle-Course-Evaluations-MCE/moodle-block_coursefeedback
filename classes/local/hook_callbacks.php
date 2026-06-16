@@ -18,8 +18,8 @@ namespace block_coursefeedback\local;
 
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\manager\user_organization_cache_manager;
-use block_coursefeedback\local\persistent\survey_execution;
 use block_coursefeedback_renderer;
+use core\di;
 use core\hook\navigation\primary_extend;
 use core\hook\output\after_standard_main_region_html_generation;
 use moodle_url;
@@ -50,24 +50,15 @@ class hook_callbacks {
                 return;
             }
 
-            // TODO: Probably cache the result of this rather large query.
-            $course_data = survey_execution_data::load_from_course($PAGE->course);
-            if (!$course_data) {
-                return;
-            }
-
-            $now = time();
-            $is_active = $course_data->survey_execution->get('status') === survey_execution::STATUS_STARTED
-                && $course_data->survey_execution->get('starttime') <= $now
-                && $now < $course_data->survey_execution->get('endtime');
-            if (!$is_active) {
+            $ongoing_survey = di::get(survey_cache::class)->get_by_course($PAGE->course);
+            if (!$ongoing_survey) {
                 return;
             }
 
             global $USER, $DB;
             if (
                 $DB->record_exists('block_coursefeedback_surveyexecution_user', [
-                    'surveyexecutionid' => $course_data->survey_execution->get('id'),
+                    'surveyexecutionid' => $ongoing_survey->survey_execution->get('id'),
                     'userid' => $USER->id,
                 ])
             ) {
@@ -75,8 +66,7 @@ class hook_callbacks {
                 return;
             }
 
-            $survey = survey::for_course($course_data);
-            if ($survey->is_empty()) {
+            if ($ongoing_survey->is_empty()) {
                 debugging("There is an active survey, but it's empty.");
                 return;
             }
@@ -85,7 +75,7 @@ class hook_callbacks {
             $renderer = $PAGE->get_renderer('block_coursefeedback');
 
             // We add the survey HTML to the end of the page, it'll move itself to the notification area.
-            $hook->add_html($renderer->render_survey($survey, append_to_selector: '#user-notifications'));
+            $hook->add_html($renderer->render_survey($ongoing_survey, append_to_selector: '#user-notifications'));
         } catch (\Exception $e) {
             debugging($e);
         }

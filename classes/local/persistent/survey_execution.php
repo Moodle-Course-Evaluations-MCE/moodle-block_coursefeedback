@@ -16,6 +16,9 @@
 
 namespace block_coursefeedback\local\persistent;
 
+use block_coursefeedback\local\survey_cache;
+use core\clock;
+use core\di;
 use core\exception\coding_exception;
 use core\lang_string;
 
@@ -95,5 +98,62 @@ class survey_execution extends persistent_with_bulk_actions {
             default:
                 throw new coding_exception("Survey execution '$id' has invalid status: '$status'");
         }
+    }
+
+    /**
+     * Checks if the SE is currently ongoing.
+     *
+     * @param clock $clock
+     * @return bool
+     */
+    public function is_ongoing(clock $clock): bool {
+        if ($this->get('status') != self::STATUS_STARTED) {
+            return false;
+        }
+
+        $starttime = $this->get('starttime');
+        $endtime = $this->get('endtime');
+        if (!$starttime || !$endtime) {
+            debugging("Survey execution {$this->get('id')} with status STARTED is missing a start and/or end time.");
+            return false;
+        }
+
+        $now = $clock->time();
+        return $now >= $starttime && $now < $endtime;
+    }
+
+    /**
+     * Checks if the survey did run and has ended.
+     *
+     * @param clock $clock
+     * @return bool
+     */
+    public function has_ended(clock $clock): bool {
+        if ($this->get('status') != self::STATUS_STARTED) {
+            return false;
+        }
+
+        $endtime = $this->get('endtime');
+        if (!$endtime) {
+            debugging("Survey execution {$this->get('id')} with status STARTED is missing an end time.");
+            return false;
+        }
+
+        return $clock->time() >= $endtime;
+    }
+
+    #[\Override]
+    protected function after_create(): void {
+        di::get(survey_cache::class)->evict_by_courseid($this->get('courseid'));
+    }
+
+    #[\Override]
+    protected function after_delete($result): void {
+        di::get(survey_cache::class)->evict_by_courseid($this->get('courseid'));
+    }
+
+    #[\Override]
+    protected function after_update($result): void {
+        di::get(survey_cache::class)->evict_by_courseid($this->get('courseid'));
     }
 }
