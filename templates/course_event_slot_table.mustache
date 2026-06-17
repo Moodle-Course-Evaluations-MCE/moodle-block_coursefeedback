@@ -179,10 +179,9 @@
     }
 }}
 
-<div class="overflow-auto">
-    <table class="table block_coursefeedback-course-event-slot-table" style="margin-bottom: 100px"
-           x-data="table({{course.id}})"
-           x-ref="courseMappingTable">
+<div class="overflow-auto block_coursefeedback_course_event_slot_table" x-ref="courseMappingTable"
+     x-data="table({{course.id}})">
+    <table class="table" style="margin-bottom: 100px">
         <thead>
         <tr>
             <th scope="col">{{#str}} teaching_event, block_coursefeedback {{/str}}</th>

@@ -327,8 +327,10 @@
     padding-right: var(--bs-alert-padding-x, 1rem) !important;
 }
 
-.block_coursefeedback-course-event-slot-table {
-    min-width: 50rem;
+.block_coursefeedback_course_event_slot_table {
+    table {
+        min-width: 50rem;
+    }
 
     .btn-link {
         padding: .1em;
