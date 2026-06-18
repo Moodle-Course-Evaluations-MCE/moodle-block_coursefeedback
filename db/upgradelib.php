@@ -45,3 +45,21 @@ function add_nonnull_field_with_default(database_manager $dbman, xmldb_table $ta
     $field->setNotNull(XMLDB_NOTNULL);
     $dbman->change_field_notnull($table, $field);
 }
+
+/**
+ * Creates a fallback organization with the given name.
+ *
+ * @param string $name
+ * @return int
+ */
+function create_fallback_org(string $name): int {
+    global $DB, $USER;
+    return $DB->insert_record('block_coursefeedback_organization', [
+        'name' => $name,
+        'can_teacher_edit_speriod' => false,
+        'can_teacher_edit_ssettings' => false,
+        'usermodified' => $USER->id,
+        'timecreated' => time(),
+        'timemodified' => time(),
+    ]);
+}
