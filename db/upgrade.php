@@ -824,14 +824,14 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         $table = new xmldb_table('block_coursefeedback_eventtype');
         $field = new xmldb_field('organizationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'active');
 
-        $org_ids = $DB->get_fieldset('block_coursefeedback_organization', 'id');
-        if (!$org_ids) {
-            throw new coding_exception("Can't upgrade to 2026032200: No organization exists. Create one and try again.");
-        }
-
         // Conditionally launch add field organizationid.
         if (!$dbman->field_exists($table, $field)) {
-            add_nonnull_field_with_default($dbman, $table, $field, reset($org_ids));
+            if ($DB->record_exists('block_coursefeedback_eventtype', [])) {
+                $fallback_org_id = create_fallback_org('Orphaned event types');
+                add_nonnull_field_with_default($dbman, $table, $field, $fallback_org_id);
+            } else {
+                $dbman->add_field($table, $field);
+            }
         }
 
         // Coursefeedback savepoint reached.
@@ -1106,14 +1106,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
                 if (!$org_id) {
                     // The course isn't part of an organization (anymore).
                     // Assign the SE to an automatically created one.
-                    $org_id = $fallback_org_id ??= $DB->insert_record('block_coursefeedback_organization', [
-                        'name' => 'Orphaned survey executions',
-                        'can_teacher_edit_speriod' => false,
-                        'can_teacher_edit_ssettings' => false,
-                        'usermodified' => $USER->id,
-                        'timecreated' => time(),
-                        'timemodified' => time(),
-                    ]);
+                    $org_id = $fallback_org_id ??= create_fallback_org('Orphaned survey executions');
                     mtrace("Assigning orphaned survey execution '$record->id' to organization '$org_id'.");
                 }
                 $record->organizationid = $org_id;
