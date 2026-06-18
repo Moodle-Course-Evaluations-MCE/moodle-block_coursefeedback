@@ -44,7 +44,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
     if ($oldversion < 2025_05_09_00) {
         throw new coding_exception(
             'This upgrade requires plugin version 2025050900 or higher. '
-            . 'Please upgrade to version 2025050900 before proceeding.'
+            . 'Please upgrade to version 2025050900 (git ref f29819d04929e78ff92e836b31784a9d553be82a) before proceeding.'
         );
     }
 
