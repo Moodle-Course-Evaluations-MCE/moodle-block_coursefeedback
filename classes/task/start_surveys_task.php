@@ -131,10 +131,10 @@ class start_surveys_task extends scheduled_task {
                 $slot->create();
 
                 // Mutate the survey execution data so we can use it to immediately warm the survey cache.
-                $survey_execution_data->events_by_id[$teaching_event->get('id')] = $teaching_event;
-                $survey_execution_data->spes_by_event_id[$teaching_event->get('id')] = $spe;
-                $survey_execution_data->slots_by_spe_id[$spe->get('id')] = [$slot];
-                $survey_execution_data->slots_by_id[$slot->get('id')] = $slot;
+                array_unshift($survey_execution_data->events_by_id, [$teaching_event->get('id') => $teaching_event]);
+                array_unshift($survey_execution_data->spes_by_event_id, [$teaching_event->get('id') => $spe]);
+                array_unshift($survey_execution_data->slots_by_spe_id, [$spe->get('id') => [$slot]]);
+                array_unshift($survey_execution_data->slots_by_id, [$slot->get('id') => $slot]);
                 $additional_survey_part_ids[$spe->get('id')] = $org_default_surveypartid;
 
                 mtrace(" ... and create default event");
