@@ -32,7 +32,12 @@
  * @param mixed $default
  * @return void
  */
-function add_nonnull_field_with_default(database_manager $dbman, xmldb_table $table, xmldb_field $field, mixed $default): void {
+function block_coursefeedback_add_nonnull_field_with_default(
+    database_manager $dbman,
+    xmldb_table $table,
+    xmldb_field $field,
+    mixed $default
+): void {
     global $DB;
 
     // We can't add a new non-null field without a default, but TEXT fields can't have defaults (for some reason).
@@ -52,7 +57,7 @@ function add_nonnull_field_with_default(database_manager $dbman, xmldb_table $ta
  * @param string $name
  * @return int
  */
-function create_fallback_org(string $name): int {
+function block_coursefeedback_create_fallback_org(string $name): int {
     global $DB, $USER;
     return $DB->insert_record('block_coursefeedback_organization', [
         'name' => $name,

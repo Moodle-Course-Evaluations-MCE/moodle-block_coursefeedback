@@ -673,7 +673,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         // Conditionally launch add field text.
         if (!$dbman->field_exists($table, $field)) {
-            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+            block_coursefeedback_add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
         }
 
         // Define key fk_textid (foreign) to be dropped form block_coursefeedback_surveyitem.
@@ -696,7 +696,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         // Conditionally launch add field text.
         if (!$dbman->field_exists($table, $field)) {
-            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+            block_coursefeedback_add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
         }
 
         // Define field textformat to be added to block_coursefeedback_surveyitem.
@@ -766,7 +766,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         // Conditionally launch add field minoptiontext.
         if (!$dbman->field_exists($table, $field)) {
-            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+            block_coursefeedback_add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
         }
 
         // Define field maxoptiontext to be added to block_coursefeedback_scale.
@@ -774,7 +774,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
 
         // Conditionally launch add field maxoptiontext.
         if (!$dbman->field_exists($table, $field)) {
-            add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
+            block_coursefeedback_add_nonnull_field_with_default($dbman, $table, $field, '{"en": "Migration placeholder"}');
         }
 
         // Define field noansweroptiontext to be added to block_coursefeedback_scale.
@@ -827,8 +827,8 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
         // Conditionally launch add field organizationid.
         if (!$dbman->field_exists($table, $field)) {
             if ($DB->record_exists('block_coursefeedback_eventtype', [])) {
-                $fallback_org_id = create_fallback_org('Orphaned event types');
-                add_nonnull_field_with_default($dbman, $table, $field, $fallback_org_id);
+                $fallback_org_id = block_coursefeedback_create_fallback_org('Orphaned event types');
+                block_coursefeedback_add_nonnull_field_with_default($dbman, $table, $field, $fallback_org_id);
             } else {
                 $dbman->add_field($table, $field);
             }
@@ -1106,7 +1106,7 @@ function xmldb_block_coursefeedback_upgrade(int $oldversion): bool {
                 if (!$org_id) {
                     // The course isn't part of an organization (anymore).
                     // Assign the SE to an automatically created one.
-                    $org_id = $fallback_org_id ??= create_fallback_org('Orphaned survey executions');
+                    $org_id = $fallback_org_id ??= block_coursefeedback_create_fallback_org('Orphaned survey executions');
                     mtrace("Assigning orphaned survey execution '$record->id' to organization '$org_id'.");
                 }
                 $record->organizationid = $org_id;
