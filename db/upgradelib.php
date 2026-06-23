@@ -45,7 +45,7 @@ function block_coursefeedback_add_nonnull_field_with_default(
 
     $field->setNotNull(false);
     $dbman->add_field($table, $field);
-    $DB->execute("UPDATE {$table->getName()} SET {$field->getName()} = :default", ['default' => $default]);
+    $DB->execute('UPDATE {' . $table->getName() . '} SET ' . $field->getName() . ' = :default', ['default' => $default]);
 
     $field->setNotNull(XMLDB_NOTNULL);
     $dbman->change_field_notnull($table, $field);
