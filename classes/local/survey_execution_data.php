@@ -211,6 +211,20 @@ class survey_execution_data {
     }
 
     /**
+     * Load data for a single survey execution. Throw error if it doesn't exist.
+     * @param int $survey_execution_id
+     * @return self
+     */
+    public static function load_from_survey_execution_id_required(int $survey_execution_id): self {
+        $data = self::load_by_filters('se.id = :surveyexecutionid', ['surveyexecutionid' => $survey_execution_id]);
+        if (count($data) != 1) {
+            throw new coding_exception('There is no survey execution with id ' . $survey_execution_id);
+        }
+        return $data[0];
+    }
+
+
+    /**
      * Load multiple survey execution data.
      * @param array $survey_execution_ids
      * @return self[]

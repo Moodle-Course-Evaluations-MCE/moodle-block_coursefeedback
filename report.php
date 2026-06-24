@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Report stuff here...
+ * Renders a report over the results of the evaluation in this course.
  *
  * @package    block_coursefeedback
- * @copyright  2025 innoCampus, Technische Universität Berlin
- * @copyright  2025 IT.Services, Ruhr-Universität Bochum
+ * @copyright  2026 innoCampus, Technische Universität Berlin
+ * @copyright  2026 IT.Services, Ruhr-Universität Bochum
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
+use block_coursefeedback\local\course_semester_mapping\course_semester_mapping;
 use block_coursefeedback\local\js_util;
 use block_coursefeedback\local\manager\permission_manager;
 use block_coursefeedback\local\persistent\organization;
@@ -40,22 +41,22 @@ $slot = response_slot::get_record(['id' => $surveypartexecutionoptionid], MUST_E
 $surveypartexecution = survey_part_execution::get_record(['id' => $slot->get('surveypartexecutionid')], MUST_EXIST);
 $surveyexecution = survey_execution::get_record(['id' => $surveypartexecution->get('surveyexecutionid')], MUST_EXIST);
 
+require_login($surveyexecution->get('courseid'));
+
 $slot_users = response_slot_user::get_records(['surveypartexecutionoptionid' => $slot->get('id')]);
+$slot_user_ids = array_map(fn ($slot_user) => $slot_user->get('userid'), $slot_users);
 $number_of_slots = response_slot::count_records(['surveypartexecutionid' => $surveypartexecution->get('id')]);
 
 $context = context_course::instance($surveyexecution->get('courseid'));
 $organization = organization::get_record(['id' => $surveyexecution->get('organizationid')], MUST_EXIST);
-require_login($surveyexecution->get('courseid'));
 
 if (!permission_manager::can_manage_organization($organization)) {
     if ($slot_users || $number_of_slots >= 2) {
         // Require user to be in $slot_users.
         if (
-            !in_array(
-                $USER->id,
-                array_map(fn ($slot_user) => $slot_user->get('userid'), $slot_users)
-            )
+            !in_array($USER->id, $slot_user_ids)
         ) {
+            throw new \core\exception\moodle_exception('not_on_allowed_list', 'block_coursefeedback');
             throw new \core\exception\coding_exception('You are not on the allowed list of users to see this report.');
         }
     } else {
@@ -78,9 +79,19 @@ if ($data !== null) {
     js_util::js_call_amd('block_coursefeedback/report', 'init', [$data]);
 }
 
+if ($slot_users) {
+    $users = $DB->get_records_list('user', 'id', $slot_user_ids);
+    $usernames = array_map(fn ($user) => fullname($user), $users);
+} else if (has_capability('block/coursefeedback:viewcourseresults', $context)) {
+    $usernames = [fullname($USER)];
+} else {
+    $usernames = [];
+}
+
 $template = [
     'coursename' => get_course($surveyexecution->get('courseid'))->fullname,
-    'username' => fullname($USER),
+    'usernames' => join(", ", $usernames),
+    'semester' => course_semester_mapping::get_instance()->get_current_semester()->name,
 ];
 
 if ($data === null) {

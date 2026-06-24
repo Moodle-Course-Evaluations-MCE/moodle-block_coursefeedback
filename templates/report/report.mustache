@@ -28,9 +28,16 @@
 <h3>
     {{#str}}report_for, block_coursefeedback, {{coursename}}{{/str}}
 </h3>
-<p>
-    {{username}}
-</p>
+{{#semester}}
+    <p>
+        {{semester}}
+    </p>
+{{/semester}}
+{{#usernames}}
+    <p>
+        {{usernames}}
+    </p>
+{{/usernames}}
 {{#not_enough_responses}}
     <p class="text-muted">{{#str}}not_enough_answers, block_coursefeedback{{/str}}</p>
 {{/not_enough_responses}}
@@ -80,6 +87,9 @@
                 {{#type_singlechoice}}
                     {{>block_coursefeedback/report/horizontal_bar_chart}}
                 {{/type_singlechoice}}
+                {{#type_dropdown}}
+                    {{>block_coursefeedback/report/horizontal_bar_chart}}
+                {{/type_dropdown}}
                 {{#type_text}}
                     {{^has_responses}}
                         <i class="text-muted small ms-3">

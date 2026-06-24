@@ -1,4 +1,4 @@
-import * as d3 from './d3';
+import * as d3 from './d3-lazy';
 
 const renderPlot = (element, options, responseStats) => {
     const width = 250;
