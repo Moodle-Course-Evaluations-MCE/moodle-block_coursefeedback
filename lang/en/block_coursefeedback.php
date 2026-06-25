@@ -174,6 +174,7 @@ $string['organization'] = 'Organization';
 $string['organizations'] = 'Organizations';
 $string['pagebreak'] = 'Page break';
 $string['planned'] = 'Planned';
+$string['please_select'] = 'Please select...';
 $string['pluginname'] = 'Course feedback';
 $string['question_in_lang'] = 'Question ({$a})';
 $string['questionnaire'] = 'Questionnaire';

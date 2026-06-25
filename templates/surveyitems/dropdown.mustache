@@ -84,6 +84,7 @@
         <select class="custom-select" name="surveyitem-{{surveyitemid}}"
                 {{#required}}required{{/required}}
                 id="block_coursefeedback-surveyitem-{{surveyitemid}}">
+            <option value="">{{#str}}please_select, block_coursefeedback{{/str}}</option>
             {{# options }}
                 <option value="{{optionid}}">{{{optiontext}}}</option>
             {{/ options }}
