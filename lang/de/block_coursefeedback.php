@@ -164,6 +164,7 @@ $string['new_surveypart'] = 'Neuer Fragebogen';
 $string['no_answer_option_text'] = 'Text für die <abbr title="nicht zutreffend">n.z.</abbr>-Option';
 $string['no_default_survey_period_set'] = 'Der Evaluationszeitraum ist noch nicht gesetzt. Er muss gesetzt werden, bevor Kurse zur Evaluation hinzugefügt werden können.';
 $string['no_edit_survey_period'] = 'Sie sind nicht berechtigt, den Evaluationszeitraum zu ändern.';
+$string['no_evaluation_permissions'] = 'Sie sind in keiner Organisationseinheit berechtigt, Evaluationen oder Fragebögen zu verwalten. Bitte wenden Sie sich an die Evaluationskoordinator/innen oder den ISIS-Support.';
 $string['no_scale_selected'] = 'Bitten wählen Sie eine Skala';
 $string['no_survey_execution'] = 'Der Kurs {$a->fullname} ist nicht Teil einer vergangenen, laufenden oder zukünftigen Evaluation.';
 $string['not_translated'] = 'nicht übersetzt';

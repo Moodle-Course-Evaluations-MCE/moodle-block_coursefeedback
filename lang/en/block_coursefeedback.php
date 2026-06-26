@@ -164,6 +164,7 @@ $string['new_surveypart'] = 'New questionnaire';
 $string['no_answer_option_text'] = 'Text for the <abbr title="not applicable">n/a</abbr> option';
 $string['no_default_survey_period_set'] = 'No default evaluation period set. Please define an evaluation period before creating surveys.';
 $string['no_edit_survey_period'] = 'You are not allowed to edit the survey period.';
+$string['no_evaluation_permissions'] = 'You do not have permission to manage survey settings or questionnaires in any organisation. Please contact your evaluation coordinators or the ISIS support.';
 $string['no_scale_selected'] = 'Please select a scale';
 $string['no_survey_execution'] = 'The course {$a->fullname} is not part of any past, current or future survey.';
 $string['not_translated'] = 'Not translated';
