@@ -54,10 +54,11 @@ $string['course_settings_explanation_events'] =
     'Anhand der von Ihnen angegebenen Veranstaltungsart werden durch die Evaluationsverantwortlichen verschiedene Fragebögen zugewiesen, die dann nacheinander abgefragt werden.';
 $string['course_settings_explanation_general'] = 'Hier können Sie optional die Lehrevaluation für ihren Kurs granularer gestalten, mithilfe von Lehrveranstaltungen und Untergruppen.';
 $string['course_settings_explanation_slot_users'] =
-    'Standardmäßig sind die Ergebnisse einer Untergruppe für alle Trainer/innen einsehbar. ' .
-    'Stattdessen können optional aber Nutzer/innen hinterlegt werden, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
+    'Wenn es nur eine Untergruppe in einer Lehrveranstaltung gibt, sind die Ergebnisse standardmäßig durch alle Trainer/innen einsehbar. ' .
+    'Stattdessen können Nutzer/innen hinterlegt werden, die die Ergebnisse sehen sollen, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
+    'Wenn es es mehr als eine Untergruppe gibt, so müssen Nutzer/innen hinterlegt werden. ' .
     'Die Evaluationsverantwortlichen können die Antworten unabhängig davon immer sehen. ' .
-    'Teilnehmer/innen sehen nicht die Namen dieser Nutzer/innen, sondern nur den Namen der Untergruppe.';
+    'Teilnehmer/innen sehen beim Ausfüllen der Umfrage zur Auswahl der Untergrupe nur den spezifierten Namen der Untergruppe, nicht die Namen der Untergruppen-Lehrenden.';
 $string['course_settings_explanation_slots'] =
     'Außerdem können Sie innerhalb einer Lehrveranstaltung nach Untergruppen (wie z.&nbsp;B. Tutoriumsterminen oder Arbeitsthemen) aufschlüsseln, um diese getrennt evaluieren zu können. ' .
     'Dann wählen Teilnehmer/innen genau eine Gruppe aus, alle Gruppen teilen aber denselben Fragebogen. Gibt es nur eine Untergruppe (standardmäßig <q>-</q>), ist keine Auswahl durch die Teilnehmer/innen nötig.';
@@ -211,7 +212,7 @@ $string['slot_choice_text'] = 'Welche Gruppe haben Sie besucht?';
 $string['slot_name'] = 'Untergruppen-Name';
 $string['slot_name_placeholder'] = 'Meine Untergruppe';
 $string['slot_users'] = 'Untergruppen-Lehrende';
-$string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen nur den Namen der Untergruppe.';
+$string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Bei mehr als zwei Untergruppen müssen hier Nutzer/innen angegeben werden. Bei nur einer Untergruppe, ist diese Einstellung optional; werden keine Nutzer/innen hinterlegt, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen beim Ausfüllen der Umfrage nur den Namen der Untergruppe.';
 $string['slot_users_of'] = 'Der Untergruppe {$a} zugewiesene Lehrende';
 $string['slots'] = 'Untergruppen';
 $string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise Tutorien verschiedener Gruppenleitenden getrennt zu evaluieren. Wenn es mehrere gibt, muss beim Beantworten des Fragebogens eine ausgewählt werden.';

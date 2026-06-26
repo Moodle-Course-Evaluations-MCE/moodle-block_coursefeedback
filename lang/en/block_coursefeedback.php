@@ -54,8 +54,9 @@ $string['course_settings_explanation_events'] =
     'The evaluation coordinators configure the questionnaires that are used for each event type, which are then shown to the user one after the other.';
 $string['course_settings_explanation_general'] = 'Here, you may make the survey for your course more fine-grained by configuring teaching events and response slots.';
 $string['course_settings_explanation_slot_users'] =
-    'By default, the responses to a slot are visible to all teachers of the course. ' .
+    'If there is only one slot in a teaching event, by default, the responses to a slot are visible to all teachers of the course. ' .
     'Instead, you can select particular users who may view them. If you do, other teachers will no longer be able to. ' .
+    'If there is more than one slot, you have to specify users here. ' .
     'Evaluation coordinators can always see responses, regardless of this setting. ' .
     'Participants do not see the slot users when filling out the survey, only its name.';
 $string['course_settings_explanation_slots'] =
@@ -211,7 +212,7 @@ $string['slot_choice_text'] = 'Which slot did you visit?';
 $string['slot_name'] = 'Slot name';
 $string['slot_name_placeholder'] = 'My response slot';
 $string['slot_users'] = 'Slot users';
-$string['slot_users_help'] = 'You can add the users responsible for this slot here, so only they will be able to see its responses. If this is empty, all teachers may see the results. Students will only ever see the slot name.';
+$string['slot_users_help'] = 'You can add the users responsible for this slot here, so only they will be able to see its responses. If there are two or more slots, users have to be specified here. If there is only one slot, this setting is optional; if this is empty, all teachers may see the results. Students filling out the survey will only ever see the slot name.';
 $string['slot_users_of'] = 'Users assigned to slot {$a}';
 $string['slots'] = 'Response slots';
 $string['slots_help'] = 'Slots can be used to group user responses, such as for different tutorials. If there is more than one slot, users must select one before the questionnaire is shown.';

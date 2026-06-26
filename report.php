@@ -57,7 +57,6 @@ if (!permission_manager::can_manage_organization($organization)) {
             !in_array($USER->id, $slot_user_ids)
         ) {
             throw new \core\exception\moodle_exception('not_on_allowed_list', 'block_coursefeedback');
-            throw new \core\exception\coding_exception('You are not on the allowed list of users to see this report.');
         }
     } else {
         require_capability('block/coursefeedback:viewcourseresults', $context);
