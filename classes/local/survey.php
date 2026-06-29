@@ -59,9 +59,7 @@ class survey {
         $events_by_spe_id = [];
         foreach ($course_data->spes_by_event_id as $event_id => $spe) {
             $events_by_spe_id[$spe->get('id')] = $course_data->events_by_id[$event_id];
-        }
 
-        foreach ($course_data->spes_by_event_id as $spe) {
             // Sanity check: Does the survey execution data contain all necessary survey parts?
             if ($spe->get('surveypartid') && !isset($course_data->survey_parts_by_spe_id[$spe->get('id')])) {
                 debugging(
