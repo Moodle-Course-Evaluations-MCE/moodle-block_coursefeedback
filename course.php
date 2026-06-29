@@ -118,7 +118,10 @@ $PAGE->set_title(get_string('course_settings_of', 'block_coursefeedback', $cours
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('course_settings', 'block_coursefeedback'));
 
+$survey_freezer = di::get(survey_freezer::class);
+
 $show_event_table = permission_manager::can_edit_course_surveysettings($course, $organization);
+$show_instructions = $show_event_table && !$is_frozen;
 global $DB;
 $num_responses = $DB->count_records(
     'block_coursefeedback_surveyexecution_user',
@@ -130,6 +133,7 @@ echo $renderer->render_from_template('block_coursefeedback/course_settings', [
     'survey_execution_period_context' => $survey_execution_period->export_for_template($renderer),
     'table_context' => $table->export_for_template($renderer),
     'show_event_table' => $show_event_table,
+    'show_instructions' => $show_instructions,
     'course_fullname' => $course->fullname,
     'localized_status' => $model->survey_execution->get_localized_status(),
     'num_responses' => $num_responses,
