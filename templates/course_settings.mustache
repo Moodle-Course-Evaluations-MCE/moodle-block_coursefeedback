@@ -266,24 +266,28 @@
 {{#show_event_table}}
     <section class="mt-4">
         <h4 class="mb-3">{{#str}} course_event_slot_table_heading, block_coursefeedback {{/str}}</h4>
-        <p>{{#str}} course_settings_explanation_general, block_coursefeedback {{/str}}</p>
 
-        <div class="card mb-3">
-            <section class="card-body">
-                <h5 class="card-title">{{#str}} course_settings_explanation_title, block_coursefeedback {{/str}}</h5>
+        {{#show_instructions}}
+            <p>{{#str}} course_settings_explanation_general, block_coursefeedback {{/str}}</p>
 
-                <dl class="mb-0">
-                    <dt>{{#str}} teaching_events, block_coursefeedback {{/str}}</dt>
-                    <dd>{{#str}} course_settings_explanation_events, block_coursefeedback {{/str}}</dd>
+            <div class="card mb-3">
+                <section class="card-body">
+                    <h5 class="card-title">{{#str}}
+                        course_settings_explanation_title, block_coursefeedback {{/str}}</h5>
 
-                    <dt>{{#str}} slots, block_coursefeedback {{/str}}</dt>
-                    <dd>{{#str}} course_settings_explanation_slots, block_coursefeedback {{/str}}</dd>
+                    <dl class="mb-0">
+                        <dt>{{#str}} teaching_events, block_coursefeedback {{/str}}</dt>
+                        <dd>{{#str}} course_settings_explanation_events, block_coursefeedback {{/str}}</dd>
 
-                    <dt>{{#str}} slot_users, block_coursefeedback {{/str}}</dt>
-                    <dd>{{#str}} course_settings_explanation_slot_users, block_coursefeedback {{/str}}</dd>
-                </dl>
-            </section>
-        </div>
+                        <dt>{{#str}} slots, block_coursefeedback {{/str}}</dt>
+                        <dd>{{#str}} course_settings_explanation_slots, block_coursefeedback {{/str}}</dd>
+
+                        <dt>{{#str}} slot_users, block_coursefeedback {{/str}}</dt>
+                        <dd>{{#str}} course_settings_explanation_slot_users, block_coursefeedback {{/str}}</dd>
+                    </dl>
+                </section>
+            </div>
+        {{/show_instructions}}
 
         {{#table_context}}
             {{> block_coursefeedback/course_event_slot_table }}
