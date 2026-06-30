@@ -16,8 +16,10 @@
 
 namespace block_coursefeedback\local\surveyitem\emoji;
 
+use block_coursefeedback\local\persistent\response_slot;
 use block_coursefeedback\local\persistent\surveyitem;
 use block_coursefeedback\local\persistent\surveypart;
+use block_coursefeedback\local\surveyitem\surveyitem_manager;
 use block_coursefeedback\local\surveyitem\surveyitemtype_with_settings;
 use core\lang_string;
 use moodle_exception;
@@ -252,5 +254,31 @@ class emoji extends surveyitemtype_with_settings {
             ];
         }
         $DB->insert_records('block_coursefeedback_surveyitemintresponse', $to_insert);
+    }
+
+    #[\Override]
+    public function load_and_export_report_data(
+        response_slot $response_slot,
+        array $surveyitemsoftype,
+        array $additional_data
+    ): array {
+        $responses = surveyitem_manager::get_aggregated_int_responses($response_slot);
+
+        $template_data = self::export_for_template($surveyitemsoftype, $additional_data);
+        foreach ($template_data as $surveyitemid => &$surveyitemdata) {
+            $response_stats = $this->calculate_statistic_properties($responses[$surveyitemid] ?? []);
+            if ($response_stats['n'] < get_config('block_coursefeedback', 'report_min_responses_per_item')) {
+                $surveyitemdata['not_enough_responses'] = true;
+                continue;
+            }
+
+            foreach ($surveyitemdata['choices'] as &$optiondata) {
+                $optiondata['responses'] = $responses[$surveyitemid][$optiondata['value']] ?? 0;
+            }
+            $surveyitemdata['response_stats'] = $response_stats;
+            $surveyitemdata['chartdata'] = json_encode($surveyitemdata, JSON_HEX_APOS | JSON_HEX_QUOT);
+        }
+
+        return $template_data;
     }
 }

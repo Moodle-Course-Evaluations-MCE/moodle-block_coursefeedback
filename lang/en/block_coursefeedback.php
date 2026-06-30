@@ -54,8 +54,9 @@ $string['course_settings_explanation_events'] =
     'The evaluation coordinators configure the questionnaires that are used for each event type, which are then shown to the user one after the other.';
 $string['course_settings_explanation_general'] = 'Here, you may make the survey for your course more fine-grained by configuring teaching events and response slots.';
 $string['course_settings_explanation_slot_users'] =
-    'By default, the responses to a slot are visible to all teachers of the course. ' .
+    'If there is only one slot in a teaching event, by default, the responses to a slot are visible to all teachers of the course. ' .
     'Instead, you can select particular users who may view them. If you do, other teachers will no longer be able to. ' .
+    'If there is more than one slot, you have to specify users here. ' .
     'Evaluation coordinators can always see responses, regardless of this setting. ' .
     'Participants do not see the slot users when filling out the survey, only its name.';
 $string['course_settings_explanation_slots'] =
@@ -149,6 +150,8 @@ $string['local_moses_no_current_semester'] = 'The Moses API did not return a cur
 $string['local_moses_not_installed'] = 'The local_moses plugin is not installed.';
 $string['local_moses_unsupported'] = 'Version {$a->installed} of the local_moses plugin is not supported. Please upgrade at least to version {$a->min}.';
 $string['max_option_text'] = 'Text for max. pole';
+$string['mean'] = 'Mean';
+$string['median'] = 'Median';
 $string['message_content'] = 'Content';
 $string['message_for_teachers_when_survey_created'] = 'Message for teachers when surveys are created';
 $string['message_subject'] = 'Subject';
@@ -162,12 +165,16 @@ $string['new_scale'] = 'New scale';
 $string['new_surveyitem'] = 'New questionnaire element';
 $string['new_surveypart'] = 'New questionnaire';
 $string['no_answer_option_text'] = 'Text for the <abbr title="not applicable">n/a</abbr> option';
+$string['no_answers'] = 'No answers';
 $string['no_default_survey_period_set'] = 'No default evaluation period set. Please define an evaluation period before creating surveys.';
 $string['no_edit_survey_period'] = 'You are not allowed to edit the survey period.';
 $string['no_scale_selected'] = 'Please select a scale';
 $string['no_survey_execution'] = 'The course {$a->fullname} is not part of any past, current or future survey.';
+$string['not_enough_answers'] = 'The report cannot be shown, because there are not enough answers.';
+$string['not_on_allowed_list'] = 'You are not on the allowed list of users to see this report.';
 $string['not_translated'] = 'Not translated';
 $string['num_responses'] = 'Number of responses';
+$string['number_of_answers'] = 'Number of answers';
 $string['ongoing'] = 'Ongoing';
 $string['option_amount'] = 'Amount of options';
 $string['organization'] = 'Organization';
@@ -179,6 +186,9 @@ $string['pluginname'] = 'Course feedback';
 $string['question_in_lang'] = 'Question ({$a})';
 $string['questionnaire'] = 'Questionnaire';
 $string['questionnaires'] = 'Questionnaires';
+$string['report'] = 'Report';
+$string['report_for'] = 'Report for <q>{$a}</q>';
+$string['reports'] = 'Reports';
 $string['scale'] = 'Scale';
 $string['scale_delete_in_use'] = 'Cannot delete scale \'{$a}\' that is in use by at least one scale question.';
 $string['scalequestion'] = 'Scale question';
@@ -194,6 +204,8 @@ $string['settings:default_survey_creation_method'] = 'Default survey creation me
 $string['settings:default_survey_creation_method:create_empty'] = 'Create empty surveys';
 $string['settings:default_survey_creation_method:rub'] = 'Use RUB Campus data';
 $string['settings:general_settings'] = 'General settings';
+$string['settings:report_min_responses_overall'] = 'Minimum number of responses to show report';
+$string['settings:report_min_responses_per_item'] = 'Minimum number of responses to show item in report (except text question).';
 $string['show_all_languages'] = 'Show all languages';
 $string['singlechoice'] = 'Single choice';
 $string['slot_choice_surveyitem'] = 'Slot Choice';
@@ -201,10 +213,11 @@ $string['slot_choice_text'] = 'Which slot did you visit?';
 $string['slot_name'] = 'Slot name';
 $string['slot_name_placeholder'] = 'My response slot';
 $string['slot_users'] = 'Slot users';
-$string['slot_users_help'] = 'You can add the users responsible for this slot here, so only they will be able to see its responses. If this is empty, all teachers may see the results. Students will only ever see the slot name.';
+$string['slot_users_help'] = 'You can add the users responsible for this slot here, so only they will be able to see its responses. If there are two or more slots, users have to be specified here. If there is only one slot, this setting is optional; if this is empty, all teachers may see the results. Students filling out the survey will only ever see the slot name.';
 $string['slot_users_of'] = 'Users assigned to slot {$a}';
 $string['slots'] = 'Response slots';
 $string['slots_help'] = 'Slots can be used to group user responses, such as for different tutorials. If there is more than one slot, users must select one before the questionnaire is shown.';
+$string['standard_deviation'] = 'Standard deviation';
 $string['start'] = 'Start';
 $string['survey_created_message_help'] = '<p>In the following texts, these <i>placeholders</i> can be used:</p>
 <p>

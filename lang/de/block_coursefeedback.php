@@ -54,10 +54,11 @@ $string['course_settings_explanation_events'] =
     'Anhand der von Ihnen angegebenen Veranstaltungsart werden durch die Evaluationsverantwortlichen verschiedene Fragebögen zugewiesen, die dann nacheinander abgefragt werden.';
 $string['course_settings_explanation_general'] = 'Hier können Sie optional die Lehrevaluation für ihren Kurs granularer gestalten, mithilfe von Lehrveranstaltungen und Untergruppen.';
 $string['course_settings_explanation_slot_users'] =
-    'Standardmäßig sind die Ergebnisse einer Untergruppe für alle Trainer/innen einsehbar. ' .
-    'Stattdessen können optional aber Nutzer/innen hinterlegt werden, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
+    'Wenn es nur eine Untergruppe in einer Lehrveranstaltung gibt, sind die Ergebnisse standardmäßig durch alle Trainer/innen einsehbar. ' .
+    'Stattdessen können Nutzer/innen hinterlegt werden, die die Ergebnisse sehen sollen, dann können andere Trainer/innen die Ergebnisse nicht mehr sehen. ' .
+    'Wenn es es mehr als eine Untergruppe gibt, so müssen Nutzer/innen hinterlegt werden. ' .
     'Die Evaluationsverantwortlichen können die Antworten unabhängig davon immer sehen. ' .
-    'Teilnehmer/innen sehen nicht die Namen dieser Nutzer/innen, sondern nur den Namen der Untergruppe.';
+    'Teilnehmer/innen sehen beim Ausfüllen der Umfrage zur Auswahl der Untergrupe nur den spezifierten Namen der Untergruppe, nicht die Namen der Untergruppen-Lehrenden.';
 $string['course_settings_explanation_slots'] =
     'Außerdem können Sie innerhalb einer Lehrveranstaltung nach Untergruppen (wie z.&nbsp;B. Tutoriumsterminen oder Arbeitsthemen) aufschlüsseln, um diese getrennt evaluieren zu können. ' .
     'Dann wählen Teilnehmer/innen genau eine Gruppe aus, alle Gruppen teilen aber denselben Fragebogen. Gibt es nur eine Untergruppe (standardmäßig <q>-</q>), ist keine Auswahl durch die Teilnehmer/innen nötig.';
@@ -149,6 +150,8 @@ $string['local_moses_no_current_semester'] = 'Die Moses-API liefert kein aktuell
 $string['local_moses_not_installed'] = 'Das Plugin local_moses ist nicht installiert.';
 $string['local_moses_unsupported'] = 'Die installierte Version {$a->installed} des local_moses-Plugins wird nicht unterstützt. Installieren Sie mindestens die Version {$a->min}.';
 $string['max_option_text'] = 'Beschriftung das max. Pols';
+$string['mean'] = 'Durchschnitt';
+$string['median'] = 'Median';
 $string['message_content'] = 'Inhalt';
 $string['message_for_teachers_when_survey_created'] = 'Nachricht an Lehrende, wenn Umfragen erstellt werden';
 $string['message_subject'] = 'Betreff';
@@ -162,12 +165,16 @@ $string['new_scale'] = 'Neue Skala';
 $string['new_surveyitem'] = 'Neues Fragebogen-Element';
 $string['new_surveypart'] = 'Neuer Fragebogen';
 $string['no_answer_option_text'] = 'Text für die <abbr title="nicht zutreffend">n.z.</abbr>-Option';
+$string['no_answers'] = 'Keine Antworten';
 $string['no_default_survey_period_set'] = 'Der Evaluationszeitraum ist noch nicht gesetzt. Er muss gesetzt werden, bevor Kurse zur Evaluation hinzugefügt werden können.';
 $string['no_edit_survey_period'] = 'Sie sind nicht berechtigt, den Evaluationszeitraum zu ändern.';
 $string['no_scale_selected'] = 'Bitten wählen Sie eine Skala';
 $string['no_survey_execution'] = 'Der Kurs {$a->fullname} ist nicht Teil einer vergangenen, laufenden oder zukünftigen Evaluation.';
+$string['not_enough_answers'] = 'Der Bericht kann nicht angezeigt werden, da es nicht genug Antworten gibt.';
+$string['not_on_allowed_list'] = 'Sie sind nicht auf der Liste der Nutzer/innen, die berechtigt sind, den Bericht zu sehen.';
 $string['not_translated'] = 'nicht übersetzt';
 $string['num_responses'] = 'Anzahl von Antworten';
+$string['number_of_answers'] = 'Anzahl der Antworten';
 $string['ongoing'] = 'Laufend';
 $string['option_amount'] = 'Anzahl von Antwortmöglichkeiten';
 $string['organization'] = 'Organisation';
@@ -179,6 +186,9 @@ $string['pluginname'] = 'Evaluation';
 $string['question_in_lang'] = 'Frage ({$a})';
 $string['questionnaire'] = 'Fragebogen';
 $string['questionnaires'] = 'Fragebögen';
+$string['report'] = 'Ergebnisbericht';
+$string['report_for'] = 'Ergebnisbericht für <q>{$a}</q>';
+$string['reports'] = 'Ergebnisberichte';
 $string['scale'] = 'Skala';
 $string['scale_delete_in_use'] = 'Kann Skala \'{$a}\' nicht löschen, da sie in mindestens einer Skalenfrage verwendet wird.';
 $string['scalequestion'] = 'Skalenfrage';
@@ -194,6 +204,8 @@ $string['settings:default_survey_creation_method'] = 'Umfrage-Erstellungsmethode
 $string['settings:default_survey_creation_method:create_empty'] = 'Einstellungen in neu hinzugefügten Kursen sind initial leer';
 $string['settings:default_survey_creation_method:rub'] = 'RUB-Campus-Daten benutzen';
 $string['settings:general_settings'] = 'Allgemeine Einstellungen';
+$string['settings:report_min_responses_overall'] = 'Minimale Anzahl von Antworten, um Ergebnisbericht anzuzeigen.';
+$string['settings:report_min_responses_per_item'] = 'Minimale Anzahl von Antworten, um Frage in Ergebnisbericht anzuzeigen (außer Freitextfragen).';
 $string['show_all_languages'] = 'Alle Sprachen anzeigen';
 $string['singlechoice'] = 'Single Choice';
 $string['slot_choice_surveyitem'] = 'Untergruppen-Auswahl';
@@ -201,10 +213,11 @@ $string['slot_choice_text'] = 'Welche Gruppe haben Sie besucht?';
 $string['slot_name'] = 'Untergruppen-Name';
 $string['slot_name_placeholder'] = 'Meine Untergruppe';
 $string['slot_users'] = 'Untergruppen-Lehrende';
-$string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Werden keine angegeben, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen nur den Namen der Untergruppe.';
+$string['slot_users_help'] = 'Hier können Nutzer/innen (z.B. Tutor/innen) angegeben werden, sodass nur diese die Ergebnisse der Untergruppe sehen. Bei mehr als zwei Untergruppen müssen hier Nutzer/innen angegeben werden. Bei nur einer Untergruppe, ist diese Einstellung optional; werden keine Nutzer/innen hinterlegt, können alle Trainer/innen die Ergebnisse sehen. Teilnehmer/innen sehen beim Ausfüllen der Umfrage nur den Namen der Untergruppe.';
 $string['slot_users_of'] = 'Der Untergruppe {$a} zugewiesene Lehrende';
 $string['slots'] = 'Untergruppen';
 $string['slots_help'] = 'Untergruppen können verwendet werden, um beispielsweise Tutorien verschiedener Gruppenleitenden getrennt zu evaluieren. Wenn es mehrere gibt, muss beim Beantworten des Fragebogens eine ausgewählt werden.';
+$string['standard_deviation'] = 'Standardabweichung';
 $string['start'] = 'Start';
 $string['survey_created_message_help'] = '<p>In den folgenden Texten können diese <i>Platzhalter</i> benutzt werden:</p>
 <p>

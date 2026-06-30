@@ -38,4 +38,22 @@
     {{/str}}
 </p>
 
-<a href="{{{evaluation_settings_url}}}">{{#str}}evaluation_settings, block_coursefeedback{{/str}}</a>
+{{#evaluation_settings_url}}
+    <p>
+        <a href="{{{evaluation_settings_url}}}">{{#str}}evaluation_settings, block_coursefeedback{{/str}}</a>
+    </p>
+{{/evaluation_settings_url}}
+
+{{#has_reports}}
+    <h5>{{#str}}reports, block_coursefeedback{{/str}}</h5>
+    {{#reports}}
+        <p>{{name}}:</p>
+        <ul>
+            {{#slots}}
+                <li>
+                    <a href="{{{url}}}">{{name}}</a>
+                </li>
+            {{/slots}}
+        </ul>
+    {{/reports}}
+{{/has_reports}}
